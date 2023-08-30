@@ -24,6 +24,8 @@ use bevy_render::{
     camera::Camera,
     mesh::*,
     primitives::Aabb,
+    picking::{VisibleMeshEntities, MESH_ID_TEXTURE_FORMAT},
+    prelude::Msaa,
     render_asset::RenderAssets,
     render_phase::{
         BinnedRenderPhasePlugin, PhaseItem, RenderCommand, RenderCommandResult,
@@ -249,6 +251,9 @@ impl Plugin for MeshRenderPlugin {
 pub struct MeshTransforms {
     pub world_from_local: Affine3,
     pub previous_world_from_local: Affine3,
+    pub transform: Affine3,
+    pub previous_transform: Affine3,
+    pub id: u32,
     pub flags: u32,
 }
 
@@ -263,6 +268,9 @@ pub struct MeshUniform {
     //   [2].z
     pub local_from_world_transpose_a: [Vec4; 2],
     pub local_from_world_transpose_b: f32,
+    pub inverse_transpose_model_a: [Vec4; 2],
+    pub inverse_transpose_model_b: f32,
+    pub id: u32,
     pub flags: u32,
     // Four 16-bit unsigned normalized UV values packed into a `UVec2`:
     //
@@ -339,6 +347,43 @@ impl MeshUniform {
             lightmap_uv_rect: pack_lightmap_uv_rect(maybe_lightmap_uv_rect),
             local_from_world_transpose_a,
             local_from_world_transpose_b,
+            transform: [
+                transpose_model_3x3
+                    .x_axis
+                    .extend(mesh_transforms.transform.translation.x),
+                transpose_model_3x3
+                    .y_axis
+                    .extend(mesh_transforms.transform.translation.y),
+                transpose_model_3x3
+                    .z_axis
+                    .extend(mesh_transforms.transform.translation.z),
+            ],
+            previous_transform: [
+                transpose_previous_model_3x3
+                    .x_axis
+                    .extend(mesh_transforms.previous_transform.translation.x),
+                transpose_previous_model_3x3
+                    .y_axis
+                    .extend(mesh_transforms.previous_transform.translation.y),
+                transpose_previous_model_3x3
+                    .z_axis
+                    .extend(mesh_transforms.previous_transform.translation.z),
+            ],
+            lightmap_uv_rect: lightmap::pack_lightmap_uv_rect(maybe_lightmap_uv_rect),
+            inverse_transpose_model_a: [
+                (
+                    inverse_transpose_model_3x3.x_axis,
+                    inverse_transpose_model_3x3.y_axis.x,
+                )
+                    .into(),
+                (
+                    inverse_transpose_model_3x3.y_axis.yz(),
+                    inverse_transpose_model_3x3.z_axis.xy(),
+                )
+                    .into(),
+            ],
+            inverse_transpose_model_b: inverse_transpose_model_3x3.z_axis.z,
+            id: mesh_transforms.id,
             flags: mesh_transforms.flags,
         }
     }
@@ -794,12 +839,14 @@ pub struct RenderMeshQueueData<'a> {
 #[derive(SystemSet, Clone, PartialEq, Eq, Debug, Hash)]
 pub struct ExtractMeshesSet;
 
+// TODO_DS: check which one
+
 /// Extracts meshes from the main world into the render world, populating the
 /// [`RenderMeshInstances`].
 ///
 /// This is the variant of the system that runs when we're *not* using GPU
 /// [`MeshUniform`] building.
-pub fn extract_meshes_for_cpu_building(
+pub fn extract_meshes_for_cpu_building1(
     mut render_mesh_instances: ResMut<RenderMeshInstances>,
     render_visibility_ranges: Res<RenderVisibilityRanges>,
     mut render_mesh_instance_queues: Local<Parallel<Vec<(Entity, RenderMeshInstanceCpu)>>>,
@@ -865,6 +912,230 @@ pub fn extract_meshes_for_cpu_building(
                         previous_world_from_local: (&previous_transform
                             .map(|t| t.0)
                             .unwrap_or(world_from_local))
+                            .into(),
+                        flags: mesh_flags.bits(),
+                    },
+                    shared,
+                },
+            ));
+        },
+    );
+
+    // Collect the render mesh instances.
+    let RenderMeshInstances::CpuBuilding(ref mut render_mesh_instances) = *render_mesh_instances
+    else {
+        panic!(
+            "`extract_meshes_for_cpu_building` should only be called if we're using CPU \
+            `MeshUniform` building"
+        );
+    };
+
+    render_mesh_instances.clear();
+    for queue in render_mesh_instance_queues.iter_mut() {
+        for (entity, render_mesh_instance) in queue.drain(..) {
+            render_mesh_instances.insert_unique_unchecked(entity, render_mesh_instance);
+        }
+    }
+}
+
+
+/// Extracts meshes from the main world into the render world, populating the
+/// [`RenderMeshInstances`].
+///
+/// This is the variant of the system that runs when we're *not* using GPU
+/// [`MeshUniform`] building.
+pub fn extract_meshes_for_cpu_building(
+    mut render_mesh_instances: ResMut<RenderMeshInstances>,
+    render_visibility_ranges: Res<RenderVisibilityRanges>,
+    mut render_mesh_instance_queues: Local<Parallel<Vec<(Entity, RenderMeshInstanceCpu)>>>,
+    meshes_query: Extract<
+        Query<(
+            Entity,
+            &ViewVisibility,
+            &GlobalTransform,
+            Option<&PreviousGlobalTransform>,
+            &Handle<Mesh>,
+            Has<NotShadowReceiver>,
+            Has<TransmittedShadowReceiver>,
+            Has<NotShadowCaster>,
+            Has<NoAutomaticBatching>,
+            Has<VisibilityRange>,
+        )>,
+    >,
+) {
+    let mut caster_commands = Vec::with_capacity(*prev_caster_commands_len);
+    let mut not_caster_commands = Vec::with_capacity(*prev_not_caster_commands_len);
+    let visible_meshes = meshes_query.iter().filter(|(_, vis, ..)| vis.get());
+
+    let mut visible_mesh_entities = vec![Entity::PLACEHOLDER];
+
+    for (mesh_id, (entity, _, transform, previous_transform, handle, not_receiver, not_caster)) in
+        visible_meshes.enumerate()
+    {
+        let transform = transform.affine();
+        let previous_transform = previous_transform.map(|t| t.0).unwrap_or(transform);
+        let mut flags = if not_receiver.is_some() {
+            MeshFlags::empty()
+        } else {
+            MeshFlags::SHADOW_RECEIVER
+        };
+        if transform.matrix3.determinant().is_sign_positive() {
+            flags |= MeshFlags::SIGN_DETERMINANT_MODEL_3X3;
+        }
+        let transforms = MeshTransforms {
+            transform: (&transform).into(),
+            previous_transform: (&previous_transform).into(),
+            flags: flags.bits(),
+            id: mesh_id as u32 + 1,
+        };
+        if not_caster.is_some() {
+            not_caster_commands.push((entity, (handle.clone_weak(), transforms, NotShadowCaster)));
+        } else {
+            caster_commands.push((entity, (handle.clone_weak(), transforms)));
+        }
+
+        visible_mesh_entities.push(entity);
+    }
+    *prev_caster_commands_len = caster_commands.len();
+    *prev_not_caster_commands_len = not_caster_commands.len();
+    commands.insert_or_spawn_batch(caster_commands);
+    commands.insert_or_spawn_batch(not_caster_commands);
+    commands.insert_resource(VisibleMeshEntities(Some(visible_mesh_entities)));
+}
+
+#[derive(Component)]
+pub struct SkinnedMeshJoints {
+    pub index: u32,
+}
+
+impl SkinnedMeshJoints {
+    #[inline]
+    pub fn build(
+        skin: &SkinnedMesh,
+        inverse_bindposes: &Assets<SkinnedMeshInverseBindposes>,
+        joints: &Query<&GlobalTransform>,
+        buffer: &mut BufferVec<Mat4>,
+    ) -> Option<Self> {
+        let inverse_bindposes = inverse_bindposes.get(&skin.inverse_bindposes)?;
+        let start = buffer.len();
+        let target = start + skin.joints.len().min(MAX_JOINTS);
+        buffer.extend(
+            joints
+                .iter_many(&skin.joints)
+                .zip(inverse_bindposes.iter())
+                .take(MAX_JOINTS)
+                .map(|(joint, bindpose)| joint.affine() * *bindpose),
+        );
+        // iter_many will skip any failed fetches. This will cause it to assign the wrong bones,
+        // so just bail by truncating to the start.
+        if buffer.len() != target {
+            buffer.truncate(start);
+            return None;
+        }
+
+        // Pad to 256 byte alignment
+        while buffer.len() % 4 != 0 {
+            buffer.push(Mat4::ZERO);
+        }
+        Some(Self {
+            index: start as u32,
+        })
+    }
+
+    /// Updated index to be in address space based on [`SkinnedMeshUniform`] size.
+    pub fn to_buffer_index(mut self) -> Self {
+        self.index *= std::mem::size_of::<Mat4>() as u32;
+        self
+    }
+}
+
+pub fn extract_skinned_meshes(
+    mut commands: Commands,
+    mut previous_len: Local<usize>,
+    mut uniform: ResMut<SkinnedMeshUniform>,
+    query: Extract<Query<(Entity, &ViewVisibility, &SkinnedMesh)>>,
+    inverse_bindposes: Extract<Res<Assets<SkinnedMeshInverseBindposes>>>,
+    joint_query: Extract<Query<&GlobalTransform>>,
+) {
+    uniform.buffer.clear();
+    let mut values = Vec::with_capacity(*previous_len);
+    let mut last_start = 0;
+
+    for (entity, view_visibility, skin) in &query {
+        if !view_visibility.get() {
+            continue;
+        }
+        // PERF: This can be expensive, can we move this to prepare?
+        if let Some(skinned_joints) =
+            SkinnedMeshJoints::build(skin, &inverse_bindposes, &joint_query, &mut uniform.buffer)
+        {
+            last_start = last_start.max(skinned_joints.index as usize);
+            values.push((entity, skinned_joints.to_buffer_index()));
+        }
+    }
+
+    // Pad out the buffer to ensure that there's enough space for bindings
+    while uniform.buffer.len() - last_start < MAX_JOINTS {
+        uniform.buffer.push(Mat4::ZERO);
+    }
+
+    *previous_len = values.len();
+    commands.insert_or_spawn_batch(values);
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn prepare_mesh_uniforms(
+    mut seen: Local<FixedBitSet>,
+    mut commands: Commands,
+    mut previous_len: Local<usize>,
+    render_device: Res<RenderDevice>,
+    render_queue: Res<RenderQueue>,
+    mut gpu_array_buffer: ResMut<GpuArrayBuffer<MeshUniform>>,
+    views: Query<(
+        &RenderPhase<Opaque3d>,
+        &RenderPhase<Transparent3d>,
+        &RenderPhase<AlphaMask3d>,
+    )>,
+    shadow_views: Query<&RenderPhase<Shadow>>,
+    meshes: Query<(Entity, &MeshTransforms)>,
+) {
+    gpu_array_buffer.clear();
+    seen.clear();
+
+    let mut indices = Vec::with_capacity(*previous_len);
+    let mut push_indices = |(mesh, mesh_uniform): (Entity, &MeshTransforms)| {
+        let index = mesh.index() as usize;
+        if !seen.contains(index) {
+            if index >= seen.len() {
+                seen.grow(index + 1);
+            }
+
+            let mut lod_index = None;
+            if visibility_range {
+                lod_index = render_visibility_ranges.lod_index_for_entity(entity);
+            }
+
+            let mesh_flags = MeshFlags::from_components(
+                transform,
+                lod_index,
+                not_shadow_receiver,
+                transmitted_receiver,
+            );
+
+            let shared = RenderMeshInstanceShared::from_components(
+                previous_transform,
+                handle,
+                not_shadow_caster,
+                no_automatic_batching,
+            );
+
+            let transform = transform.affine();
+            queue.push((
+                entity,
+                RenderMeshInstanceCpu {
+                    transforms: MeshTransforms {
+                        transform: (&transform).into(),
+                        previous_transform: (&previous_transform.map(|t| t.0).unwrap_or(transform))
                             .into(),
                         flags: mesh_flags.bits(),
                     },
@@ -1398,9 +1669,12 @@ bitflags::bitflags! {
         const MOTION_VECTOR_PREPASS             = 1 << 6;
         const MAY_DISCARD                       = 1 << 7; // Guards shader codepaths that may discard, allowing early depth tests in most cases
                                                             // See: https://www.khronos.org/opengl/wiki/Early_Fragment_Test
-        const ENVIRONMENT_MAP                   = 1 << 8;
-        const SCREEN_SPACE_AMBIENT_OCCLUSION    = 1 << 9;
-        const DEPTH_CLAMP_ORTHO                 = 1 << 10;
+        // Bitfields
+        const ENVIRONMENT_MAP                   = (1 << 7);
+        const SCREEN_SPACE_AMBIENT_OCCLUSION    = (1 << 8);
+        const DEPTH_CLAMP_ORTHO                 = (1 << 9);
+        const TAA                               = (1 << 10);
+        const MORPH_TARGETS                     = (1 << 11);
         const TEMPORAL_JITTER                   = 1 << 11;
         const READS_VIEW_TRANSMISSION_TEXTURE   = 1 << 12;
         const LIGHTMAPPED                       = 1 << 13;
@@ -1411,7 +1685,15 @@ bitflags::bitflags! {
         const HAS_PREVIOUS_MORPH                = 1 << 18;
         const LAST_FLAG                         = Self::HAS_PREVIOUS_MORPH.bits();
 
-        // Bitfields
+        /// Indicates if the mesh should output it's entity index
+        const GPU_PICKING                       = (1 << 12);
+        /// Indicates if the entity index texture should be added as a target
+        const MESH_ID_TEXTURE_TARGET            = (1 << 13);
+        const BLEND_RESERVED_BITS               = Self::BLEND_MASK_BITS << Self::BLEND_SHIFT_BITS; // ← Bitmask reserving bits for the blend state
+        const BLEND_OPAQUE                      = (0 << Self::BLEND_SHIFT_BITS);                   // ← Values are just sequential within the mask, and can range from 0 to 3
+        const BLEND_PREMULTIPLIED_ALPHA         = (1 << Self::BLEND_SHIFT_BITS);                   //
+        const BLEND_MULTIPLY                    = (2 << Self::BLEND_SHIFT_BITS);                   // ← We still have room for one more value without adding more bits
+        const BLEND_ALPHA                       = (3 << Self::BLEND_SHIFT_BITS);
         const MSAA_RESERVED_BITS                = Self::MSAA_MASK_BITS << Self::MSAA_SHIFT_BITS;
         const BLEND_RESERVED_BITS               = Self::BLEND_MASK_BITS << Self::BLEND_SHIFT_BITS; // ← Bitmask reserving bits for the blend state
         const BLEND_OPAQUE                      = 0 << Self::BLEND_SHIFT_BITS;                     // ← Values are just sequential within the mask
@@ -1870,6 +2152,34 @@ impl SpecializedMeshPipeline for MeshPipeline {
             ));
         }
 
+        let mut push_constant_ranges = Vec::with_capacity(1);
+        if cfg!(all(feature = "webgl", target_arch = "wasm32")) {
+            push_constant_ranges.push(PushConstantRange {
+                stages: ShaderStages::VERTEX,
+                range: 0..4,
+            });
+        }
+
+        let mut targets = vec![Some(ColorTargetState {
+            format,
+            blend,
+            write_mask: ColorWrites::ALL,
+        })];
+
+        if key.contains(MeshPipelineKey::GPU_PICKING) {
+            shader_defs.push("GPU_PICKING".into());
+        }
+
+        if key.contains(MeshPipelineKey::MESH_ID_TEXTURE_TARGET) {
+            // Event if GPU_PICKING is not in the key we still need to add the target.
+            // This is important because the target is for all meshes not just pickable meshes.
+            targets.push(Some(ColorTargetState {
+                format: MESH_ID_TEXTURE_FORMAT,
+                blend: None,
+                write_mask: ColorWrites::ALL,
+            }));
+        }
+
         Ok(RenderPipelineDescriptor {
             vertex: VertexState {
                 shader: MESH_SHADER_HANDLE,
@@ -1881,11 +2191,7 @@ impl SpecializedMeshPipeline for MeshPipeline {
                 shader: MESH_SHADER_HANDLE,
                 shader_defs,
                 entry_point: "fragment".into(),
-                targets: vec![Some(ColorTargetState {
-                    format,
-                    blend,
-                    write_mask: ColorWrites::ALL,
-                })],
+                targets,
             }),
             layout: bind_group_layout,
             push_constant_ranges: vec![],

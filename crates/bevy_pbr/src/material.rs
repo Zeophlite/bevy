@@ -29,6 +29,20 @@ use bevy_render::{
     render_asset::{PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets},
     render_phase::*,
     render_resource::*,
+    extract_component::ExtractComponentPlugin,
+    mesh::{Mesh, MeshVertexBufferLayout},
+    picking::{ExtractedGpuPickingCamera, GpuPickingMesh},
+    prelude::Image,
+    render_asset::{prepare_assets, RenderAssets},
+    render_phase::{
+        AddRenderCommand, DrawFunctions, PhaseItem, RenderCommand, RenderCommandResult,
+        RenderPhase, SetItemPipeline, TrackedRenderPass,
+    },
+    render_resource::{
+        AsBindGroup, AsBindGroupError, BindGroup, BindGroupLayout, OwnedBindingResource,
+        PipelineCache, RenderPipelineDescriptor, Shader, ShaderRef, SpecializedMeshPipeline,
+        SpecializedMeshPipelineError, SpecializedMeshPipelines,
+    },
     renderer::RenderDevice,
     texture::FallbackImage,
     view::{ExtractedView, Msaa, RenderVisibilityRanges, VisibleEntities, WithMesh},
@@ -547,6 +561,13 @@ pub fn queue_material_meshes<M: Material>(
     mut alpha_mask_render_phases: ResMut<ViewBinnedRenderPhases<AlphaMask3d>>,
     mut transmissive_render_phases: ResMut<ViewSortedRenderPhases<Transmissive3d>>,
     mut transparent_render_phases: ResMut<ViewSortedRenderPhases<Transparent3d>>,
+    material_meshes: Query<(
+        &Handle<M>,
+        &Handle<Mesh>,
+        &MeshTransforms,
+        Option<&GpuPickingMesh>,
+    )>,
+    images: Res<RenderAssets<Image>>,
     mut views: Query<(
         Entity,
         &ExtractedView,
@@ -568,6 +589,8 @@ pub fn queue_material_meshes<M: Material>(
             Has<RenderViewLightProbes<EnvironmentMapLight>>,
             Has<RenderViewLightProbes<IrradianceVolume>>,
         ),
+        Option<&ExtractedGpuPickingCamera>,
+        Option<&TemporalAntiAliasSettings>,
     )>,
 ) where
     M::Data: PartialEq + Eq + Hash + Clone,
@@ -584,6 +607,13 @@ pub fn queue_material_meshes<M: Material>(
         camera_3d,
         temporal_jitter,
         projection,
+        normal_prepass,
+        gpu_picking_camera,
+        taa_settings,
+        mut opaque_phase,
+        mut alpha_mask_phase,
+        mut transmissive_phase,
+        mut transparent_phase,
         (has_environment_maps, has_irradiance_volumes),
     ) in &mut views
     {
@@ -684,12 +714,15 @@ pub fn queue_material_meshes<M: Material>(
             else {
                 continue;
             };
+            let gpu_picking_mesh = mesh_instance;
             let Some(mesh) = render_meshes.get(mesh_instance.mesh_asset_id) else {
                 continue;
             };
+            let mesh_handle = mesh;
             let Some(material) = render_materials.get(*material_asset_id) else {
                 continue;
             };
+            let material_handle = material;
 
             let mut mesh_key = view_key
                 | MeshPipelineKey::from_bits_retain(mesh.key_bits.bits())
@@ -800,9 +833,35 @@ pub fn queue_material_meshes<M: Material>(
                             BinnedRenderPhaseType::mesh(mesh_instance.should_batch()),
                         );
                     }
-                }
-                _ => {
+
+                    if gpu_picking_camera.is_some() {
+                        // This is to indicate that the mesh pipeline needs to have the target
+                        mesh_key |= MeshPipelineKey::MESH_ID_TEXTURE_TARGET;
+                        if gpu_picking_mesh.is_some() {
+                            mesh_key |= MeshPipelineKey::GPU_PICKING;
+                        }
+                    }
+
+                    let pipeline_id = pipelines.specialize(
+                        &pipeline_cache,
+                        &material_pipeline,
+                        MaterialPipelineKey {
+                            mesh_key,
+                            bind_group_data: material.key.clone(),
+                        },
+                        &mesh.layout,
+                    );
+                    let pipeline_id = match pipeline_id {
+                        Ok(id) => id,
+                        Err(err) => {
+                            error!("{}", err);
+                            continue;
+                        }
+                    };
+
                     let distance = rangefinder.distance_translation(&mesh_instance.translation)
+                    //let distance = rangefinder
+                    //    .distance_translation(&mesh_transforms.transform.translation)
                         + material.properties.depth_bias;
                     transparent_phase.add(Transparent3d {
                         entity: *visible_entity,
@@ -812,6 +871,9 @@ pub fn queue_material_meshes<M: Material>(
                         batch_range: 0..1,
                         extra_index: PhaseItemExtraIndex::NONE,
                     });
+                }
+                _ => {
+                    // TODO_DS: do nothing maybe
                 }
             }
         }

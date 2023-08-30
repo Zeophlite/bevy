@@ -25,6 +25,7 @@ pub mod graph {
         MainTransmissivePass,
         MainTransparentPass,
         EndMainPass,
+        EntityIndexBufferCopy,
         Taa,
         MotionBlur,
         Bloom,
@@ -76,6 +77,8 @@ use bevy_math::FloatOrd;
 use bevy_render::{
     camera::{Camera, ExtractedCamera},
     extract_component::ExtractComponentPlugin,
+    mesh::Mesh,
+    picking::{ExtractedGpuPickingCamera, VisibleMeshIdTextures, MESH_ID_TEXTURE_FORMAT},
     prelude::Msaa,
     render_graph::{EmptyNode, RenderGraphApp, ViewNodeRunner},
     render_phase::{
@@ -92,6 +95,7 @@ use bevy_render::{
     view::{ExtractedView, ViewDepthTexture, ViewTarget},
     Extract, ExtractSchedule, Render, RenderApp, RenderSet,
 };
+use bevy_render::render_phase::BinnedRenderPhase;
 use bevy_utils::{tracing::warn, HashMap};
 
 use crate::{
@@ -153,6 +157,7 @@ impl Plugin for Core3dPlugin {
                     prepare_core_3d_depth_textures.in_set(RenderSet::PrepareResources),
                     prepare_core_3d_transmission_textures.in_set(RenderSet::PrepareResources),
                     prepare_prepass_textures.in_set(RenderSet::PrepareResources),
+                    prepare_entity_textures.in_set(RenderSet::PrepareResources),
                 ),
             );
 
@@ -964,5 +969,65 @@ pub fn prepare_prepass_textures(
                 .map(|t| ColorAttachment::new(t, None, Some(LinearRgba::BLACK))),
             size,
         });
+    }
+}
+
+/// Create the required textures based on the camera size
+pub fn prepare_entity_textures(
+    mut commands: Commands,
+    mut texture_cache: ResMut<TextureCache>,
+    msaa: Res<Msaa>,
+    render_device: Res<RenderDevice>,
+    views_3d: Query<
+        (Entity, &ExtractedCamera),
+        (
+            With<ExtractedGpuPickingCamera>,
+            With<BinnedRenderPhase<Opaque3d>>,
+            With<BinnedRenderPhase<AlphaMask3d>>,
+        ),
+    >,
+) {
+    for (entity, camera) in &views_3d {
+        let Some(physical_target_size) = camera.physical_target_size else {
+            continue;
+        };
+
+        let size = Extent3d {
+            depth_or_array_layers: 1,
+            width: physical_target_size.x,
+            height: physical_target_size.y,
+        };
+
+        let descriptor = TextureDescriptor {
+            label: None,
+            size,
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: TextureDimension::D2,
+            format: MESH_ID_TEXTURE_FORMAT,
+            usage: TextureUsages::RENDER_ATTACHMENT | TextureUsages::COPY_SRC,
+            view_formats: &[],
+        };
+
+        let mesh_id_textures = VisibleMeshIdTextures {
+            main: texture_cache.get(
+                &render_device,
+                TextureDescriptor {
+                    label: Some("main_entity_texture"),
+                    ..descriptor
+                },
+            ),
+            sampled: (msaa.samples() > 1).then(|| {
+                texture_cache.get(
+                    &render_device,
+                    TextureDescriptor {
+                        label: Some("main_entity_texture_sampled"),
+                        sample_count: msaa.samples(),
+                        ..descriptor
+                    },
+                )
+            }),
+        };
+        commands.entity(entity).insert(mesh_id_textures);
     }
 }

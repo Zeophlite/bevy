@@ -1,21 +1,26 @@
 use crate::{
-    core_3d::Opaque3d,
-    skybox::{SkyboxBindGroup, SkyboxPipelineId},
+    core_3d::Opaque3d, prepass::{DepthPrepass, MotionVectorPrepass, NormalPrepass}, skybox::{SkyboxBindGroup, SkyboxPipelineId}
 };
 use bevy_ecs::{entity::Entity, prelude::World, query::QueryItem};
 use bevy_render::{
-    camera::ExtractedCamera,
+    camera::{ClearColorConfig, ExtractedCamera},
     diagnostic::RecordDiagnostics,
+    picking::{ExtractedGpuPickingCamera, VisibleMeshIdTextures},
+    render_phase::{BinnedRenderPhase, TrackedRenderPass, ViewBinnedRenderPhases},
     render_graph::{NodeRunError, RenderGraphContext, ViewNode},
-    render_phase::{TrackedRenderPass, ViewBinnedRenderPhases},
-    render_resource::{CommandEncoderDescriptor, PipelineCache, RenderPassDescriptor, StoreOp},
+    render_resource::{
+        CommandEncoderDescriptor, StoreOp,
+        LoadOp, Operations, PipelineCache, RenderPassColorAttachment,
+        RenderPassDepthStencilAttachment, RenderPassDescriptor,
+    },
     renderer::RenderContext,
-    view::{ViewDepthTexture, ViewTarget, ViewUniformOffset},
+    view::{ViewDepthTexture, ViewTarget, ViewUniformOffset}
 };
 #[cfg(feature = "trace")]
 use bevy_utils::tracing::info_span;
+use smallvec::{smallvec, SmallVec};
 
-use super::AlphaMask3d;
+use super::{AlphaMask3d, Camera3dDepthLoadOp};
 
 /// A [`bevy_render::render_graph::Node`] that runs the [`Opaque3d`]
 /// [`BinnedRenderPhase`] and [`AlphaMask3d`]
@@ -28,8 +33,13 @@ impl ViewNode for MainOpaquePass3dNode {
         &'static ExtractedCamera,
         &'static ViewTarget,
         &'static ViewDepthTexture,
+        Option<&'static DepthPrepass>,
+        Option<&'static NormalPrepass>,
+        Option<&'static MotionVectorPrepass>,
+        Option<&'static ExtractedGpuPickingCamera>,
         Option<&'static SkyboxPipelineId>,
         Option<&'static SkyboxBindGroup>,
+        Option<&'static VisibleMeshIdTextures>,
         &'static ViewUniformOffset,
     );
 
@@ -42,8 +52,13 @@ impl ViewNode for MainOpaquePass3dNode {
             camera,
             target,
             depth,
+            depth_prepass,
+            normal_prepass,
+            motion_vector_prepass,
+            gpu_picking_camera,
             skybox_pipeline,
             skybox_bind_group,
+            mesh_id_textures,
             view_uniform_offset,
         ): QueryItem<'w, Self::ViewQuery>,
         world: &'w World,
@@ -66,6 +81,19 @@ impl ViewNode for MainOpaquePass3dNode {
         let color_attachments = [Some(target.get_color_attachment())];
         let depth_stencil_attachment = Some(depth.get_attachment(StoreOp::Store));
 
+        if gpu_picking_camera.is_some() {
+            // if let Some(mesh_id_textures) = mesh_id_textures {
+            //     color_attachments.push(Some(mesh_id_textures.get_color_attachment(Operations {
+            //         load: match camera.clear_color {
+            //             ClearColorConfig::None => LoadOp::Load,
+            //             // TODO clear this earlier?
+            //             _ => LoadOp::Clear(VisibleMeshIdTextures::CLEAR_COLOR),
+            //         },
+            //         store: StoreOp::Store,
+            //     })));
+            // }
+        }
+
         let view_entity = graph.view_entity();
         render_context.add_command_buffer_generation_task(move |render_device| {
             #[cfg(feature = "trace")]
@@ -78,20 +106,43 @@ impl ViewNode for MainOpaquePass3dNode {
                 });
 
             // Render pass setup
-            let render_pass = command_encoder.begin_render_pass(&RenderPassDescriptor {
+            let mut render_pass = render_context.begin_tracked_render_pass(RenderPassDescriptor {
                 label: Some("main_opaque_pass_3d"),
+                // NOTE: The opaque pass loads the color
+                // buffer as well as writing to it.
                 color_attachments: &color_attachments,
-                depth_stencil_attachment,
+                depth_stencil_attachment: Some(RenderPassDepthStencilAttachment {
+                    view: &depth.view(),
+                    // NOTE: The opaque main pass loads the depth buffer and possibly overwrites it
+                    depth_ops: Some(Operations {
+                        load: if depth_prepass.is_some()
+                            || normal_prepass.is_some()
+                            || motion_vector_prepass.is_some()
+                        {
+                            // if any prepass runs, it will generate a depth buffer so we should use it,
+                            // even if only the normal_prepass is used.
+                            Camera3dDepthLoadOp::Load
+                        } else {
+                            // NOTE: 0.0 is the far plane due to bevy's use of reverse-z projections.
+                            // TODO_DS: depth_load_op not on ExtractedCamera
+                            // camera.depth_load_op.clone()
+                            Camera3dDepthLoadOp::Load
+                        }
+                        .into(),
+                        store: StoreOp::Store,
+                    }),
+                    stencil_ops: None,
+                }),
                 timestamp_writes: None,
                 occlusion_query_set: None,
             });
-            let mut render_pass = TrackedRenderPass::new(&render_device, render_pass);
+            // let mut render_pass = TrackedRenderPass::new(&render_device, render_pass_a);
             let pass_span = diagnostics.pass_span(&mut render_pass, "main_opaque_pass_3d");
 
             if let Some(viewport) = camera.viewport.as_ref() {
                 render_pass.set_camera_viewport(viewport);
             }
-
+    
             // Opaque draws
             if !opaque_phase.is_empty() {
                 #[cfg(feature = "trace")]

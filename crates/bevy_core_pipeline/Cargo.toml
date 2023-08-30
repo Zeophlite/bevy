@@ -37,8 +37,8 @@ bevy_utils = { path = "../bevy_utils", version = "0.14.0-dev" }
 serde = { version = "1", features = ["derive"] }
 bitflags = "2.3"
 radsort = "0.1"
+smallvec = "1.6"
 nonmax = "0.5"
-smallvec = "1"
 thiserror = "1.0"
 
 [lints]
