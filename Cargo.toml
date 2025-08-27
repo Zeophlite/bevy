@@ -152,6 +152,7 @@ default = [
   "bevy_camera",
   "bevy_light",
   "bevy_shader",
+  "bevy_material",
   "bevy_sprite",
   "bevy_sprite_picking_backend",
   "bevy_sprite_render",
@@ -278,6 +279,9 @@ bevy_light = ["bevy_internal/bevy_light"]
 
 # Provides shaders usable through asset handles.
 bevy_shader = ["bevy_internal/bevy_shader"]
+
+# Provides materials.
+bevy_material = ["bevy_internal/bevy_material"]
 
 # Adds support for rendering gizmos
 bevy_gizmos = ["bevy_internal/bevy_gizmos"]
