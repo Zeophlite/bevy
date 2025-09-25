@@ -586,7 +586,7 @@ pub trait AsBindGroup {
     {
         render_device.create_bind_group_layout(
             Self::label(),
-            &Self::bind_group_layout_entries(render_device, false),
+            &Self::bind_group_layout_entries(false),
         )
     }
 
@@ -596,7 +596,10 @@ pub trait AsBindGroup {
     where
         Self: Sized,
     {
-        todo!();
+        BindGroupLayoutDescriptor {
+            label: Self::label().map_or(None, |f| Some(f.into())),
+            entries: Self::bind_group_layout_entries(false),
+        }
     }
 
     /// Returns a vec of bind group layout entries.
@@ -605,7 +608,6 @@ pub trait AsBindGroup {
     /// be used. `ExtendedMaterial` uses this in order to ensure that the base
     /// material doesn't use bindless mode if the extension doesn't.
     fn bind_group_layout_entries(
-        render_device: &RenderDevice,
         force_no_bindless: bool,
     ) -> Vec<BindGroupLayoutEntry>
     where

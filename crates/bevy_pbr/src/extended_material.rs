@@ -221,8 +221,7 @@ impl<B: Material, E: MaterialExtension> AsBindGroup for ExtendedMaterial<B, E> {
     }
 
     fn bind_group_layout_entries(
-        render_device: &RenderDevice,
-        mut force_non_bindless: bool,
+        mut force_non_bindless: bool
     ) -> Vec<BindGroupLayoutEntry>
     where
         Self: Sized,
@@ -236,9 +235,9 @@ impl<B: Material, E: MaterialExtension> AsBindGroup for ExtendedMaterial<B, E> {
         // complain.
         let mut entries = vec![];
         let mut seen_bindings = HashSet::<_>::with_hasher(FixedHasher);
-        for entry in B::bind_group_layout_entries(render_device, force_non_bindless)
+        for entry in B::bind_group_layout_entries(force_non_bindless)
             .into_iter()
-            .chain(E::bind_group_layout_entries(render_device, force_non_bindless).into_iter())
+            .chain(E::bind_group_layout_entries(force_non_bindless).into_iter())
         {
             if seen_bindings.insert(entry.binding) {
                 entries.push(entry);

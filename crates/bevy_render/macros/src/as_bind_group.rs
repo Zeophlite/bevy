@@ -784,7 +784,7 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
         Some(_) => {
             quote! {
                 let (#uniform_binding_type, #uniform_buffer_usages) =
-                    if Self::bindless_supported(render_device) && !force_no_bindless {
+                    if !force_no_bindless {
                         (
                             #render_path::render_resource::BufferBindingType::Storage { read_only: true },
                             #render_path::render_resource::BufferUsages::STORAGE,
@@ -964,8 +964,7 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                         }
                 };
                 let actual_bindless_slot_count_declaration = quote! {
-                    let #actual_bindless_slot_count = if Self::bindless_supported(render_device) &&
-                            !force_no_bindless {
+                    let #actual_bindless_slot_count = if !force_no_bindless {
                         ::core::num::NonZeroU32::new(#bindless_count_syntax)
                     } else {
                         None
@@ -1077,7 +1076,6 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
             }
 
             fn bind_group_layout_entries(
-                render_device: &#render_path::renderer::RenderDevice,
                 force_no_bindless: bool
             ) -> Vec<#render_path::render_resource::BindGroupLayoutEntry> {
                 #actual_bindless_slot_count_declaration
