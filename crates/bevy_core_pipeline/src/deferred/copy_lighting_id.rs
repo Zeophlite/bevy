@@ -6,10 +6,11 @@ use bevy_app::prelude::*;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer};
 use bevy_ecs::prelude::*;
 use bevy_image::ToExtents;
+use bevy_material::render_resource::{binding_types::texture_2d, *};
 use bevy_render::{
     camera::ExtractedCamera,
     diagnostic::RecordDiagnostics,
-    render_resource::{binding_types::texture_2d, *},
+    render_resource::*,
     renderer::RenderDevice,
     texture::{CachedTexture, TextureCache},
     view::ViewTarget,

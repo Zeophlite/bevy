@@ -32,6 +32,7 @@ use bevy_app::{App, Plugin};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::component::Tick;
 use bevy_ecs::entity::EntityHash;
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_platform::collections::{hash_map::Entry, HashMap};
 use bevy_utils::default;
 pub use draw::*;
@@ -58,7 +59,7 @@ use crate::{
         no_gpu_preprocessing::{self, BatchedInstanceBuffer},
         GetFullBatchData,
     },
-    render_resource::{CachedRenderPipelineId, GpuArrayBufferIndex, PipelineCache},
+    render_resource::{GpuArrayBufferIndex, PipelineCache},
     Render, RenderApp, RenderSystems,
 };
 use bevy_ecs::intern::Interned;
@@ -67,8 +68,9 @@ use bevy_ecs::{
     prelude::*,
     system::{lifetimeless::SRes, SystemParamItem},
 };
+use bevy_material::render_resource::CachedRenderPipelineId;
+pub use bevy_material_macros::ShaderLabel;
 use bevy_render::renderer::RenderAdapterInfo;
-pub use bevy_render_macros::ShaderLabel;
 use core::{fmt::Debug, hash::Hash, iter, marker::PhantomData, ops::Range, slice::SliceIndex};
 use smallvec::SmallVec;
 use tracing::warn;
@@ -85,7 +87,7 @@ define_label!(
 /// A shorthand for `Interned<dyn RenderSubGraph>`.
 pub type InternedShaderLabel = Interned<dyn ShaderLabel>;
 
-pub use bevy_render_macros::DrawFunctionLabel;
+pub use bevy_material_macros::DrawFunctionLabel;
 
 define_label!(
     #[diagnostic::on_unimplemented(

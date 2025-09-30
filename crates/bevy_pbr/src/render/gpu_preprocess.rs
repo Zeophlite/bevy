@@ -26,6 +26,12 @@ use bevy_ecs::{
     system::{lifetimeless::Read, Commands, Query, Res, ResMut},
     world::{FromWorld, World},
 };
+use bevy_material::render_resource::{
+    binding_types::{storage_buffer, storage_buffer_read_only, texture_2d, uniform_buffer},
+    BindGroupLayoutDescriptor, CachedComputePipelineId, ComputePipelineDescriptor,
+    DynamicBindGroupLayoutEntries, PushConstantRange, ShaderStages, SpecializedComputePipeline,
+    TextureSampleType,
+};
 use bevy_render::{
     batching::gpu_preprocessing::{
         BatchedInstanceBuffers, GpuOcclusionCullingWorkItemBuffers, GpuPreprocessingMode,
@@ -39,12 +45,8 @@ use bevy_render::{
     experimental::occlusion_culling::OcclusionCulling,
     render_graph::{Node, NodeRunError, RenderGraphContext, RenderGraphExt},
     render_resource::{
-        binding_types::{storage_buffer, storage_buffer_read_only, texture_2d, uniform_buffer},
-        BindGroup, BindGroupEntries, BindGroupLayoutDescriptor, BindingResource, Buffer,
-        BufferBinding, CachedComputePipelineId, ComputePassDescriptor, ComputePipelineDescriptor,
-        DynamicBindGroupLayoutEntries, PipelineCache, PushConstantRange, RawBufferVec,
-        ShaderStages, ShaderType, SpecializedComputePipeline, SpecializedComputePipelines,
-        TextureSampleType, UninitBufferVec,
+        BindGroup, BindGroupEntries, BindingResource, Buffer, BufferBinding, ComputePassDescriptor,
+        PipelineCache, RawBufferVec, ShaderType, SpecializedComputePipelines, UninitBufferVec,
     },
     renderer::{RenderContext, RenderDevice, RenderQueue},
     settings::WgpuFeatures,

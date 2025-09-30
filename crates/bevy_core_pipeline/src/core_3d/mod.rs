@@ -79,6 +79,7 @@ use bevy_render::{
     experimental::occlusion_culling::OcclusionCulling,
     mesh::allocator::SlabId,
     render_phase::PhaseItemBatchSetKey,
+    render_resource::TextureDescriptor,
     view::{prepare_view_targets, NoIndirectDrawing, RetainedViewEntity},
 };
 pub use main_opaque_pass_3d_node::*;
@@ -89,6 +90,13 @@ use bevy_asset::UntypedAssetId;
 use bevy_color::LinearRgba;
 use bevy_ecs::prelude::*;
 use bevy_image::{BevyDefault, ToExtents};
+use bevy_material::{
+    render_phase::DrawFunctionId,
+    render_resource::{
+        CachedRenderPipelineId, FilterMode, SamplerDescriptor, TextureDimension, TextureFormat,
+        TextureUsages,
+    },
+};
 use bevy_math::FloatOrd;
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_render::{
@@ -97,14 +105,11 @@ use bevy_render::{
     prelude::Msaa,
     render_graph::{EmptyNode, RenderGraphExt, ViewNodeRunner},
     render_phase::{
-        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId,
-        DrawFunctions, PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
+        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctions,
+        PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
         ViewSortedRenderPhases,
     },
-    render_resource::{
-        CachedRenderPipelineId, FilterMode, Sampler, SamplerDescriptor, Texture, TextureDescriptor,
-        TextureDimension, TextureFormat, TextureUsages, TextureView,
-    },
+    render_resource::{Sampler, Texture, TextureView},
     renderer::RenderDevice,
     sync_world::{MainEntity, RenderEntity},
     texture::{ColorAttachment, TextureCache},

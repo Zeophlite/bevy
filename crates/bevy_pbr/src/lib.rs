@@ -131,15 +131,16 @@ use bevy_ecs::prelude::*;
 #[cfg(feature = "bluenoise_texture")]
 use bevy_image::{CompressedImageFormats, ImageType};
 use bevy_image::{Image, ImageSampler};
-use bevy_material::alpha::AlphaMode;
+use bevy_material::{
+    alpha::AlphaMode,
+    material::DefaultOpaqueRendererMethod,
+    render_resource::{Extent3d, TextureUsages},
+};
 use bevy_render::{
     camera::sort_cameras,
     extract_resource::ExtractResourcePlugin,
     render_graph::RenderGraph,
-    render_resource::{
-        Extent3d, TextureDataOrder, TextureDescriptor, TextureDimension, TextureFormat,
-        TextureUsages,
-    },
+    render_resource::{TextureDataOrder, TextureDescriptor, TextureDimension, TextureFormat},
     sync_component::SyncComponentPlugin,
     ExtractSchedule, Render, RenderApp, RenderDebugFlags, RenderStartup, RenderSystems,
 };

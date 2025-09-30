@@ -47,18 +47,19 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{lifetimeless::Read, Query},
 };
+use bevy_material::render_resource::{DownlevelFlags, TextureUsages};
 use bevy_math::{UVec2, UVec3, Vec3};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     extract_component::UniformComponentPlugin,
-    render_resource::{DownlevelFlags, ShaderType, SpecializedRenderPipelines},
+    render_resource::{ShaderType, SpecializedRenderPipelines},
     view::Hdr,
     RenderStartup,
 };
 use bevy_render::{
     extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_graph::{RenderGraphExt, ViewNodeRunner},
-    render_resource::{TextureFormat, TextureUsages},
+    render_resource::TextureFormat,
     renderer::RenderAdapter,
     Render, RenderApp, RenderSystems,
 };

@@ -1,7 +1,6 @@
 use crate::{
-    DrawMesh, MeshPipeline, MeshPipelineKey, RenderMeshInstanceFlags, RenderMeshInstances,
-    SetMeshBindGroup, SetMeshViewBindGroup, SetMeshViewBindingArrayBindGroup, ViewKeyCache,
-    ViewSpecializationTicks,
+    DrawMesh, MeshPipelineKey, RenderMeshInstanceFlags, RenderMeshInstances, SetMeshBindGroup,
+    SetMeshViewBindGroup, SetMeshViewBindingArrayBindGroup, ViewKeyCache, ViewSpecializationTicks,
 };
 use bevy_app::{App, Plugin, PostUpdate, Startup, Update};
 use bevy_asset::{
@@ -17,6 +16,14 @@ use bevy_ecs::{
     prelude::*,
     query::QueryItem,
     system::{lifetimeless::SRes, SystemChangeTick, SystemParamItem},
+};
+use bevy_material::{
+    render::MeshPipeline,
+    render_phase::DrawFunctionId,
+    render_resource::{
+        CachedRenderPipelineId, PolygonMode, PushConstantRange, RenderPipelineDescriptor,
+        ShaderStages, SpecializedMeshPipeline, SpecializedMeshPipelineError, StoreOp,
+    },
 };
 use bevy_mesh::{Mesh3d, MeshVertexBufferLayoutRef};
 use bevy_platform::{
@@ -40,12 +47,13 @@ use bevy_render::{
     render_graph::{NodeRunError, RenderGraphContext, RenderGraphExt, ViewNode, ViewNodeRunner},
     render_phase::{
         AddRenderCommand, BinnedPhaseItem, BinnedRenderPhasePlugin, BinnedRenderPhaseType,
-        CachedRenderPipelinePhaseItem, DrawFunctionId, DrawFunctions, PhaseItem,
-        PhaseItemBatchSetKey, PhaseItemExtraIndex, RenderCommand, RenderCommandResult,
-        SetItemPipeline, TrackedRenderPass, ViewBinnedRenderPhases,
+        CachedRenderPipelinePhaseItem, DrawFunctions, PhaseItem, PhaseItemBatchSetKey,
+        PhaseItemExtraIndex, RenderCommand, RenderCommandResult, SetItemPipeline,
+        TrackedRenderPass, ViewBinnedRenderPhases,
     },
     render_resource::*,
     renderer::{RenderContext, RenderDevice},
+    settings::WgpuFeatures,
     sync_world::{MainEntity, MainEntityHashMap},
     view::{
         ExtractedView, NoIndirectDrawing, RenderVisibilityRanges, RenderVisibleEntities,

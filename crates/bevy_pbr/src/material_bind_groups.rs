@@ -10,17 +10,20 @@ use bevy_ecs::{
     resource::Resource,
     system::{Commands, Res},
 };
+use bevy_material::render_resource::{
+    BindGroupLayoutDescriptor, BufferDescriptor, BufferUsages, CompareFunction, FilterMode,
+    SamplerDescriptor, TextureViewDimension,
+};
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_reflect::{prelude::ReflectDefault, Reflect};
 use bevy_render::render_resource::{BindlessSlabResourceLimit, PipelineCache};
 use bevy_render::{
     render_resource::{
-        BindGroup, BindGroupEntry, BindGroupLayoutDescriptor, BindingNumber, BindingResource,
-        BindingResources, BindlessDescriptor, BindlessIndex, BindlessIndexTableDescriptor,
-        BindlessResourceType, Buffer, BufferBinding, BufferDescriptor, BufferId,
-        BufferInitDescriptor, BufferUsages, CompareFunction, FilterMode, OwnedBindingResource,
-        PreparedBindGroup, RawBufferVec, Sampler, SamplerDescriptor, SamplerId, TextureView,
-        TextureViewDimension, TextureViewId, UnpreparedBindGroup, WgpuSampler, WgpuTextureView,
+        BindGroup, BindGroupEntry, BindingNumber, BindingResource, BindingResources,
+        BindlessDescriptor, BindlessIndex, BindlessIndexTableDescriptor, BindlessResourceType,
+        Buffer, BufferBinding, BufferId, BufferInitDescriptor, OwnedBindingResource,
+        PreparedBindGroup, RawBufferVec, Sampler, SamplerId, TextureView, TextureViewId,
+        UnpreparedBindGroup, WgpuSampler, WgpuTextureView,
     },
     renderer::{RenderDevice, RenderQueue},
     settings::WgpuFeatures,

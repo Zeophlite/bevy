@@ -24,24 +24,24 @@ use bevy_ecs::{
     system::{lifetimeless::Read, Commands, Local, Query, Res, ResMut},
     world::{FromWorld, World},
 };
-use bevy_math::{uvec2, UVec2, Vec4Swizzles as _};
-use bevy_render::{
-    batching::gpu_preprocessing::GpuPreprocessingSupport,
-    render_resource::BindGroupLayoutDescriptor, RenderStartup,
+use bevy_material::render_resource::{
+    binding_types::{sampler, texture_2d, texture_2d_multisampled, texture_storage_2d},
+    BindGroupLayoutDescriptor, BindGroupLayoutEntries, CachedComputePipelineId,
+    ComputePipelineDescriptor, Extent3d, PushConstantRange, SamplerBindingType, SamplerDescriptor,
+    ShaderStages, SpecializedComputePipeline, StorageTextureAccess, TextureAspect,
+    TextureSampleType, TextureUsages, TextureViewDescriptor, TextureViewDimension,
 };
+use bevy_math::{uvec2, UVec2, Vec4Swizzles as _};
+use bevy_render::{batching::gpu_preprocessing::GpuPreprocessingSupport, RenderStartup};
 use bevy_render::{
     experimental::occlusion_culling::{
         OcclusionCulling, OcclusionCullingSubview, OcclusionCullingSubviewEntities,
     },
     render_graph::{Node, NodeRunError, RenderGraphContext, RenderGraphExt},
     render_resource::{
-        binding_types::{sampler, texture_2d, texture_2d_multisampled, texture_storage_2d},
-        BindGroup, BindGroupEntries, BindGroupLayout, BindGroupLayoutEntries,
-        CachedComputePipelineId, ComputePassDescriptor, ComputePipeline, ComputePipelineDescriptor,
-        Extent3d, IntoBinding, PipelineCache, PushConstantRange, Sampler, SamplerBindingType,
-        SamplerDescriptor, ShaderStages, SpecializedComputePipeline, SpecializedComputePipelines,
-        StorageTextureAccess, TextureAspect, TextureDescriptor, TextureDimension, TextureFormat,
-        TextureSampleType, TextureUsages, TextureView, TextureViewDescriptor, TextureViewDimension,
+        BindGroup, BindGroupEntries, BindGroupLayout, ComputePassDescriptor, ComputePipeline,
+        IntoBinding, PipelineCache, Sampler, SpecializedComputePipelines, TextureDescriptor,
+        TextureDimension, TextureFormat, TextureView,
     },
     renderer::{RenderContext, RenderDevice},
     texture::TextureCache,

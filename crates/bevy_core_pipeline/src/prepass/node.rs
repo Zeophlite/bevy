@@ -1,12 +1,13 @@
 use bevy_camera::{MainPassResolutionOverride, Viewport};
 use bevy_ecs::{prelude::*, query::QueryItem};
+use bevy_material::render_resource::{CommandEncoderDescriptor, StoreOp};
 use bevy_render::{
     camera::ExtractedCamera,
     diagnostic::RecordDiagnostics,
     experimental::occlusion_culling::OcclusionCulling,
     render_graph::{NodeRunError, RenderGraphContext, ViewNode},
     render_phase::{TrackedRenderPass, ViewBinnedRenderPhases},
-    render_resource::{CommandEncoderDescriptor, PipelineCache, RenderPassDescriptor, StoreOp},
+    render_resource::{PipelineCache, RenderPassDescriptor},
     renderer::RenderContext,
     view::{ExtractedView, NoIndirectDrawing, ViewDepthTexture, ViewUniformOffset},
 };

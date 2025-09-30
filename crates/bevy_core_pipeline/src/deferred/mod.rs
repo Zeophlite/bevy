@@ -5,13 +5,14 @@ use core::ops::Range;
 
 use crate::prepass::{OpaqueNoLightmap3dBatchSetKey, OpaqueNoLightmap3dBinKey};
 use bevy_ecs::prelude::*;
+use bevy_material::render_phase::DrawFunctionId;
+use bevy_material::render_resource::CachedRenderPipelineId;
 use bevy_render::sync_world::MainEntity;
 use bevy_render::{
     render_phase::{
-        BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId, PhaseItem,
-        PhaseItemExtraIndex,
+        BinnedPhaseItem, CachedRenderPipelinePhaseItem, PhaseItem, PhaseItemExtraIndex,
     },
-    render_resource::{CachedRenderPipelineId, TextureFormat},
+    render_resource::TextureFormat,
 };
 
 pub const DEFERRED_PREPASS_FORMAT: TextureFormat = TextureFormat::Rgba32Uint;

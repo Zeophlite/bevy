@@ -3,6 +3,7 @@
 use bevy_app::prelude::*;
 use bevy_camera::{Camera, Camera3d};
 use bevy_ecs::{component::*, lifecycle::ComponentHook, prelude::*};
+use bevy_material::render_resource::{BufferUsages, TextureUsages};
 use bevy_math::UVec2;
 use bevy_platform::collections::HashSet;
 use bevy_platform::time::Instant;
@@ -11,7 +12,7 @@ use bevy_render::{
     camera::ExtractedCamera,
     extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_graph::{RenderGraphExt, ViewNodeRunner},
-    render_resource::{BufferUsages, BufferVec, DynamicUniformBuffer, ShaderType, TextureUsages},
+    render_resource::{BufferVec, DynamicUniformBuffer, ShaderType},
     renderer::{RenderDevice, RenderQueue},
     view::Msaa,
     Render, RenderApp, RenderStartup, RenderSystems,

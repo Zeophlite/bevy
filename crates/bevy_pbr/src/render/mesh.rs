@@ -23,10 +23,21 @@ use bevy_light::{
     EnvironmentMapLight, IrradianceVolume, NotShadowCaster, NotShadowReceiver,
     ShadowFilteringMethod, TransmittedShadowReceiver,
 };
+use bevy_material::{
+    material::screen_space_specular_transmission_pipeline_key,
+    render::{MeshLayouts, MeshPipeline, MeshPipelineViewLayouts, MeshTransforms},
+    render_resource::{
+        BindGroupLayoutDescriptor, BlendComponent, BlendFactor, BlendOperation, BlendState,
+        BufferUsages, ColorTargetState, ColorWrites, CompareFunction, DepthBiasState,
+        DepthStencilState, Face, FragmentState, MultisampleState, PrimitiveState,
+        RenderPipelineDescriptor, SpecializedMeshPipeline, SpecializedMeshPipelineError,
+        StencilFaceState, StencilState, TexelCopyBufferLayout, TextureViewDescriptor, VertexState,
+    },
+};
 use bevy_math::{Affine3, Rect, UVec2, Vec3, Vec4};
 use bevy_mesh::{
     skinning::SkinnedMesh, BaseMeshPipelineKey, Mesh, Mesh3d, MeshTag, MeshVertexBufferLayoutRef,
-    VertexAttributeDescriptor,
+    PrimitiveTopology, VertexAttributeDescriptor,
 };
 use bevy_platform::collections::{hash_map::Entry, HashMap};
 use bevy_render::{
@@ -54,7 +65,7 @@ use bevy_render::{
     },
     Extract,
 };
-use bevy_shader::{load_shader_library, Shader, ShaderDefVal, ShaderSettings};
+use bevy_shader::{load_shader_library, ShaderDefVal, ShaderSettings};
 use bevy_transform::components::GlobalTransform;
 use bevy_utils::{default, Parallel, TypeIdMap};
 use core::any::TypeId;
@@ -109,17 +120,6 @@ impl MeshRenderPlugin {
         }
     }
 }
-
-/// How many textures are allowed in the view bind group layout (`@group(0)`) before
-/// broader compatibility with WebGL and WebGPU is at risk, due to the minimum guaranteed
-/// values for `MAX_TEXTURE_IMAGE_UNITS` (in WebGL) and `maxSampledTexturesPerShaderStage` (in WebGPU),
-/// currently both at 16.
-///
-/// We use 10 here because it still leaves us, in a worst case scenario, with 6 textures for the other bind groups.
-///
-/// See: <https://gpuweb.github.io/gpuweb/#limits>
-#[cfg(debug_assertions)]
-pub const MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES: usize = 10;
 
 impl Plugin for MeshRenderPlugin {
     fn build(&self, app: &mut App) {
@@ -426,13 +426,6 @@ pub fn check_views_need_specialization(
             view_specialization_ticks.insert(view.retained_view_entity, ticks.this_run());
         }
     }
-}
-
-#[derive(Component)]
-pub struct MeshTransforms {
-    pub world_from_local: Affine3,
-    pub previous_world_from_local: Affine3,
-    pub flags: u32,
 }
 
 #[derive(ShaderType, Clone)]
@@ -1758,44 +1751,6 @@ pub fn collect_meshes_for_gpu_building(
     previous_input_buffer.ensure_nonempty();
 }
 
-/// All data needed to construct a pipeline for rendering 3D meshes.
-#[derive(Resource, Clone)]
-pub struct MeshPipeline {
-    /// A reference to all the mesh pipeline view layouts.
-    pub view_layouts: MeshPipelineViewLayouts,
-    // This dummy white texture is to be used in place of optional StandardMaterial textures
-    pub dummy_white_gpu_image: GpuImage,
-    pub clustered_forward_buffer_binding_type: BufferBindingType,
-    pub mesh_layouts: MeshLayouts,
-    /// The shader asset handle.
-    pub shader: Handle<Shader>,
-    /// `MeshUniform`s are stored in arrays in buffers. If storage buffers are available, they
-    /// are used and this will be `None`, otherwise uniform buffers will be used with batches
-    /// of this many `MeshUniform`s, stored at dynamic offsets within the uniform buffer.
-    /// Use code like this in custom shaders:
-    /// ```wgsl
-    /// ##ifdef PER_OBJECT_BUFFER_BATCH_SIZE
-    /// @group(1) @binding(0) var<uniform> mesh: array<Mesh, #{PER_OBJECT_BUFFER_BATCH_SIZE}u>;
-    /// ##else
-    /// @group(1) @binding(0) var<storage> mesh: array<Mesh>;
-    /// ##endif // PER_OBJECT_BUFFER_BATCH_SIZE
-    /// ```
-    pub per_object_buffer_batch_size: Option<u32>,
-
-    /// Whether binding arrays (a.k.a. bindless textures) are usable on the
-    /// current render device.
-    ///
-    /// This affects whether reflection probes can be used.
-    pub binding_arrays_are_usable: bool,
-
-    /// Whether clustered decals are usable on the current render device.
-    pub clustered_decals_are_usable: bool,
-
-    /// Whether skins will use uniform buffers on account of storage buffers
-    /// being unavailable on this platform.
-    pub skins_use_uniform_buffers: bool,
-}
-
 impl FromWorld for MeshPipeline {
     fn from_world(world: &mut World) -> Self {
         let shader = load_embedded_asset!(world, "mesh.wgsl");
@@ -1861,31 +1816,6 @@ impl FromWorld for MeshPipeline {
             ),
             skins_use_uniform_buffers: skins_use_uniform_buffers(&render_device),
         }
-    }
-}
-
-impl MeshPipeline {
-    pub fn get_image_texture<'a>(
-        &'a self,
-        gpu_images: &'a RenderAssets<GpuImage>,
-        handle_option: &Option<Handle<Image>>,
-    ) -> Option<(&'a TextureView, &'a Sampler)> {
-        if let Some(handle) = handle_option {
-            let gpu_image = gpu_images.get(handle)?;
-            Some((&gpu_image.texture_view, &gpu_image.sampler))
-        } else {
-            Some((
-                &self.dummy_white_gpu_image.texture_view,
-                &self.dummy_white_gpu_image.sampler,
-            ))
-        }
-    }
-
-    pub fn get_view_layout(
-        &self,
-        layout_key: MeshPipelineViewLayoutKey,
-    ) -> &MeshPipelineViewLayout {
-        self.view_layouts.get_view_layout(layout_key)
     }
 }
 

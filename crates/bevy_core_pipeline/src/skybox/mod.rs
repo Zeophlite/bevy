@@ -10,6 +10,11 @@ use bevy_ecs::{
     system::{Commands, Query, Res, ResMut},
 };
 use bevy_image::{BevyDefault, Image};
+use bevy_material::render_resource::{
+    binding_types::{sampler, texture_cube, uniform_buffer},
+    *,
+};
+use bevy_material::render_resource::{CachedRenderPipelineId, ColorTargetState, ColorWrites};
 use bevy_math::{Mat4, Quat};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
@@ -18,10 +23,7 @@ use bevy_render::{
         UniformComponentPlugin,
     },
     render_asset::RenderAssets,
-    render_resource::{
-        binding_types::{sampler, texture_cube, uniform_buffer},
-        *,
-    },
+    render_resource::*,
     renderer::RenderDevice,
     texture::GpuImage,
     view::{ExtractedView, Msaa, ViewTarget, ViewUniform, ViewUniforms},

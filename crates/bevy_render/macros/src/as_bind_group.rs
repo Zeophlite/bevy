@@ -59,6 +59,7 @@ struct BindlessIndexTableRangeAttr {
 
 pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
     let manifest = BevyManifest::shared();
+    let material_path = manifest.get_path("bevy_material");
     let render_path = manifest.get_path("bevy_render");
     let image_path = manifest.get_path("bevy_image");
     let asset_path = manifest.get_path("bevy_asset");
@@ -203,10 +204,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                     let binding_array_binding = binding_array_binding.unwrap_or(0);
                     bindless_binding_layouts.push(quote! {
                             #bind_group_layout_entries.push(
-                                #render_path::render_resource::BindGroupLayoutEntry {
+                                #material_path::render_resource::BindGroupLayoutEntry {
                                     binding: #binding_array_binding,
-                                    visibility: #render_path::render_resource::ShaderStages::FRAGMENT | #render_path::render_resource::ShaderStages::VERTEX | #render_path::render_resource::ShaderStages::COMPUTE,
-                                    ty: #render_path::render_resource::BindingType::Buffer {
+                                    visibility: #material_path::render_resource::ShaderStages::FRAGMENT | #material_path::render_resource::ShaderStages::VERTEX | #material_path::render_resource::ShaderStages::COMPUTE,
+                                    ty: #material_path::render_resource::BindingType::Buffer {
                                         ty: #uniform_binding_type,
                                         has_dynamic_offset: false,
                                         min_binding_size: Some(<#converted_shader_type as #render_path::render_resource::ShaderType>::min_size()),
@@ -252,10 +253,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                     let binding_array_binding = binding_array_binding.unwrap_or(0);
                     bindless_binding_layouts.push(quote! {
                             #bind_group_layout_entries.push(
-                                #render_path::render_resource::BindGroupLayoutEntry {
+                                #material_path::render_resource::BindGroupLayoutEntry {
                                     binding: #binding_array_binding,
-                                    visibility: #render_path::render_resource::ShaderStages::FRAGMENT | #render_path::render_resource::ShaderStages::VERTEX | #render_path::render_resource::ShaderStages::COMPUTE,
-                                    ty: #render_path::render_resource::BindingType::Buffer {
+                                    visibility: #material_path::render_resource::ShaderStages::FRAGMENT | #material_path::render_resource::ShaderStages::VERTEX | #material_path::render_resource::ShaderStages::COMPUTE,
+                                    ty: #material_path::render_resource::BindingType::Buffer {
                                         ty: #uniform_binding_type,
                                         has_dynamic_offset: false,
                                         min_binding_size: Some(<#converted_shader_type as #render_path::render_resource::ShaderType>::min_size()),
@@ -278,10 +279,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
 
             non_bindless_binding_layouts.push(quote!{
                     #bind_group_layout_entries.push(
-                        #render_path::render_resource::BindGroupLayoutEntry {
+                        #material_path::render_resource::BindGroupLayoutEntry {
                             binding: #binding_index,
-                            visibility: #render_path::render_resource::ShaderStages::FRAGMENT | #render_path::render_resource::ShaderStages::VERTEX | #render_path::render_resource::ShaderStages::COMPUTE,
-                            ty: #render_path::render_resource::BindingType::Buffer {
+                            visibility: #material_path::render_resource::ShaderStages::FRAGMENT | #material_path::render_resource::ShaderStages::VERTEX | #material_path::render_resource::ShaderStages::COMPUTE,
+                            ty: #material_path::render_resource::BindingType::Buffer {
                                 ty: #uniform_binding_type,
                                 has_dynamic_offset: false,
                                 min_binding_size: Some(<#converted_shader_type as #render_path::render_resource::ShaderType>::min_size()),
@@ -445,7 +446,7 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                         buffer,
                     } = get_storage_binding_attr(nested_meta_items)?;
                     let visibility =
-                        visibility.hygienic_quote(&quote! { #render_path::render_resource });
+                        visibility.hygienic_quote(&quote! { #material_path::render_resource });
 
                     let field_name = field.ident.as_ref().unwrap();
 
@@ -472,11 +473,11 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
 
                     non_bindless_binding_layouts.push(quote! {
                         #bind_group_layout_entries.push(
-                            #render_path::render_resource::BindGroupLayoutEntry {
+                            #material_path::render_resource::BindGroupLayoutEntry {
                                 binding: #binding_index,
                                 visibility: #visibility,
-                                ty: #render_path::render_resource::BindingType::Buffer {
-                                    ty: #render_path::render_resource::BufferBindingType::Storage { read_only: #read_only },
+                                ty: #material_path::render_resource::BindingType::Buffer {
+                                    ty: #material_path::render_resource::BufferBindingType::Storage { read_only: #read_only },
                                     has_dynamic_offset: false,
                                     min_binding_size: None,
                                 },
@@ -517,11 +518,11 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                         // Declare the binding array.
                         bindless_binding_layouts.push(quote!{
                             #bind_group_layout_entries.push(
-                                #render_path::render_resource::BindGroupLayoutEntry {
+                                #material_path::render_resource::BindGroupLayoutEntry {
                                     binding: #binding_array_binding,
-                                    visibility: #render_path::render_resource::ShaderStages::FRAGMENT | #render_path::render_resource::ShaderStages::VERTEX | #render_path::render_resource::ShaderStages::COMPUTE,
-                                    ty: #render_path::render_resource::BindingType::Buffer {
-                                        ty: #render_path::render_resource::BufferBindingType::Storage {
+                                    visibility: #material_path::render_resource::ShaderStages::FRAGMENT | #material_path::render_resource::ShaderStages::VERTEX | #material_path::render_resource::ShaderStages::COMPUTE,
+                                    ty: #material_path::render_resource::BindingType::Buffer {
+                                        ty: #material_path::render_resource::BufferBindingType::Storage {
                                             read_only: #read_only
                                         },
                                         has_dynamic_offset: false,
@@ -550,9 +551,9 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                     } = get_storage_texture_binding_attr(nested_meta_items)?;
 
                     let visibility =
-                        visibility.hygienic_quote(&quote! { #render_path::render_resource });
+                        visibility.hygienic_quote(&quote! { #material_path::render_resource });
 
-                    let fallback_image = get_fallback_image(&render_path, dimension);
+                    let fallback_image = get_fallback_image(&render_path, &material_path, dimension);
 
                     // insert fallible texture-based entries at 0 so that if we fail here, we exit before allocating any buffers
                     binding_impls.insert(0, quote! {
@@ -573,10 +574,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
 
                     non_bindless_binding_layouts.push(quote! {
                         #bind_group_layout_entries.push(
-                            #render_path::render_resource::BindGroupLayoutEntry {
+                            #material_path::render_resource::BindGroupLayoutEntry {
                                 binding: #binding_index,
                                 visibility: #visibility,
-                                ty: #render_path::render_resource::BindingType::StorageTexture {
+                                ty: #material_path::render_resource::BindingType::StorageTexture {
                                     access: #render_path::render_resource::StorageTextureAccess::#access,
                                     format: #render_path::render_resource::TextureFormat::#image_format,
                                     view_dimension: #render_path::render_resource::#dimension,
@@ -596,9 +597,9 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                     } = tex_attrs.as_ref().unwrap();
 
                     let visibility =
-                        visibility.hygienic_quote(&quote! { #render_path::render_resource });
+                        visibility.hygienic_quote(&quote! { #material_path::render_resource });
 
-                    let fallback_image = get_fallback_image(&render_path, *dimension);
+                    let fallback_image = get_fallback_image(&render_path, &material_path, *dimension);
 
                     // insert fallible texture-based entries at 0 so that if we fail here, we exit before allocating any buffers
                     binding_impls.insert(0, quote! {
@@ -622,10 +623,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
 
                     non_bindless_binding_layouts.push(quote! {
                         #bind_group_layout_entries.push(
-                            #render_path::render_resource::BindGroupLayoutEntry {
+                            #material_path::render_resource::BindGroupLayoutEntry {
                                 binding: #binding_index,
                                 visibility: #visibility,
-                                ty: #render_path::render_resource::BindingType::Texture {
+                                ty: #material_path::render_resource::BindingType::Texture {
                                     multisampled: #multisampled,
                                     sample_type: #render_path::render_resource::#sample_type,
                                     view_dimension: #render_path::render_resource::#dimension,
@@ -689,21 +690,21 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                         .expect("sampler attribute must have matching texture attribute");
 
                     let visibility =
-                        visibility.hygienic_quote(&quote! { #render_path::render_resource });
+                        visibility.hygienic_quote(&quote! { #material_path::render_resource });
 
-                    let fallback_image = get_fallback_image(&render_path, *dimension);
+                    let fallback_image = get_fallback_image(&render_path, &material_path, *dimension);
 
                     let expected_samplers = match sampler_binding_type {
                         SamplerBindingType::Filtering => {
-                            quote!( [#render_path::render_resource::TextureSampleType::Float { filterable: true }] )
+                            quote!( [#material_path::render_resource::TextureSampleType::Float { filterable: true }] )
                         }
                         SamplerBindingType::NonFiltering => quote!([
-                            #render_path::render_resource::TextureSampleType::Float { filterable: false },
-                            #render_path::render_resource::TextureSampleType::Sint,
-                            #render_path::render_resource::TextureSampleType::Uint,
+                            #material_path::render_resource::TextureSampleType::Float { filterable: false },
+                            #material_path::render_resource::TextureSampleType::Sint,
+                            #material_path::render_resource::TextureSampleType::Uint,
                         ]),
                         SamplerBindingType::Comparison => {
-                            quote!( [#render_path::render_resource::TextureSampleType::Depth] )
+                            quote!( [#material_path::render_resource::TextureSampleType::Depth] )
                         }
                     };
 
@@ -713,7 +714,7 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                             #binding_index,
                             #render_path::render_resource::OwnedBindingResource::Sampler(
                                 // TODO: Support other types.
-                                #render_path::render_resource::WgpuSamplerBindingType::Filtering,
+                                #material_path::render_resource::WgpuSamplerBindingType::Filtering,
                                 {
                                 let handle: Option<&#asset_path::Handle<#image_path::Image>> = (&self.#field_name).into();
                                 if let Some(handle) = handle {
@@ -748,10 +749,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
 
                     non_bindless_binding_layouts.push(quote!{
                         #bind_group_layout_entries.push(
-                            #render_path::render_resource::BindGroupLayoutEntry {
+                            #material_path::render_resource::BindGroupLayoutEntry {
                                 binding: #binding_index,
                                 visibility: #visibility,
-                                ty: #render_path::render_resource::BindingType::Sampler(#render_path::render_resource::#sampler_binding_type),
+                                ty: #material_path::render_resource::BindingType::Sampler(#render_path::render_resource::#sampler_binding_type),
                                 count: #actual_bindless_slot_count,
                             }
                         );
@@ -786,13 +787,13 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                 let (#uniform_binding_type, #uniform_buffer_usages) =
                     if Self::bindless_supported(render_device) && !force_no_bindless {
                         (
-                            #render_path::render_resource::BufferBindingType::Storage { read_only: true },
-                            #render_path::render_resource::BufferUsages::STORAGE,
+                            #material_path::render_resource::BufferBindingType::Storage { read_only: true },
+                            #material_path::render_resource::BufferUsages::STORAGE,
                         )
                     } else {
                         (
-                            #render_path::render_resource::BufferBindingType::Uniform,
-                            #render_path::render_resource::BufferUsages::UNIFORM,
+                            #material_path::render_resource::BufferBindingType::Uniform,
+                            #material_path::render_resource::BufferUsages::UNIFORM,
                         )
                     };
             }
@@ -800,8 +801,8 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
         None => {
             quote! {
                 let (#uniform_binding_type, #uniform_buffer_usages) = (
-                    #render_path::render_resource::BufferBindingType::Uniform,
-                    #render_path::render_resource::BufferUsages::UNIFORM,
+                    #material_path::render_resource::BufferBindingType::Uniform,
+                    #material_path::render_resource::BufferUsages::UNIFORM,
                 );
             }
         }
@@ -832,10 +833,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
 
                 non_bindless_binding_layouts.push(quote!{
                     #bind_group_layout_entries.push(
-                        #render_path::render_resource::BindGroupLayoutEntry {
+                        #material_path::render_resource::BindGroupLayoutEntry {
                             binding: #binding_index,
-                            visibility: #render_path::render_resource::ShaderStages::FRAGMENT | #render_path::render_resource::ShaderStages::VERTEX | #render_path::render_resource::ShaderStages::COMPUTE,
-                            ty: #render_path::render_resource::BindingType::Buffer {
+                            visibility: #material_path::render_resource::ShaderStages::FRAGMENT | #material_path::render_resource::ShaderStages::VERTEX | #material_path::render_resource::ShaderStages::COMPUTE,
+                            ty: #material_path::render_resource::BindingType::Buffer {
                                 ty: #uniform_binding_type,
                                 has_dynamic_offset: false,
                                 min_binding_size: Some(<#field_ty as #render_path::render_resource::ShaderType>::min_size()),
@@ -879,10 +880,10 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
                 }});
 
                 non_bindless_binding_layouts.push(quote!{
-                    #bind_group_layout_entries.push(#render_path::render_resource::BindGroupLayoutEntry {
+                    #bind_group_layout_entries.push(#material_path::render_resource::BindGroupLayoutEntry {
                         binding: #binding_index,
-                        visibility: #render_path::render_resource::ShaderStages::FRAGMENT | #render_path::render_resource::ShaderStages::VERTEX | #render_path::render_resource::ShaderStages::COMPUTE,
-                        ty: #render_path::render_resource::BindingType::Buffer {
+                        visibility: #material_path::render_resource::ShaderStages::FRAGMENT | #material_path::render_resource::ShaderStages::VERTEX | #material_path::render_resource::ShaderStages::COMPUTE,
+                        ty: #material_path::render_resource::BindingType::Buffer {
                             ty: #uniform_binding_type,
                             has_dynamic_offset: false,
                             min_binding_size: Some(<#uniform_struct_name as #render_path::render_resource::ShaderType>::min_size()),
@@ -1079,7 +1080,7 @@ pub fn derive_as_bind_group(ast: syn::DeriveInput) -> Result<TokenStream> {
             fn bind_group_layout_entries(
                 render_device: &#render_path::renderer::RenderDevice,
                 force_no_bindless: bool
-            ) -> Vec<#render_path::render_resource::BindGroupLayoutEntry> {
+            ) -> Vec<#material_path::render_resource::BindGroupLayoutEntry> {
                 #actual_bindless_slot_count_declaration
                 #uniform_binding_type_declarations
 
@@ -1135,17 +1136,18 @@ fn add_bindless_resource_type(
 }
 
 fn get_fallback_image(
-    render_path: &syn::Path,
+    _render_path: &syn::Path,
+    material_path: &syn::Path,
     dimension: BindingTextureDimension,
 ) -> proc_macro2::TokenStream {
     quote! {
-        match #render_path::render_resource::#dimension {
-            #render_path::render_resource::TextureViewDimension::D1 => &fallback_image.d1,
-            #render_path::render_resource::TextureViewDimension::D2 => &fallback_image.d2,
-            #render_path::render_resource::TextureViewDimension::D2Array => &fallback_image.d2_array,
-            #render_path::render_resource::TextureViewDimension::Cube => &fallback_image.cube,
-            #render_path::render_resource::TextureViewDimension::CubeArray => &fallback_image.cube_array,
-            #render_path::render_resource::TextureViewDimension::D3 => &fallback_image.d3,
+        match #material_path::render_resource::#dimension {
+            #material_path::render_resource::TextureViewDimension::D1 => &fallback_image.d1,
+            #material_path::render_resource::TextureViewDimension::D2 => &fallback_image.d2,
+            #material_path::render_resource::TextureViewDimension::D2Array => &fallback_image.d2_array,
+            #material_path::render_resource::TextureViewDimension::Cube => &fallback_image.cube,
+            #material_path::render_resource::TextureViewDimension::CubeArray => &fallback_image.cube_array,
+            #material_path::render_resource::TextureViewDimension::D3 => &fallback_image.d3,
         }
     }
 }

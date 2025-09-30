@@ -2,14 +2,11 @@ use crate::FullscreenShader;
 use bevy_app::{App, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_ecs::prelude::*;
-use bevy_render::{
-    render_resource::{
-        binding_types::{sampler, texture_2d},
-        *,
-    },
-    renderer::RenderDevice,
-    RenderApp, RenderStartup,
+use bevy_material::render_resource::{
+    binding_types::{sampler, texture_2d},
+    *,
 };
+use bevy_render::{render_resource::*, renderer::RenderDevice, RenderApp, RenderStartup};
 use bevy_shader::Shader;
 use bevy_utils::default;
 

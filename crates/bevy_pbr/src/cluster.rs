@@ -3,18 +3,15 @@ use core::num::NonZero;
 use bevy_camera::Camera;
 use bevy_ecs::{entity::EntityHashMap, prelude::*};
 use bevy_light::cluster::{ClusterableObjectCounts, Clusters, GlobalClusterSettings};
+use bevy_material::{render::MeshPipeline, render_resource::BufferBindingType};
 use bevy_math::{uvec4, UVec3, UVec4, Vec4};
 use bevy_render::{
-    render_resource::{
-        BindingResource, BufferBindingType, ShaderSize, ShaderType, StorageBuffer, UniformBuffer,
-    },
+    render_resource::{BindingResource, ShaderSize, ShaderType, StorageBuffer, UniformBuffer},
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
     sync_world::RenderEntity,
     Extract,
 };
 use tracing::warn;
-
-use crate::MeshPipeline;
 
 // NOTE: this must be kept in sync with the same constants in
 // `mesh_view_types.wgsl`.

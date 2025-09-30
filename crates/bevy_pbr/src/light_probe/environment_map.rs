@@ -48,14 +48,14 @@ use bevy_asset::AssetId;
 use bevy_ecs::{query::QueryItem, system::lifetimeless::Read};
 use bevy_image::Image;
 use bevy_light::EnvironmentMapLight;
+use bevy_material::render_resource::{
+    binding_types::{self, uniform_buffer},
+    BindGroupLayoutEntryBuilder, SamplerBindingType, ShaderStages, TextureSampleType,
+};
 use bevy_render::{
     extract_instances::ExtractInstance,
     render_asset::RenderAssets,
-    render_resource::{
-        binding_types::{self, uniform_buffer},
-        BindGroupLayoutEntryBuilder, Sampler, SamplerBindingType, ShaderStages, TextureSampleType,
-        TextureView,
-    },
+    render_resource::{Sampler, TextureView},
     renderer::{RenderAdapter, RenderDevice},
     texture::{FallbackImage, GpuImage},
 };

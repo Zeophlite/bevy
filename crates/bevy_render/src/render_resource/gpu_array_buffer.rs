@@ -1,12 +1,13 @@
-use super::{
-    binding_types::{storage_buffer_read_only, uniform_buffer_sized},
-    BindGroupLayoutEntryBuilder, BufferVec,
-};
+use super::BufferVec;
 use crate::{
     render_resource::batched_uniform_buffer::BatchedUniformBuffer,
     renderer::{RenderDevice, RenderQueue},
 };
 use bevy_ecs::{prelude::Component, resource::Resource};
+use bevy_material::render_resource::{
+    binding_types::{storage_buffer_read_only, uniform_buffer_sized},
+    BindGroupLayoutEntryBuilder,
+};
 use core::marker::PhantomData;
 use encase::{private::WriteInto, ShaderSize, ShaderType};
 use nonmax::NonMaxU32;

@@ -1,14 +1,15 @@
 use bevy_core_pipeline::prepass::ViewPrepassTextures;
-use bevy_render::render_resource::{
-    binding_types::{
-        texture_2d, texture_2d_multisampled, texture_depth_2d, texture_depth_2d_multisampled,
+use bevy_material::{
+    render::MeshPipelineViewLayoutKey,
+    render_resource::{
+        binding_types::{
+            texture_2d, texture_2d_multisampled, texture_depth_2d, texture_depth_2d_multisampled,
+        },
+        BindGroupLayoutEntryBuilder, TextureAspect, TextureSampleType, TextureViewDescriptor,
     },
-    BindGroupLayoutEntryBuilder, TextureAspect, TextureSampleType, TextureView,
-    TextureViewDescriptor,
 };
+use bevy_render::render_resource::TextureView;
 use bevy_utils::default;
-
-use crate::MeshPipelineViewLayoutKey;
 
 pub fn get_bind_group_layout_entries(
     layout_key: MeshPipelineViewLayoutKey,

@@ -2,12 +2,12 @@ use crate::{
     diagnostic::internal::{Pass, PassKind, WritePipelineStatistics, WriteTimestamp},
     render_resource::{
         BindGroup, BindGroupId, Buffer, BufferId, BufferSlice, RenderPipeline, RenderPipelineId,
-        ShaderStages,
     },
     renderer::RenderDevice,
 };
 use bevy_camera::Viewport;
 use bevy_color::LinearRgba;
+use bevy_material::render_resource::ShaderStages;
 use bevy_utils::default;
 use core::ops::Range;
 use wgpu::{IndexFormat, QuerySet, RenderPass};

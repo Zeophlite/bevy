@@ -9,12 +9,13 @@ use nonmax::NonMaxU32;
 
 use crate::{
     render_phase::{
-        BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId, PhaseItemExtraIndex,
-        SortedPhaseItem, SortedRenderPhase, ViewBinnedRenderPhases,
+        BinnedPhaseItem, CachedRenderPipelinePhaseItem, PhaseItemExtraIndex, SortedPhaseItem,
+        SortedRenderPhase, ViewBinnedRenderPhases,
     },
-    render_resource::{CachedRenderPipelineId, GpuArrayBufferable},
+    render_resource::GpuArrayBufferable,
     sync_world::MainEntity,
 };
+use bevy_material::{render_phase::DrawFunctionId, render_resource::CachedRenderPipelineId};
 
 pub mod gpu_preprocessing;
 pub mod no_gpu_preprocessing;

@@ -8,14 +8,14 @@ use bevy_ecs::{
     prelude::*,
 };
 use bevy_image::BevyDefault as _;
+use bevy_material::render_resource::{
+    binding_types::{storage_buffer_sized, texture_depth_2d, uniform_buffer},
+    BindGroupLayoutDescriptor, BindGroupLayoutEntries, BlendComponent, BlendState,
+    CachedRenderPipelineId, ColorTargetState, ColorWrites, DownlevelFlags, FragmentState,
+    RenderPipelineDescriptor, ShaderStages, TextureFormat,
+};
 use bevy_render::{
-    render_resource::{
-        binding_types::{storage_buffer_sized, texture_depth_2d, uniform_buffer},
-        BindGroup, BindGroupEntries, BindGroupLayoutDescriptor, BindGroupLayoutEntries,
-        BlendComponent, BlendState, CachedRenderPipelineId, ColorTargetState, ColorWrites,
-        DownlevelFlags, FragmentState, PipelineCache, RenderPipelineDescriptor, ShaderStages,
-        TextureFormat,
-    },
+    render_resource::{BindGroup, BindGroupEntries, PipelineCache},
     renderer::{RenderAdapter, RenderDevice},
     view::{ExtractedView, ViewTarget, ViewUniform, ViewUniforms},
     Render, RenderApp, RenderSystems,

@@ -16,12 +16,13 @@ use bevy_ecs::{
 };
 use bevy_image::Image;
 use bevy_light::{AtmosphereEnvironmentMapLight, GeneratedEnvironmentMapLight};
+use bevy_material::render_resource::{binding_types::*, *};
 use bevy_math::{Quat, UVec2};
 use bevy_render::{
     extract_component::{ComponentUniforms, DynamicUniformIndex, ExtractComponent},
     render_asset::RenderAssets,
     render_graph::{Node, NodeRunError, RenderGraphContext},
-    render_resource::{binding_types::*, *},
+    render_resource::*,
     renderer::{RenderContext, RenderDevice},
     texture::{CachedTexture, GpuImage},
     view::{ViewUniform, ViewUniformOffset, ViewUniforms},

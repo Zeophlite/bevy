@@ -16,6 +16,11 @@ use bevy_ecs::{
     world::{FromWorld, World},
 };
 use bevy_image::ToExtents;
+use bevy_material::render_resource::CachedComputePipelineId;
+use bevy_material::render_resource::{
+    binding_types::{sampler, texture_2d, texture_depth_2d, texture_storage_2d, uniform_buffer},
+    *,
+};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     camera::{ExtractedCamera, TemporalJitter},
@@ -23,12 +28,7 @@ use bevy_render::{
     extract_component::ExtractComponent,
     globals::{GlobalsBuffer, GlobalsUniform},
     render_graph::{NodeRunError, RenderGraphContext, RenderGraphExt, ViewNode, ViewNodeRunner},
-    render_resource::{
-        binding_types::{
-            sampler, texture_2d, texture_depth_2d, texture_storage_2d, uniform_buffer,
-        },
-        *,
-    },
+    render_resource::*,
     renderer::{RenderAdapter, RenderContext, RenderDevice, RenderQueue},
     sync_component::SyncComponentPlugin,
     sync_world::RenderEntity,
@@ -288,7 +288,6 @@ impl ViewNode for SsaoNode {
 struct SsaoPipelines {
     preprocess_depth_pipeline: CachedComputePipelineId,
     spatial_denoise_pipeline: CachedComputePipelineId,
-
     common_bind_group_layout: BindGroupLayoutDescriptor,
     preprocess_depth_bind_group_layout: BindGroupLayoutDescriptor,
     ssao_bind_group_layout: BindGroupLayoutDescriptor,

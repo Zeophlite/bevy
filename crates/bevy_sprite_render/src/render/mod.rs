@@ -18,8 +18,16 @@ use bevy_ecs::{
     system::{lifetimeless::*, SystemParamItem},
 };
 use bevy_image::{BevyDefault, Image, ImageSampler, TextureAtlasLayout, TextureFormatPixelInfo};
+use bevy_material::render_resource::{
+    binding_types::{sampler, texture_2d, uniform_buffer},
+    BindGroupLayoutDescriptor, BindGroupLayoutEntries, BlendState, BufferUsages, ColorTargetState,
+    ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, FragmentState, IndexFormat,
+    MultisampleState, RenderPipelineDescriptor, SamplerBindingType, ShaderStages,
+    SpecializedRenderPipeline, StencilFaceState, StencilState, TexelCopyBufferLayout,
+    TextureSampleType, TextureViewDescriptor, VertexAttribute, VertexState, VertexStepMode,
+};
 use bevy_math::{Affine3A, FloatOrd, Quat, Rect, Vec2, Vec4};
-use bevy_mesh::VertexBufferLayout;
+use bevy_mesh::{VertexBufferLayout, VertexFormat};
 use bevy_platform::collections::HashMap;
 use bevy_render::view::{RenderVisibleEntities, RetainedViewEntity};
 use bevy_render::{
@@ -28,10 +36,7 @@ use bevy_render::{
         DrawFunctions, PhaseItem, PhaseItemExtraIndex, RenderCommand, RenderCommandResult,
         SetItemPipeline, TrackedRenderPass, ViewSortedRenderPhases,
     },
-    render_resource::{
-        binding_types::{sampler, texture_2d, uniform_buffer},
-        *,
-    },
+    render_resource::*,
     renderer::{RenderDevice, RenderQueue},
     sync_world::RenderEntity,
     texture::{DefaultImageSampler, FallbackImage, GpuImage},

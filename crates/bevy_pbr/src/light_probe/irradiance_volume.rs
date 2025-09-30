@@ -135,12 +135,12 @@
 
 use bevy_image::Image;
 use bevy_light::IrradianceVolume;
+use bevy_material::render_resource::{
+    binding_types, BindGroupLayoutEntryBuilder, SamplerBindingType, TextureSampleType,
+};
 use bevy_render::{
     render_asset::RenderAssets,
-    render_resource::{
-        binding_types, BindGroupLayoutEntryBuilder, Sampler, SamplerBindingType, TextureSampleType,
-        TextureView,
-    },
+    render_resource::{Sampler, TextureView},
     renderer::{RenderAdapter, RenderDevice},
     texture::{FallbackImage, GpuImage},
 };

@@ -3,12 +3,13 @@ use crate::core_3d::Transmissive3d;
 use bevy_camera::{Camera3d, MainPassResolutionOverride, Viewport};
 use bevy_ecs::{prelude::*, query::QueryItem};
 use bevy_image::ToExtents;
+use bevy_material::render_resource::StoreOp;
 use bevy_render::{
     camera::ExtractedCamera,
     diagnostic::RecordDiagnostics,
     render_graph::{NodeRunError, RenderGraphContext, ViewNode},
     render_phase::ViewSortedRenderPhases,
-    render_resource::{RenderPassDescriptor, StoreOp},
+    render_resource::RenderPassDescriptor,
     renderer::RenderContext,
     view::{ExtractedView, ViewDepthTexture, ViewTarget},
 };

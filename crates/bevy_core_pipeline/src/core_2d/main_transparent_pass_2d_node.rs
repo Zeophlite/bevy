@@ -1,11 +1,12 @@
 use crate::core_2d::Transparent2d;
 use bevy_ecs::prelude::*;
+use bevy_material::render_resource::{CommandEncoderDescriptor, StoreOp};
 use bevy_render::{
     camera::ExtractedCamera,
     diagnostic::RecordDiagnostics,
     render_graph::{NodeRunError, RenderGraphContext, ViewNode},
     render_phase::{TrackedRenderPass, ViewSortedRenderPhases},
-    render_resource::{CommandEncoderDescriptor, RenderPassDescriptor, StoreOp},
+    render_resource::RenderPassDescriptor,
     renderer::RenderContext,
     view::{ExtractedView, ViewDepthTexture, ViewTarget},
 };

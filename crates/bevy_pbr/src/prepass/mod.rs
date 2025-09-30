@@ -1,14 +1,7 @@
 mod prepass_bindings;
 
 use crate::{
-    alpha_mode_pipeline_key, binding_arrays_are_usable, buffer_layout,
-    collect_meshes_for_gpu_building, init_material_pipeline, set_mesh_motion_vector_flags,
-    setup_morph_and_skinning_defs, skin, DeferredDrawFunction, DeferredFragmentShader,
-    DeferredVertexShader, DrawMesh, EntitySpecializationTicks, ErasedMaterialPipelineKey, Material,
-    MaterialPipeline, MaterialProperties, MeshLayouts, MeshPipeline, MeshPipelineKey,
-    OpaqueRendererMethod, PreparedMaterial, PrepassDrawFunction, PrepassFragmentShader,
-    PrepassVertexShader, RenderLightmaps, RenderMaterialInstances, RenderMeshInstanceFlags,
-    RenderMeshInstances, RenderPhaseType, SetMaterialBindGroup, SetMeshBindGroup, ShadowView,
+    alpha_mode_pipeline_key, binding_arrays_are_usable, buffer_layout, collect_meshes_for_gpu_building, init_material_pipeline, set_mesh_motion_vector_flags, setup_morph_and_skinning_defs, skin, DrawMesh, EntitySpecializationTicks, Material, MeshPipelineKey, OpaqueRendererMethod, PreparedMaterial, RenderLightmaps, RenderMaterialInstances, RenderMeshInstanceFlags, RenderMeshInstances, SetMaterialBindGroup, SetMeshBindGroup, ShadowView
 };
 use bevy_app::{App, Plugin, PreUpdate};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
@@ -21,7 +14,22 @@ use bevy_ecs::{
         SystemParamItem,
     },
 };
-use bevy_material::alpha::AlphaMode;
+use bevy_material::{
+    alpha::AlphaMode,
+    material::{
+        DeferredDrawFunction, DeferredFragmentShader, DeferredVertexShader,
+        ErasedMaterialPipelineKey, MaterialPipeline, MaterialProperties, PrepassDrawFunction,
+        PrepassFragmentShader, PrepassVertexShader, RenderPhaseType, MATERIAL_BIND_GROUP_INDEX,
+    },
+    render::{MeshLayouts, MeshPipeline},
+    render_resource::{
+        binding_types::uniform_buffer, BindGroupLayoutDescriptor, BindGroupLayoutEntries,
+        CachedRenderPipelineId, CompareFunction, DepthBiasState, DepthStencilState, FragmentState,
+        MultisampleState, PrimitiveState, RenderPipelineDescriptor, ShaderStages,
+        SpecializedMeshPipeline, SpecializedMeshPipelineError, StencilFaceState, StencilState,
+        VertexState,
+    },
+};
 use bevy_math::{Affine3A, Mat4, Vec4};
 use bevy_mesh::{Mesh, Mesh3d, MeshVertexBufferLayoutRef};
 use bevy_render::{
@@ -30,8 +38,9 @@ use bevy_render::{
     mesh::{allocator::MeshAllocator, RenderMesh},
     render_asset::{prepare_assets, RenderAssets},
     render_phase::*,
-    render_resource::{binding_types::uniform_buffer, *},
+    render_resource::*,
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
+    settings::WgpuFeatures,
     sync_world::RenderEntity,
     view::{
         ExtractedView, Msaa, RenderVisibilityRanges, RetainedViewEntity, ViewUniform,
@@ -403,7 +412,7 @@ impl PrepassPipeline {
 
         shader_defs.push(ShaderDefVal::UInt(
             "MATERIAL_BIND_GROUP".into(),
-            crate::MATERIAL_BIND_GROUP_INDEX as u32,
+            MATERIAL_BIND_GROUP_INDEX as u32,
         ));
         // NOTE: Eventually, it would be nice to only add this when the shaders are overloaded by the Material.
         // The main limitation right now is that bind group order is hardcoded in shaders.

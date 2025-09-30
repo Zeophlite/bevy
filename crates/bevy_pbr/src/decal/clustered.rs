@@ -29,14 +29,14 @@ use bevy_ecs::{
 };
 use bevy_image::Image;
 use bevy_light::{ClusteredDecal, DirectionalLightTexture, PointLightTexture, SpotLightTexture};
+use bevy_material::render_resource::{
+    binding_types, BindGroupLayoutEntryBuilder, BufferUsages, SamplerBindingType, TextureSampleType,
+};
 use bevy_math::Mat4;
 use bevy_platform::collections::HashMap;
 use bevy_render::{
     render_asset::RenderAssets,
-    render_resource::{
-        binding_types, BindGroupLayoutEntryBuilder, Buffer, BufferUsages, RawBufferVec, Sampler,
-        SamplerBindingType, ShaderType, TextureSampleType, TextureView,
-    },
+    render_resource::{Buffer, RawBufferVec, Sampler, ShaderType, TextureView},
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
     sync_component::SyncComponentPlugin,
     sync_world::RenderEntity,

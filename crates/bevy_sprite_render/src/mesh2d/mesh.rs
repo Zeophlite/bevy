@@ -1,6 +1,13 @@
 use bevy_app::Plugin;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId, AssetServer, Handle};
 use bevy_camera::{visibility::ViewVisibility, Camera2d};
+use bevy_material::render_resource::{
+    BindGroupLayoutDescriptor, BindGroupLayoutEntries, BlendState, ColorTargetState, ColorWrites,
+    CompareFunction, DepthBiasState, DepthStencilState, FragmentState, FrontFace, MultisampleState,
+    PolygonMode, PrimitiveState, RenderPipelineDescriptor, ShaderStages, SpecializedMeshPipeline,
+    SpecializedMeshPipelineError, StencilFaceState, StencilState, TexelCopyBufferLayout,
+    TextureViewDescriptor, VertexState,
+};
 use bevy_render::RenderStartup;
 use bevy_shader::{load_shader_library, Shader, ShaderDefVal, ShaderSettings};
 
@@ -21,8 +28,9 @@ use bevy_ecs::{
     system::{lifetimeless::*, SystemParamItem},
 };
 use bevy_image::{BevyDefault, Image, ImageSampler, TextureFormatPixelInfo};
+use bevy_material::render_resource::{binding_types::uniform_buffer, *};
 use bevy_math::{Affine3, Vec4};
-use bevy_mesh::{Mesh, Mesh2d, MeshTag, MeshVertexBufferLayoutRef};
+use bevy_mesh::{Mesh, Mesh2d, MeshTag, MeshVertexBufferLayoutRef, PrimitiveTopology};
 use bevy_render::prelude::Msaa;
 use bevy_render::RenderSystems::PrepareAssets;
 use bevy_render::{
@@ -41,7 +49,7 @@ use bevy_render::{
         sweep_old_entities, PhaseItem, PhaseItemExtraIndex, RenderCommand, RenderCommandResult,
         TrackedRenderPass,
     },
-    render_resource::{binding_types::uniform_buffer, *},
+    render_resource::*,
     renderer::{RenderDevice, RenderQueue},
     sync_world::{MainEntity, MainEntityHashMap},
     texture::{DefaultImageSampler, FallbackImage, GpuImage},

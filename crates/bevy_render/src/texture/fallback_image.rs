@@ -12,6 +12,7 @@ use bevy_ecs::{
 };
 use bevy_image::{BevyDefault, Image, ImageSampler, TextureFormatPixelInfo};
 use bevy_platform::collections::HashMap;
+use wgpu::{Extent3d, TextureUsages, TextureViewDescriptor, TextureViewDimension};
 
 /// A [`RenderApp`](crate::RenderApp) resource that contains the default "fallback image",
 /// which can be used in situations where an image was not explicitly defined. The most common

@@ -28,6 +28,23 @@ use bevy_light::{
     Cascades, DirectionalLight, DirectionalLightShadowMap, NotShadowCaster, PointLight,
     PointLightShadowMap, ShadowFilteringMethod, SpotLight, VolumetricLight,
 };
+use bevy_material::material::{
+    EntitiesNeedingSpecialization, ErasedMaterialPipelineKey, ShadowsDrawFunction,
+};
+use bevy_material::render_phase::DrawFunctionId;
+#[cfg(all(
+    not(target_abi = "sim"),
+    any(
+        not(feature = "webgl"),
+        not(target_arch = "wasm32"),
+        feature = "webgpu"
+    )
+))]
+use bevy_material::render_resource::TextureViewDimension;
+use bevy_material::render_resource::{
+    AddressMode, CachedRenderPipelineId, CommandEncoderDescriptor, CompareFunction, Extent3d,
+    FilterMode, SamplerDescriptor, StoreOp, TextureAspect, TextureUsages, TextureViewDescriptor,
+};
 use bevy_math::{ops, Mat4, UVec4, Vec3, Vec3Swizzles, Vec4, Vec4Swizzles};
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_platform::hash::FixedHasher;

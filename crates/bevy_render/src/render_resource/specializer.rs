@@ -1,8 +1,9 @@
-use super::{
-    CachedComputePipelineId, CachedRenderPipelineId, ComputePipeline, ComputePipelineDescriptor,
-    PipelineCache, RenderPipeline, RenderPipelineDescriptor,
-};
+use super::{ComputePipeline, PipelineCache, RenderPipeline};
 use bevy_ecs::error::BevyError;
+use bevy_material::render_resource::{
+    CachedComputePipelineId, CachedRenderPipelineId, ComputePipelineDescriptor,
+    RenderPipelineDescriptor,
+};
 use bevy_platform::{
     collections::{
         hash_map::{Entry, VacantEntry},
@@ -14,7 +15,7 @@ use core::{hash::Hash, marker::PhantomData};
 use tracing::error;
 use variadics_please::all_tuples;
 
-pub use bevy_render_macros::{Specializer, SpecializerKey};
+pub use bevy_material_macros::{Specializer, SpecializerKey};
 
 /// Defines a type that is able to be "specialized" and cached by creating and transforming
 /// its descriptor type. This is implemented for [`RenderPipeline`] and [`ComputePipeline`], and

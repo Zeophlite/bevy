@@ -23,6 +23,15 @@ use bevy_ecs::{
 };
 use bevy_image::BevyDefault as _;
 use bevy_light::EnvironmentMapLight;
+use bevy_material::{
+    render::{MeshPipelineViewLayoutKey, MeshPipelineViewLayouts},
+    render_resource::{
+        binding_types, AddressMode, BindGroupLayoutDescriptor, BindGroupLayoutEntries,
+        CachedRenderPipelineId, ColorTargetState, ColorWrites, FilterMode, FragmentState,
+        Operations, RenderPipelineDescriptor, SamplerBindingType, SamplerDescriptor, ShaderStages,
+        SpecializedRenderPipeline, TextureFormat, TextureSampleType,
+    },
+};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     diagnostic::RecordDiagnostics,
@@ -31,12 +40,8 @@ use bevy_render::{
         NodeRunError, RenderGraph, RenderGraphContext, RenderGraphExt, ViewNode, ViewNodeRunner,
     },
     render_resource::{
-        binding_types, AddressMode, BindGroupEntries, BindGroupLayoutDescriptor,
-        BindGroupLayoutEntries, CachedRenderPipelineId, ColorTargetState, ColorWrites,
-        DynamicUniformBuffer, FilterMode, FragmentState, Operations, PipelineCache,
-        RenderPassColorAttachment, RenderPassDescriptor, RenderPipelineDescriptor, Sampler,
-        SamplerBindingType, SamplerDescriptor, ShaderStages, ShaderType, SpecializedRenderPipeline,
-        SpecializedRenderPipelines, TextureFormat, TextureSampleType,
+        BindGroupEntries, DynamicUniformBuffer, PipelineCache, RenderPassColorAttachment,
+        RenderPassDescriptor, Sampler, ShaderType, SpecializedRenderPipelines,
     },
     renderer::{RenderAdapter, RenderContext, RenderDevice, RenderQueue},
     view::{ExtractedView, Msaa, ViewTarget, ViewUniformOffset},
@@ -47,9 +52,9 @@ use bevy_utils::{once, prelude::default};
 use tracing::info;
 
 use crate::{
-    binding_arrays_are_usable, graph::NodePbr, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts,
-    MeshViewBindGroup, RenderViewLightProbes, ViewEnvironmentMapUniformOffset,
-    ViewFogUniformOffset, ViewLightProbesUniformOffset, ViewLightsUniformOffset,
+    binding_arrays_are_usable, graph::NodePbr, MeshViewBindGroup, RenderViewLightProbes,
+    ViewEnvironmentMapUniformOffset, ViewFogUniformOffset, ViewLightProbesUniformOffset,
+    ViewLightsUniformOffset,
 };
 
 /// Enables screen-space reflections for a camera.

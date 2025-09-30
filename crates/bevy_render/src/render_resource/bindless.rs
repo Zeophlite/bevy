@@ -11,9 +11,9 @@ use wgpu::{
     BindGroupLayoutEntry, SamplerBindingType, ShaderStages, TextureSampleType, TextureViewDimension,
 };
 
-use crate::render_resource::binding_types::storage_buffer_read_only_sized;
+use bevy_material::render_resource::binding_types::storage_buffer_read_only_sized;
 
-use super::binding_types::{
+use bevy_material::render_resource::binding_types::{
     sampler, texture_1d, texture_2d, texture_2d_array, texture_3d, texture_cube, texture_cube_array,
 };
 

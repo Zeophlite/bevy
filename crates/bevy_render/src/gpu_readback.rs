@@ -1,10 +1,7 @@
 use crate::{
     extract_component::ExtractComponentPlugin,
     render_asset::RenderAssets,
-    render_resource::{
-        Buffer, BufferUsages, CommandEncoder, Extent3d, TexelCopyBufferLayout, Texture,
-        TextureFormat,
-    },
+    render_resource::{Buffer, CommandEncoder, Texture, TextureFormat},
     renderer::{render_system, RenderDevice},
     storage::{GpuShaderStorageBuffer, ShaderStorageBuffer},
     sync_world::MainEntity,
@@ -24,6 +21,7 @@ use bevy_ecs::{
     system::{Query, Res},
 };
 use bevy_image::{Image, TextureFormatPixelInfo};
+use bevy_material::render_resource::{BufferUsages, Extent3d, TexelCopyBufferLayout};
 use bevy_platform::collections::HashMap;
 use bevy_reflect::Reflect;
 use bevy_render_macros::ExtractComponent;

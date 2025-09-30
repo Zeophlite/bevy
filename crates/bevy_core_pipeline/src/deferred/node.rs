@@ -1,5 +1,6 @@
 use bevy_camera::{MainPassResolutionOverride, Viewport};
 use bevy_ecs::{prelude::*, query::QueryItem};
+use bevy_material::render_resource::{CommandEncoderDescriptor, StoreOp};
 use bevy_render::experimental::occlusion_culling::OcclusionCulling;
 use bevy_render::render_graph::ViewNode;
 
@@ -9,7 +10,7 @@ use bevy_render::{
     diagnostic::RecordDiagnostics,
     render_graph::{NodeRunError, RenderGraphContext},
     render_phase::{TrackedRenderPass, ViewBinnedRenderPhases},
-    render_resource::{CommandEncoderDescriptor, RenderPassDescriptor, StoreOp},
+    render_resource::RenderPassDescriptor,
     renderer::RenderContext,
     view::ViewDepthTexture,
 };

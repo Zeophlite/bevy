@@ -20,11 +20,17 @@ use bevy_ecs::{
     prelude::*,
     system::{lifetimeless::SRes, SystemParamItem},
 };
+use bevy_material::{
+    render_phase::DrawFunctionId,
+    render_resource::{
+        BindGroupLayoutDescriptor, CachedRenderPipelineId, RenderPipelineDescriptor,
+        SpecializedMeshPipeline, SpecializedMeshPipelineError,
+    },
+};
 use bevy_math::FloatOrd;
 use bevy_mesh::MeshVertexBufferLayoutRef;
 use bevy_platform::collections::HashMap;
 use bevy_reflect::{prelude::ReflectDefault, Reflect};
-use bevy_render::render_resource::BindGroupLayoutDescriptor;
 use bevy_render::{
     camera::extract_cameras,
     mesh::RenderMesh,
@@ -32,14 +38,13 @@ use bevy_render::{
         prepare_assets, PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets,
     },
     render_phase::{
-        AddRenderCommand, BinnedRenderPhaseType, DrawFunctionId, DrawFunctions, InputUniformIndex,
-        PhaseItem, PhaseItemExtraIndex, RenderCommand, RenderCommandResult, SetItemPipeline,
+        AddRenderCommand, BinnedRenderPhaseType, DrawFunctions, InputUniformIndex, PhaseItem,
+        PhaseItemExtraIndex, RenderCommand, RenderCommandResult, SetItemPipeline,
         TrackedRenderPass, ViewBinnedRenderPhases, ViewSortedRenderPhases,
     },
     render_resource::{
-        AsBindGroup, AsBindGroupError, BindGroup, BindGroupId, BindingResources,
-        CachedRenderPipelineId, PipelineCache, RenderPipelineDescriptor, SpecializedMeshPipeline,
-        SpecializedMeshPipelineError, SpecializedMeshPipelines,
+        AsBindGroup, AsBindGroupError, BindGroup, BindGroupId, BindingResources, PipelineCache,
+        SpecializedMeshPipelines,
     },
     renderer::RenderDevice,
     sync_world::{MainEntity, MainEntityHashMap},

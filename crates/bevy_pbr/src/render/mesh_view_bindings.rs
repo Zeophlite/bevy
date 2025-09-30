@@ -7,22 +7,39 @@ use bevy_core_pipeline::{
         get_lut_bind_group_layout_entries, get_lut_bindings, Tonemapping, TonemappingLuts,
     },
 };
-use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
     query::Has,
-    resource::Resource,
     system::{Commands, Query, Res},
     world::{FromWorld, World},
 };
 use bevy_image::BevyDefault as _;
 use bevy_light::{EnvironmentMapLight, IrradianceVolume};
+use bevy_material::render_resource::binding_types::*;
+#[cfg(all(
+    not(target_abi = "sim"),
+    any(
+        not(feature = "webgl"),
+        not(target_arch = "wasm32"),
+        feature = "webgpu"
+    )
+))]
+use bevy_material::render_resource::TextureSampleType;
+use bevy_material::{
+    render::{
+        MeshPipeline, MeshPipelineViewLayout, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts,
+    },
+    render_resource::{
+        BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindGroupLayoutEntryBuilder,
+        BufferBindingType, DynamicBindGroupLayoutEntries, SamplerBindingType, ShaderStages,
+    },
+};
 use bevy_math::Vec4;
 use bevy_render::{
     globals::{GlobalsBuffer, GlobalsUniform},
     render_asset::RenderAssets,
-    render_resource::{binding_types::*, *},
+    render_resource::*,
     renderer::{RenderAdapter, RenderDevice},
     texture::{FallbackImage, FallbackImageMsaa, FallbackImageZero, GpuImage},
     view::{
@@ -45,115 +62,13 @@ use crate::{
     },
     prepass, EnvironmentMapUniformBuffer, FogMeta, GlobalClusterableObjectMeta,
     GpuClusterableObjects, GpuFog, GpuLights, LightMeta, LightProbesBuffer, LightProbesUniform,
-    MeshPipeline, MeshPipelineKey, RenderViewLightProbes, ScreenSpaceAmbientOcclusionResources,
+    RenderViewLightProbes, ScreenSpaceAmbientOcclusionResources,
     ScreenSpaceReflectionsBuffer, ScreenSpaceReflectionsUniform, ShadowSamplers,
     ViewClusterBindings, ViewShadowBindings, CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT,
 };
 
 #[cfg(all(feature = "webgl", target_arch = "wasm32", not(feature = "webgpu")))]
 use bevy_render::render_resource::binding_types::texture_cube;
-
-#[cfg(debug_assertions)]
-use {crate::MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES, bevy_utils::once, tracing::warn};
-
-#[derive(Clone)]
-pub struct MeshPipelineViewLayout {
-    pub main_layout: BindGroupLayoutDescriptor,
-    pub binding_array_layout: BindGroupLayoutDescriptor,
-    pub empty_layout: BindGroupLayoutDescriptor,
-
-    #[cfg(debug_assertions)]
-    pub texture_count: usize,
-}
-
-bitflags::bitflags! {
-    /// A key that uniquely identifies a [`MeshPipelineViewLayout`].
-    ///
-    /// Used to generate all possible layouts for the mesh pipeline in [`generate_view_layouts`],
-    /// so special care must be taken to not add too many flags, as the number of possible layouts
-    /// will grow exponentially.
-    #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-    #[repr(transparent)]
-    pub struct MeshPipelineViewLayoutKey: u32 {
-        const MULTISAMPLED                = 1 << 0;
-        const DEPTH_PREPASS               = 1 << 1;
-        const NORMAL_PREPASS              = 1 << 2;
-        const MOTION_VECTOR_PREPASS       = 1 << 3;
-        const DEFERRED_PREPASS            = 1 << 4;
-        const OIT_ENABLED                 = 1 << 5;
-    }
-}
-
-impl MeshPipelineViewLayoutKey {
-    // The number of possible layouts
-    pub const COUNT: usize = Self::all().bits() as usize + 1;
-
-    /// Builds a unique label for each layout based on the flags
-    pub fn label(&self) -> String {
-        use MeshPipelineViewLayoutKey as Key;
-
-        format!(
-            "mesh_view_layout{}{}{}{}{}{}",
-            if self.contains(Key::MULTISAMPLED) {
-                "_multisampled"
-            } else {
-                Default::default()
-            },
-            if self.contains(Key::DEPTH_PREPASS) {
-                "_depth"
-            } else {
-                Default::default()
-            },
-            if self.contains(Key::NORMAL_PREPASS) {
-                "_normal"
-            } else {
-                Default::default()
-            },
-            if self.contains(Key::MOTION_VECTOR_PREPASS) {
-                "_motion"
-            } else {
-                Default::default()
-            },
-            if self.contains(Key::DEFERRED_PREPASS) {
-                "_deferred"
-            } else {
-                Default::default()
-            },
-            if self.contains(Key::OIT_ENABLED) {
-                "_oit"
-            } else {
-                Default::default()
-            },
-        )
-    }
-}
-
-impl From<MeshPipelineKey> for MeshPipelineViewLayoutKey {
-    fn from(value: MeshPipelineKey) -> Self {
-        let mut result = MeshPipelineViewLayoutKey::empty();
-
-        if value.msaa_samples() > 1 {
-            result |= MeshPipelineViewLayoutKey::MULTISAMPLED;
-        }
-        if value.contains(MeshPipelineKey::DEPTH_PREPASS) {
-            result |= MeshPipelineViewLayoutKey::DEPTH_PREPASS;
-        }
-        if value.contains(MeshPipelineKey::NORMAL_PREPASS) {
-            result |= MeshPipelineViewLayoutKey::NORMAL_PREPASS;
-        }
-        if value.contains(MeshPipelineKey::MOTION_VECTOR_PREPASS) {
-            result |= MeshPipelineViewLayoutKey::MOTION_VECTOR_PREPASS;
-        }
-        if value.contains(MeshPipelineKey::DEFERRED_PREPASS) {
-            result |= MeshPipelineViewLayoutKey::DEFERRED_PREPASS;
-        }
-        if value.contains(MeshPipelineKey::OIT_ENABLED) {
-            result |= MeshPipelineViewLayoutKey::OIT_ENABLED;
-        }
-
-        result
-    }
-}
 
 impl From<Msaa> for MeshPipelineViewLayoutKey {
     fn from(value: Msaa) -> Self {
@@ -416,15 +331,6 @@ fn layout_entries(
     [entries.to_vec(), binding_array_entries.to_vec()]
 }
 
-/// Stores the view layouts for every combination of pipeline keys.
-///
-/// This is wrapped in an [`Arc`] so that it can be efficiently cloned and
-/// placed inside specializable pipeline types.
-#[derive(Resource, Clone, Deref, DerefMut)]
-pub struct MeshPipelineViewLayouts(
-    pub Arc<[MeshPipelineViewLayout; MeshPipelineViewLayoutKey::COUNT]>,
-);
-
 impl FromWorld for MeshPipelineViewLayouts {
     fn from_world(world: &mut World) -> Self {
         // Generates all possible view layouts for the mesh pipeline, based on all combinations of
@@ -451,6 +357,8 @@ impl FromWorld for MeshPipelineViewLayouts {
             let texture_count: usize = entries
                 .iter()
                 .flat_map(|e| {
+                    use bevy_material::render_resource::BindingType;
+
                     e.iter()
                         .filter(|entry| matches!(entry.ty, BindingType::Texture { .. }))
                 })
@@ -467,24 +375,6 @@ impl FromWorld for MeshPipelineViewLayouts {
                 texture_count,
             }
         })))
-    }
-}
-
-impl MeshPipelineViewLayouts {
-    pub fn get_view_layout(
-        &self,
-        layout_key: MeshPipelineViewLayoutKey,
-    ) -> &MeshPipelineViewLayout {
-        let index = layout_key.bits() as usize;
-        let layout = &self[index];
-
-        #[cfg(debug_assertions)]
-        if layout.texture_count > MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES {
-            // Issue our own warning here because Naga's error message is a bit cryptic in this situation
-            once!(warn!("Too many textures in mesh pipeline view layout, this might cause us to hit `wgpu::Limits::max_sampled_textures_per_shader_stage` in some environments."));
-        }
-
-        layout
     }
 }
 
@@ -510,6 +400,8 @@ pub fn generate_view_layouts(
         let texture_count: usize = entries
             .iter()
             .flat_map(|e| {
+                use bevy_material::render_resource::BindingType;
+
                 e.iter()
                     .filter(|entry| matches!(entry.ty, BindingType::Texture { .. }))
             })

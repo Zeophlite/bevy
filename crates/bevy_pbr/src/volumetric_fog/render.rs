@@ -19,6 +19,19 @@ use bevy_ecs::{
 };
 use bevy_image::{BevyDefault, Image};
 use bevy_light::{FogVolume, VolumetricFog, VolumetricLight};
+use bevy_material::{
+    render::{MeshPipelineViewLayoutKey, MeshPipelineViewLayouts},
+    render_resource::{
+        binding_types::{
+            sampler, texture_3d, texture_depth_2d, texture_depth_2d_multisampled, uniform_buffer,
+        },
+        BindGroupLayoutDescriptor, BindGroupLayoutEntries, BlendComponent, BlendFactor,
+        BlendOperation, BlendState, CachedRenderPipelineId, ColorTargetState, ColorWrites, Face,
+        FragmentState, LoadOp, Operations, PrimitiveState, RenderPipelineDescriptor,
+        SamplerBindingType, ShaderStages, SpecializedRenderPipeline, StoreOp, TextureFormat,
+        TextureSampleType, TextureUsages, VertexState,
+    },
+};
 use bevy_math::{vec4, Affine3A, Mat4, Vec3, Vec3A, Vec4};
 use bevy_mesh::{Mesh, MeshVertexBufferLayoutRef};
 use bevy_render::{
@@ -27,16 +40,8 @@ use bevy_render::{
     render_asset::RenderAssets,
     render_graph::{NodeRunError, RenderGraphContext, ViewNode},
     render_resource::{
-        binding_types::{
-            sampler, texture_3d, texture_depth_2d, texture_depth_2d_multisampled, uniform_buffer,
-        },
-        BindGroupLayoutDescriptor, BindGroupLayoutEntries, BindingResource, BlendComponent,
-        BlendFactor, BlendOperation, BlendState, CachedRenderPipelineId, ColorTargetState,
-        ColorWrites, DynamicBindGroupEntries, DynamicUniformBuffer, Face, FragmentState, LoadOp,
-        Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment, RenderPassDescriptor,
-        RenderPipelineDescriptor, SamplerBindingType, ShaderStages, ShaderType,
-        SpecializedRenderPipeline, SpecializedRenderPipelines, StoreOp, TextureFormat,
-        TextureSampleType, TextureUsages, VertexState,
+        BindingResource, DynamicBindGroupEntries, DynamicUniformBuffer, PipelineCache,
+        RenderPassColorAttachment, RenderPassDescriptor, ShaderType, SpecializedRenderPipelines,
     },
     renderer::{RenderContext, RenderDevice, RenderQueue},
     sync_world::RenderEntity,
@@ -50,9 +55,8 @@ use bevy_utils::prelude::default;
 use bitflags::bitflags;
 
 use crate::{
-    MeshPipelineViewLayoutKey, MeshPipelineViewLayouts, MeshViewBindGroup,
-    ViewEnvironmentMapUniformOffset, ViewFogUniformOffset, ViewLightProbesUniformOffset,
-    ViewLightsUniformOffset, ViewScreenSpaceReflectionsUniformOffset,
+    MeshViewBindGroup, ViewEnvironmentMapUniformOffset, ViewFogUniformOffset,
+    ViewLightProbesUniformOffset, ViewLightsUniformOffset, ViewScreenSpaceReflectionsUniformOffset,
 };
 
 use super::FogAssets;

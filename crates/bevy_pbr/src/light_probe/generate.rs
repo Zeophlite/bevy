@@ -24,19 +24,21 @@ use bevy_ecs::{
     world::{FromWorld, World},
 };
 use bevy_image::Image;
+use bevy_material::render_resource::{
+    binding_types::*, AddressMode, BindGroupLayoutDescriptor, BindGroupLayoutEntries,
+    CachedComputePipelineId, ComputePipelineDescriptor, DownlevelFlags, Extent3d, FilterMode,
+    SamplerBindingType, SamplerDescriptor, ShaderStages, StorageTextureAccess, TextureAspect,
+    TextureDimension, TextureFormat, TextureFormatFeatureFlags, TextureSampleType, TextureUsages,
+    TextureViewDescriptor, TextureViewDimension,
+};
 use bevy_math::{Quat, UVec2, Vec2};
 use bevy_render::{
     diagnostic::RecordDiagnostics,
     render_asset::RenderAssets,
     render_graph::{Node, NodeRunError, RenderGraphContext, RenderGraphExt, RenderLabel},
     render_resource::{
-        binding_types::*, AddressMode, BindGroup, BindGroupEntries, BindGroupLayoutDescriptor,
-        BindGroupLayoutEntries, CachedComputePipelineId, ComputePassDescriptor,
-        ComputePipelineDescriptor, DownlevelFlags, Extent3d, FilterMode, PipelineCache, Sampler,
-        SamplerBindingType, SamplerDescriptor, ShaderStages, ShaderType, StorageTextureAccess,
-        Texture, TextureAspect, TextureDescriptor, TextureDimension, TextureFormat,
-        TextureFormatFeatureFlags, TextureSampleType, TextureUsages, TextureView,
-        TextureViewDescriptor, TextureViewDimension, UniformBuffer,
+        BindGroup, BindGroupEntries, ComputePassDescriptor, PipelineCache, Sampler, ShaderType,
+        Texture, TextureDescriptor, TextureView, UniformBuffer,
     },
     renderer::{RenderAdapter, RenderContext, RenderDevice, RenderQueue},
     settings::WgpuFeatures,

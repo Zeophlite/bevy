@@ -3,13 +3,14 @@ use std::sync::Mutex;
 use crate::tonemapping::{TonemappingLuts, TonemappingPipeline, ViewTonemappingPipeline};
 
 use bevy_ecs::{prelude::*, query::QueryItem};
+use bevy_material::render_resource::{LoadOp, Operations, StoreOp};
 use bevy_render::{
     diagnostic::RecordDiagnostics,
     render_asset::RenderAssets,
     render_graph::{NodeRunError, RenderGraphContext, ViewNode},
     render_resource::{
-        BindGroup, BindGroupEntries, BufferId, LoadOp, Operations, PipelineCache,
-        RenderPassColorAttachment, RenderPassDescriptor, StoreOp, TextureViewId,
+        BindGroup, BindGroupEntries, BufferId, PipelineCache, RenderPassColorAttachment,
+        RenderPassDescriptor, TextureViewId,
     },
     renderer::RenderContext,
     texture::{FallbackImage, GpuImage},

@@ -41,6 +41,7 @@ use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingMode,
     camera::CameraRenderGraph,
     render_phase::PhaseItemBatchSetKey,
+    render_resource::TextureDescriptor,
     view::{ExtractedView, RetainedViewEntity},
 };
 pub use main_opaque_pass_2d_node::*;
@@ -52,20 +53,21 @@ use crate::{
 };
 use bevy_app::{App, Plugin};
 use bevy_ecs::prelude::*;
+use bevy_material::{
+    render_phase::DrawFunctionId,
+    render_resource::{CachedRenderPipelineId, TextureUsages},
+};
 use bevy_math::FloatOrd;
 use bevy_render::{
     camera::ExtractedCamera,
     extract_component::ExtractComponentPlugin,
     render_graph::{EmptyNode, RenderGraphExt, ViewNodeRunner},
     render_phase::{
-        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId,
-        DrawFunctions, PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
+        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctions,
+        PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
         ViewSortedRenderPhases,
     },
-    render_resource::{
-        BindGroupId, CachedRenderPipelineId, TextureDescriptor, TextureDimension, TextureFormat,
-        TextureUsages,
-    },
+    render_resource::{BindGroupId, TextureDimension, TextureFormat},
     renderer::RenderDevice,
     sync_world::MainEntity,
     texture::TextureCache,

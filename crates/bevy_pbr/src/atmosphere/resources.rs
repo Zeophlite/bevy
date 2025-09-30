@@ -11,10 +11,11 @@ use bevy_ecs::{
     world::{FromWorld, World},
 };
 use bevy_image::ToExtents;
+use bevy_material::render_resource::{binding_types::*, *};
 use bevy_math::{Affine3A, Mat4, Vec3A};
 use bevy_render::{
     extract_component::ComponentUniforms,
-    render_resource::{binding_types::*, *},
+    render_resource::*,
     renderer::{RenderDevice, RenderQueue},
     texture::{CachedTexture, TextureCache},
     view::{ExtractedView, Msaa, ViewDepthTexture, ViewUniform, ViewUniforms},

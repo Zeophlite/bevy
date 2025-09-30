@@ -8,13 +8,13 @@ use bevy_ecs::{
     resource::Resource,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_material::render_resource::{
+    binding_types::uniform_buffer, BindGroupLayoutDescriptor, BindGroupLayoutEntries,
+    CachedRenderPipelineId, CompareFunction, DepthStencilState, FragmentState, MultisampleState,
+    RenderPipelineDescriptor, ShaderStages, SpecializedRenderPipeline,
+};
 use bevy_render::{
-    render_resource::{
-        binding_types::uniform_buffer, BindGroup, BindGroupEntries, BindGroupLayoutDescriptor,
-        BindGroupLayoutEntries, CachedRenderPipelineId, CompareFunction, DepthStencilState,
-        FragmentState, MultisampleState, PipelineCache, RenderPipelineDescriptor, ShaderStages,
-        SpecializedRenderPipeline, SpecializedRenderPipelines,
-    },
+    render_resource::{BindGroup, BindGroupEntries, PipelineCache, SpecializedRenderPipelines},
     renderer::RenderDevice,
     view::{Msaa, ViewUniform, ViewUniforms},
 };
