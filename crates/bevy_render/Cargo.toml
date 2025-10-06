@@ -60,13 +60,15 @@ bevy_ecs = { path = "../bevy_ecs", version = "0.18.0-dev" }
 bevy_encase_derive = { path = "../bevy_encase_derive", version = "0.18.0-dev" }
 bevy_math = { path = "../bevy_math", version = "0.18.0-dev" }
 bevy_reflect = { path = "../bevy_reflect", version = "0.18.0-dev" }
-bevy_render_macros = { path = "macros", version = "0.18.0-dev" }
+bevy_material_macros = { path = "../bevy_material/macros", version = "0.18.0-dev" }
+bevy_render_macros = { path = "../bevy_render/macros", version = "0.18.0-dev" }
 bevy_time = { path = "../bevy_time", version = "0.18.0-dev" }
 bevy_transform = { path = "../bevy_transform", version = "0.18.0-dev" }
 bevy_window = { path = "../bevy_window", version = "0.18.0-dev" }
 bevy_utils = { path = "../bevy_utils", version = "0.18.0-dev" }
 bevy_tasks = { path = "../bevy_tasks", version = "0.18.0-dev" }
 bevy_image = { path = "../bevy_image", version = "0.18.0-dev" }
+bevy_material = { path = "../bevy_material", version = "0.18.0-dev" }
 bevy_mesh = { path = "../bevy_mesh", version = "0.18.0-dev" }
 bevy_camera = { path = "../bevy_camera", version = "0.18.0-dev" }
 bevy_shader = { path = "../bevy_shader", version = "0.18.0-dev" }
