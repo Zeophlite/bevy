@@ -10,10 +10,6 @@ pub(crate) fn bevy_material_path() -> syn::Path {
     BevyManifest::shared().get_path("bevy_material")
 }
 
-pub(crate) fn bevy_ecs_path() -> syn::Path {
-    BevyManifest::shared().get_path("bevy_ecs")
-}
-
 #[proc_macro_derive(ShaderLabel)]
 pub fn derive_shader_label(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
