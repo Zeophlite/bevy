@@ -39,8 +39,8 @@ use crate::{
         clustered::{
             DecalsBuffer, RenderClusteredDecals, RenderViewClusteredDecalBindGroupEntries,
         },
-    }, environment_map::{self, RenderViewEnvironmentMapBindGroupEntries}, get_view_layout, irradiance_volume::{
-        self, RenderViewIrradianceVolumeBindGroupEntries, IRRADIANCE_VOLUMES_ARE_USABLE,
+    }, environment_map::{self, RenderViewEnvironmentMapBindGroupEntries}, irradiance_volume::{
+        self, RenderViewIrradianceVolumeBindGroupEntries,
     }, prepass, EnvironmentMapUniformBuffer, FogMeta, GlobalClusterableObjectMeta, GpuClusterableObjects, GpuFog, GpuLights, LightMeta, LightProbesBuffer, LightProbesUniform, RenderViewLightProbes, ScreenSpaceAmbientOcclusionResources, ScreenSpaceReflectionsBuffer, ScreenSpaceReflectionsUniform, ShadowSamplers, ViewClusterBindings, ViewShadowBindings, CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT
 };
 
@@ -490,7 +490,7 @@ pub fn prepare_mesh_view_bind_groups(
                 layout_key |= MeshPipelineViewLayoutKey::OIT_ENABLED;
             }
 
-            let layout = get_view_layout(&mesh_pipeline, layout_key);
+            let layout = mesh_pipeline.get_view_layout(layout_key);
 
             let mut entries = DynamicBindGroupEntries::new_with_indices((
                 (0, view_binding.clone()),

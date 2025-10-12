@@ -3,16 +3,16 @@ mod prepass_bindings;
 use crate::{
     alpha_mode_pipeline_key, binding_arrays_are_usable, buffer_layout,
     collect_meshes_for_gpu_building, init_material_pipeline, set_mesh_motion_vector_flags,
-    setup_morph_and_skinning_defs, skin, DeferredDrawFunction, DeferredFragmentShader,
+    skin, DeferredDrawFunction, DeferredFragmentShader,
     DeferredVertexShader, DrawMesh, EntitySpecializationTicks, Material,
     OpaqueRendererMethod, PreparedMaterial, PrepassDrawFunction, PrepassFragmentShader,
-    PrepassVertexShader, RenderLightmaps, RenderMaterialInstances, RenderMeshInstanceFlags,
+    PrepassVertexShader, RenderMaterialInstances,
     RenderMeshInstances, SetMaterialBindGroup, SetMeshBindGroup, ShadowView,
 };
 use bevy_app::{App, Plugin, PreUpdate};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_camera::{Camera, Camera3d};
-use bevy_core_pipeline::{core_3d::CORE_3D_DEPTH_FORMAT, deferred::*, prepass::*};
+use bevy_core_pipeline::{deferred::*, prepass::*};
 use bevy_ecs::{
     prelude::*,
     system::{
@@ -26,7 +26,7 @@ use bevy_mesh::{Mesh, Mesh3d, MeshVertexBufferLayoutRef};
 use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingSupport,
     globals::{GlobalsBuffer, GlobalsUniform},
-    mesh::{allocator::MeshAllocator, RenderMesh},
+    mesh::{allocator::MeshAllocator, lightmap::RenderLightmapsU, mesh::{PreviousGlobalTransform, RenderMeshInstanceFlags}, RenderMesh},
     render_asset::{prepare_assets, RenderAssets},
     render_phase::*,
     render_resource::{binding_types::uniform_buffer, *},
@@ -213,9 +213,6 @@ pub fn update_previous_view_data(
         });
     }
 }
-
-#[derive(Component, PartialEq, Default)]
-pub struct PreviousGlobalTransform(pub Affine3A);
 
 #[cfg(not(feature = "meshlet"))]
 type PreviousMeshFilter = With<Mesh3d>;
@@ -820,7 +817,7 @@ pub fn specialize_prepass_material_meshes(
     render_materials: Res<ErasedRenderAssets<PreparedMaterial>>,
     render_mesh_instances: Res<RenderMeshInstances>,
     render_material_instances: Res<RenderMaterialInstances>,
-    render_lightmaps: Res<RenderLightmaps>,
+    render_lightmaps: Res<RenderLightmapsU>,
     render_visibility_ranges: Res<RenderVisibilityRanges>,
     view_key_cache: Res<ViewKeyPrepassCache>,
     views: Query<(

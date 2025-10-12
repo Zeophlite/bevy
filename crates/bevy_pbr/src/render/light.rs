@@ -10,7 +10,6 @@ use bevy_camera::visibility::{
 };
 use bevy_camera::Camera3d;
 use bevy_color::ColorToComponents;
-use bevy_core_pipeline::core_3d::CORE_3D_DEPTH_FORMAT;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::component::Tick;
 use bevy_ecs::system::SystemChangeTick;
@@ -38,6 +37,8 @@ use bevy_render::erased_render_asset::ErasedRenderAssets;
 use bevy_render::experimental::occlusion_culling::{
     OcclusionCulling, OcclusionCullingSubview, OcclusionCullingSubviewEntities,
 };
+use bevy_render::mesh::lightmap::RenderLightmapsU;
+use bevy_render::mesh::mesh::RenderMeshInstanceFlags;
 use bevy_render::sync_world::MainEntityHashMap;
 use bevy_render::{
     batching::gpu_preprocessing::{GpuPreprocessingMode, GpuPreprocessingSupport},
@@ -1758,7 +1759,7 @@ pub fn specialize_shadows(
     shadow_render_phases: Res<ViewBinnedRenderPhases<Shadow>>,
     mut pipelines: ResMut<SpecializedMeshPipelines<PrepassPipelineSpecializer>>,
     pipeline_cache: Res<PipelineCache>,
-    render_lightmaps: Res<RenderLightmaps>,
+    render_lightmaps: Res<RenderLightmapsU>,
     view_lights: Query<(Entity, &ViewLightEntities), With<ExtractedView>>,
     view_light_entities: Query<(&LightEntity, &ExtractedView)>,
     point_light_entities: Query<&RenderCubemapVisibleEntities, With<ExtractedPointLight>>,

@@ -19,6 +19,7 @@ use crate::{
 
 pub mod gpu_preprocessing;
 pub mod no_gpu_preprocessing;
+pub mod mesh_batch;
 
 /// Add this component to mesh entities to disable automatic batching
 #[derive(Component, Default)]

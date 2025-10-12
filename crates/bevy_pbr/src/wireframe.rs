@@ -1,5 +1,5 @@
 use crate::{
-    DrawMesh, RenderMeshInstanceFlags, RenderMeshInstances,
+    DrawMesh, RenderMeshInstances,
     SetMeshBindGroup, SetMeshViewBindGroup, SetMeshViewBindingArrayBindGroup, ViewKeyCache,
     ViewSpecializationTicks,
 };
@@ -31,8 +31,7 @@ use bevy_render::{
     diagnostic::RecordDiagnostics,
     extract_resource::ExtractResource,
     mesh::{
-        allocator::{MeshAllocator, SlabId},
-        RenderMesh,
+        allocator::{MeshAllocator, SlabId}, mesh::RenderMeshInstanceFlags, RenderMesh
     },
     prelude::*,
     render_asset::{

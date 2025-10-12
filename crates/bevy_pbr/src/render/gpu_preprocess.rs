@@ -34,22 +34,14 @@ use bevy_render::{
         IndirectParametersNonIndexed, LatePreprocessWorkItemIndirectParameters, PreprocessWorkItem,
         PreprocessWorkItemBuffers, UntypedPhaseBatchedInstanceBuffers,
         UntypedPhaseIndirectParametersBuffers,
-    },
-    diagnostic::RecordDiagnostics,
-    experimental::occlusion_culling::OcclusionCulling,
-    render_graph::{Node, NodeRunError, RenderGraphContext, RenderGraphExt},
-    render_resource::{
+    }, diagnostic::RecordDiagnostics, experimental::occlusion_culling::OcclusionCulling, mesh::mesh::{MeshInputUniform, MeshUniform}, render_graph::{Node, NodeRunError, RenderGraphContext, RenderGraphExt}, render_resource::{
         binding_types::{storage_buffer, storage_buffer_read_only, texture_2d, uniform_buffer},
         BindGroup, BindGroupEntries, BindGroupLayoutDescriptor, BindingResource, Buffer,
         BufferBinding, CachedComputePipelineId, ComputePassDescriptor, ComputePipelineDescriptor,
         DynamicBindGroupLayoutEntries, PipelineCache, PushConstantRange, RawBufferVec,
         ShaderStages, ShaderType, SpecializedComputePipeline, SpecializedComputePipelines,
         TextureSampleType, UninitBufferVec,
-    },
-    renderer::{RenderContext, RenderDevice, RenderQueue},
-    settings::WgpuFeatures,
-    view::{ExtractedView, NoIndirectDrawing, ViewUniform, ViewUniformOffset, ViewUniforms},
-    Render, RenderApp, RenderSystems,
+    }, renderer::{RenderContext, RenderDevice, RenderQueue}, settings::WgpuFeatures, view::{ExtractedView, NoIndirectDrawing, ViewUniform, ViewUniformOffset, ViewUniforms}, Render, RenderApp, RenderSystems
 };
 use bevy_shader::Shader;
 use bevy_utils::{default, TypeIdMap};
@@ -58,7 +50,7 @@ use smallvec::{smallvec, SmallVec};
 use tracing::warn;
 
 use crate::{
-    graph::NodePbr, MeshCullingData, MeshCullingDataBuffer, MeshInputUniform, MeshUniform,
+    graph::NodePbr, MeshCullingData, MeshCullingDataBuffer,
 };
 
 use super::{ShadowView, ViewLightEntities};

@@ -13,7 +13,7 @@ use bevy_render::{
         binding_types::uniform_buffer, BindGroup, BindGroupEntries, BindGroupLayoutDescriptor,
         BindGroupLayoutEntries, CachedRenderPipelineId, CompareFunction, DepthStencilState,
         FragmentState, MultisampleState, PipelineCache, RenderPipelineDescriptor, ShaderStages,
-        SpecializedRenderPipeline, SpecializedRenderPipelines,
+        SpecializedRenderPipeline, SpecializedRenderPipelines, CORE_3D_DEPTH_FORMAT,
     },
     renderer::RenderDevice,
     view::{Msaa, ViewUniform, ViewUniforms},
@@ -22,7 +22,6 @@ use bevy_shader::Shader;
 use bevy_utils::prelude::default;
 
 use crate::{
-    core_3d::CORE_3D_DEPTH_FORMAT,
     prepass::{
         prepass_target_descriptors, MotionVectorPrepass, NormalPrepass, PreviousViewData,
         PreviousViewUniforms,

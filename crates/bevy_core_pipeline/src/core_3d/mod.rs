@@ -47,9 +47,6 @@ pub mod graph {
     }
 }
 
-// PERF: vulkan docs recommend using 24 bit depth for better performance
-pub const CORE_3D_DEPTH_FORMAT: TextureFormat = TextureFormat::Depth32Float;
-
 /// True if multisampled depth textures are supported on this platform.
 ///
 /// In theory, Naga supports depth textures on WebGL 2. In practice, it doesn't,
@@ -75,12 +72,7 @@ use core::ops::Range;
 use bevy_camera::{Camera, Camera3d, Camera3dDepthLoadOp};
 use bevy_material::render_phase::DrawFunctionId;
 use bevy_render::{
-    batching::gpu_preprocessing::{GpuPreprocessingMode, GpuPreprocessingSupport},
-    camera::CameraRenderGraph,
-    experimental::occlusion_culling::OcclusionCulling,
-    mesh::allocator::SlabId,
-    render_phase::PhaseItemBatchSetKey,
-    view::{prepare_view_targets, NoIndirectDrawing, RetainedViewEntity},
+    batching::gpu_preprocessing::{GpuPreprocessingMode, GpuPreprocessingSupport}, camera::CameraRenderGraph, experimental::occlusion_culling::OcclusionCulling, mesh::allocator::SlabId, render_phase::PhaseItemBatchSetKey, render_resource::CORE_3D_DEPTH_FORMAT, view::{prepare_view_targets, NoIndirectDrawing, RetainedViewEntity}
 };
 pub use main_opaque_pass_3d_node::*;
 pub use main_transparent_pass_3d_node::*;

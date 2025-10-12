@@ -38,9 +38,9 @@ use bevy_mesh::{
 };
 #[cfg(feature = "pbr_transmission_textures")]
 use bevy_pbr::UvChannel;
-use bevy_pbr::{MeshMaterial3d, StandardMaterial, MAX_JOINTS};
+use bevy_pbr::{MeshMaterial3d, StandardMaterial};
 use bevy_platform::collections::{HashMap, HashSet};
-use bevy_render::render_resource::Face;
+use bevy_render::{mesh::skin::MAX_JOINTS, render_resource::Face};
 use bevy_scene::Scene;
 #[cfg(not(target_arch = "wasm32"))]
 use bevy_tasks::IoTaskPool;

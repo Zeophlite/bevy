@@ -4,11 +4,10 @@ use bevy_material::render::MeshLayouts;
 use bevy_math::Mat4;
 use bevy_mesh::morph::MAX_MORPH_WEIGHTS;
 use bevy_render::{
-    render_resource::*,
-    renderer::{RenderAdapter, RenderDevice},
+    mesh::skin::MAX_JOINTS, render_resource::*, renderer::{RenderAdapter, RenderDevice}
 };
 
-use crate::{binding_arrays_are_usable, render::skin::MAX_JOINTS, LightmapSlab};
+use crate::{binding_arrays_are_usable, LightmapSlab};
 
 const MORPH_WEIGHT_SIZE: usize = size_of::<f32>();
 
@@ -27,17 +26,16 @@ mod layout_entry {
     use core::num::NonZeroU32;
 
     use super::{JOINT_BUFFER_SIZE, MORPH_BUFFER_SIZE};
-    use crate::{render::skin, MeshUniform, LIGHTMAPS_PER_SLAB};
+    use crate::{render::skin, LIGHTMAPS_PER_SLAB};
     use bevy_render::{
-        render_resource::{
+        mesh::mesh::MeshUniform, render_resource::{
             binding_types::{
                 sampler, storage_buffer_read_only_sized, texture_2d, texture_3d,
                 uniform_buffer_sized,
             },
             BindGroupLayoutEntryBuilder, BufferSize, GpuArrayBuffer, SamplerBindingType,
             ShaderStages, TextureSampleType,
-        },
-        renderer::RenderDevice,
+        }, renderer::RenderDevice
     };
 
     pub(super) fn model(render_device: &RenderDevice) -> BindGroupLayoutEntryBuilder {

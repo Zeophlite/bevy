@@ -22,7 +22,7 @@ use bevy_mesh::{
     VertexAttributeDescriptor,
 };
 use bevy_platform::collections::{hash_map::Entry, HashMap};
-use crate::{render::{MeshLayouts, MeshPipelineViewLayouts}, render_resource::*};
+use crate::{render::{MeshLayouts, MeshPipelineViewLayout, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts}, render_resource::*};
 use bevy_shader::{load_shader_library, Shader, ShaderDefVal, ShaderSettings};
 use bevy_transform::components::GlobalTransform;
 use bevy_utils::{default, Parallel, TypeIdMap};
@@ -96,6 +96,15 @@ pub struct MeshPipeline {
     /// Whether skins will use uniform buffers on account of storage buffers
     /// being unavailable on this platform.
     pub skins_use_uniform_buffers: bool,
+}
+
+impl MeshPipeline {
+    pub fn get_view_layout(
+        self: &MeshPipeline,
+        layout_key: MeshPipelineViewLayoutKey,
+    ) -> &MeshPipelineViewLayout {
+        self.view_layouts.get_view_layout(layout_key)
+    }
 }
 
 

@@ -1,4 +1,8 @@
 pub mod allocator;
+pub mod mesh;
+pub mod material_bind_group;
+pub mod lightmap;
+pub mod skin;
 use crate::{
     render_asset::{PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets},
     render_resource::TextureView,

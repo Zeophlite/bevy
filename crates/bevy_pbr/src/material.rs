@@ -1,5 +1,5 @@
 use crate::material_bind_groups::{
-    FallbackBindlessResources, MaterialBindGroupAllocator, MaterialBindingId,
+    FallbackBindlessResources, MaterialBindGroupAllocator,
 };
 use crate::*;
 use alloc::sync::Arc;
@@ -44,6 +44,9 @@ use bevy_render::camera::extract_cameras;
 use bevy_render::erased_render_asset::{
     ErasedRenderAsset, ErasedRenderAssetPlugin, ErasedRenderAssets, PrepareAssetError,
 };
+use bevy_render::mesh::lightmap::RenderLightmapsU;
+use bevy_render::mesh::material_bind_group::MaterialBindingId;
+use bevy_render::mesh::mesh::RenderMeshInstanceFlags;
 use bevy_render::render_asset::{prepare_assets, RenderAssets};
 use bevy_render::renderer::RenderQueue;
 use bevy_render::RenderStartup;
@@ -905,7 +908,7 @@ pub fn specialize_material_meshes(
     render_materials: Res<ErasedRenderAssets<PreparedMaterial>>,
     render_mesh_instances: Res<RenderMeshInstances>,
     render_material_instances: Res<RenderMaterialInstances>,
-    render_lightmaps: Res<RenderLightmaps>,
+    render_lightmaps: Res<RenderLightmapsU>,
     render_visibility_ranges: Res<RenderVisibilityRanges>,
     (
         opaque_render_phases,
