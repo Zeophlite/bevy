@@ -26,6 +26,8 @@ use bevy_ecs::{
         SystemParamItem,
     },
 };
+use bevy_material::material::{ErasedMaterialKey, ErasedMaterialPipelineKey, MaterialPipeline, MaterialProperties, RenderPhaseType};
+use bevy_material::render::{MeshPipeline, MeshPipelineKey};
 use bevy_material::{
     prelude::*,
     render_phase::*,

@@ -1,5 +1,5 @@
 use crate::{
-    DrawMesh, MeshPipeline, MeshPipelineKey, RenderMeshInstanceFlags, RenderMeshInstances,
+    DrawMesh, RenderMeshInstanceFlags, RenderMeshInstances,
     SetMeshBindGroup, SetMeshViewBindGroup, SetMeshViewBindingArrayBindGroup, ViewKeyCache,
     ViewSpecializationTicks,
 };
@@ -18,6 +18,7 @@ use bevy_ecs::{
     query::QueryItem,
     system::{lifetimeless::SRes, SystemChangeTick, SystemParamItem},
 };
+use bevy_material::{render::{MeshPipeline, MeshPipelineKey}, render_phase::DrawFunctionId};
 use bevy_mesh::{Mesh3d, MeshVertexBufferLayoutRef};
 use bevy_platform::{
     collections::{HashMap, HashSet},
@@ -40,7 +41,7 @@ use bevy_render::{
     render_graph::{NodeRunError, RenderGraphContext, RenderGraphExt, ViewNode, ViewNodeRunner},
     render_phase::{
         AddRenderCommand, BinnedPhaseItem, BinnedRenderPhasePlugin, BinnedRenderPhaseType,
-        CachedRenderPipelinePhaseItem, DrawFunctionId, DrawFunctions, PhaseItem,
+        CachedRenderPipelinePhaseItem, DrawFunctions, PhaseItem,
         PhaseItemBatchSetKey, PhaseItemExtraIndex, RenderCommand, RenderCommandResult,
         SetItemPipeline, TrackedRenderPass, ViewBinnedRenderPhases,
     },

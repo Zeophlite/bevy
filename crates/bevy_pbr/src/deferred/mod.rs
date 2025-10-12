@@ -1,10 +1,10 @@
 use crate::{
-    graph::NodePbr, MeshPipeline, MeshViewBindGroup, RenderViewLightProbes,
+    graph::NodePbr, MeshViewBindGroup, RenderViewLightProbes,
     ScreenSpaceAmbientOcclusion, ScreenSpaceReflectionsUniform, ViewEnvironmentMapUniformOffset,
     ViewLightProbesUniformOffset, ViewScreenSpaceReflectionsUniformOffset,
     TONEMAPPING_LUT_SAMPLER_BINDING_INDEX, TONEMAPPING_LUT_TEXTURE_BINDING_INDEX,
 };
-use crate::{DistanceFog, MeshPipelineKey, ViewFogUniformOffset, ViewLightsUniformOffset};
+use crate::{get_view_layout, DistanceFog, ViewFogUniformOffset, ViewLightsUniformOffset};
 use bevy_app::prelude::*;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_core_pipeline::{
@@ -18,6 +18,7 @@ use bevy_core_pipeline::{
 use bevy_ecs::{prelude::*, query::QueryItem};
 use bevy_image::BevyDefault as _;
 use bevy_light::{EnvironmentMapLight, IrradianceVolume, ShadowFilteringMethod};
+use bevy_material::render::{MeshPipeline, MeshPipelineKey};
 use bevy_render::RenderStartup;
 use bevy_render::{
     diagnostic::RecordDiagnostics,
@@ -346,7 +347,7 @@ impl SpecializedRenderPipeline for DeferredLightingLayout {
         #[cfg(all(feature = "webgl", target_arch = "wasm32", not(feature = "webgpu")))]
         shader_defs.push("SIXTEEN_BYTE_ALIGNMENT".into());
 
-        let layout = self.mesh_pipeline.get_view_layout(key.into());
+        let layout = get_view_layout(&self.mesh_pipeline, key.into());
         RenderPipelineDescriptor {
             label: Some("deferred_lighting_pipeline".into()),
             layout: vec![

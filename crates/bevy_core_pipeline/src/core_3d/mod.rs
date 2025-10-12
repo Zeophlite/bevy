@@ -73,6 +73,7 @@ pub const DEPTH_TEXTURE_SAMPLING_SUPPORTED: bool = true;
 use core::ops::Range;
 
 use bevy_camera::{Camera, Camera3d, Camera3dDepthLoadOp};
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_render::{
     batching::gpu_preprocessing::{GpuPreprocessingMode, GpuPreprocessingSupport},
     camera::CameraRenderGraph,
@@ -97,7 +98,7 @@ use bevy_render::{
     prelude::Msaa,
     render_graph::{EmptyNode, RenderGraphExt, ViewNodeRunner},
     render_phase::{
-        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId,
+        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem,
         DrawFunctions, PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
         ViewSortedRenderPhases,
     },

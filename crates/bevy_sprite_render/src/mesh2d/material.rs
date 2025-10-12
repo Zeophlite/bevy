@@ -20,6 +20,7 @@ use bevy_ecs::{
     prelude::*,
     system::{lifetimeless::SRes, SystemParamItem},
 };
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_math::FloatOrd;
 use bevy_mesh::MeshVertexBufferLayoutRef;
 use bevy_platform::collections::HashMap;
@@ -32,7 +33,7 @@ use bevy_render::{
         prepare_assets, PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets,
     },
     render_phase::{
-        AddRenderCommand, BinnedRenderPhaseType, DrawFunctionId, DrawFunctions, InputUniformIndex,
+        AddRenderCommand, BinnedRenderPhaseType, DrawFunctions, InputUniformIndex,
         PhaseItem, PhaseItemExtraIndex, RenderCommand, RenderCommandResult, SetItemPipeline,
         TrackedRenderPass, ViewBinnedRenderPhases, ViewSortedRenderPhases,
     },

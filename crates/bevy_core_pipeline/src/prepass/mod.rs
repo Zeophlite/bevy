@@ -32,6 +32,7 @@ use core::ops::Range;
 use crate::deferred::{DEFERRED_LIGHTING_PASS_ID_FORMAT, DEFERRED_PREPASS_FORMAT};
 use bevy_asset::UntypedAssetId;
 use bevy_ecs::prelude::*;
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_math::Mat4;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::mesh::allocator::SlabId;
@@ -39,7 +40,7 @@ use bevy_render::render_phase::PhaseItemBatchSetKey;
 use bevy_render::sync_world::MainEntity;
 use bevy_render::{
     render_phase::{
-        BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId, PhaseItem,
+        BinnedPhaseItem, CachedRenderPipelinePhaseItem, PhaseItem,
         PhaseItemExtraIndex,
     },
     render_resource::{

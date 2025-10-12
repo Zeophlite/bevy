@@ -7,6 +7,7 @@ use bevy_ecs::{
     system::{ReadOnlySystemParam, SystemParam, SystemParamItem, SystemState},
     world::World,
 };
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_utils::TypeIdMap;
 use core::{any::TypeId, fmt::Debug, hash::Hash};
 use std::sync::{PoisonError, RwLock, RwLockReadGuard, RwLockWriteGuard};

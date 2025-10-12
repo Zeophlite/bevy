@@ -3,6 +3,7 @@ use crate::render_resource::{
     RenderPipelineDescriptor,
 };
 use bevy_ecs::resource::Resource;
+use bevy_material::render_resource::SpecializedMeshPipelineError;
 use bevy_mesh::{MeshVertexBufferLayoutRef, MissingVertexAttributeError, VertexBufferLayout};
 use bevy_platform::{
     collections::{

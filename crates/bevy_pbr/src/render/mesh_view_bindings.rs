@@ -18,6 +18,7 @@ use bevy_ecs::{
 };
 use bevy_image::BevyDefault as _;
 use bevy_light::{EnvironmentMapLight, IrradianceVolume};
+use bevy_material::render::{MeshPipeline, MeshPipelineViewLayout, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts};
 use bevy_math::Vec4;
 use bevy_render::{
     globals::{GlobalsBuffer, GlobalsUniform},
@@ -38,23 +39,16 @@ use crate::{
         clustered::{
             DecalsBuffer, RenderClusteredDecals, RenderViewClusteredDecalBindGroupEntries,
         },
-    },
-    environment_map::{self, RenderViewEnvironmentMapBindGroupEntries},
-    irradiance_volume::{
+    }, environment_map::{self, RenderViewEnvironmentMapBindGroupEntries}, get_view_layout, irradiance_volume::{
         self, RenderViewIrradianceVolumeBindGroupEntries, IRRADIANCE_VOLUMES_ARE_USABLE,
-    },
-    prepass, EnvironmentMapUniformBuffer, FogMeta, GlobalClusterableObjectMeta,
-    GpuClusterableObjects, GpuFog, GpuLights, LightMeta, LightProbesBuffer, LightProbesUniform,
-    MeshPipeline, MeshPipelineKey, RenderViewLightProbes, ScreenSpaceAmbientOcclusionResources,
-    ScreenSpaceReflectionsBuffer, ScreenSpaceReflectionsUniform, ShadowSamplers,
-    ViewClusterBindings, ViewShadowBindings, CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT,
+    }, prepass, EnvironmentMapUniformBuffer, FogMeta, GlobalClusterableObjectMeta, GpuClusterableObjects, GpuFog, GpuLights, LightMeta, LightProbesBuffer, LightProbesUniform, RenderViewLightProbes, ScreenSpaceAmbientOcclusionResources, ScreenSpaceReflectionsBuffer, ScreenSpaceReflectionsUniform, ShadowSamplers, ViewClusterBindings, ViewShadowBindings, CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT
 };
 
 #[cfg(all(feature = "webgl", target_arch = "wasm32", not(feature = "webgpu")))]
 use bevy_render::render_resource::binding_types::texture_cube;
 
-impl From<Msaa> for MeshPipelineViewLayoutKey {
-    fn from(value: Msaa) -> Self {
+// impl From<Msaa> for MeshPipelineViewLayoutKey {
+    pub fn meshPipelineViewLayoutKey_from_msaa(value: Msaa) -> MeshPipelineViewLayoutKey {
         let mut result = MeshPipelineViewLayoutKey::empty();
 
         if value.samples() > 1 {
@@ -63,10 +57,10 @@ impl From<Msaa> for MeshPipelineViewLayoutKey {
 
         result
     }
-}
+// }
 
-impl From<Option<&ViewPrepassTextures>> for MeshPipelineViewLayoutKey {
-    fn from(value: Option<&ViewPrepassTextures>) -> Self {
+// impl From<Option<&ViewPrepassTextures>> for MeshPipelineViewLayoutKey {
+    pub fn meshPipelineViewLayoutKey_from_viewPrepassTexture(value: Option<&ViewPrepassTextures>) -> MeshPipelineViewLayoutKey {
         let mut result = MeshPipelineViewLayoutKey::empty();
 
         if let Some(prepass_textures) = value {
@@ -86,7 +80,7 @@ impl From<Option<&ViewPrepassTextures>> for MeshPipelineViewLayoutKey {
 
         result
     }
-}
+// }
 
 pub(crate) fn buffer_layout(
     buffer_binding_type: BufferBindingType,
@@ -314,8 +308,8 @@ fn layout_entries(
     [entries.to_vec(), binding_array_entries.to_vec()]
 }
 
-impl FromWorld for MeshPipelineViewLayouts {
-    fn from_world(world: &mut World) -> Self {
+// impl FromWorld for MeshPipelineViewLayouts {
+    pub fn meshPipelineViewLayouts_from_world(world: &mut World) {
         // Generates all possible view layouts for the mesh pipeline, based on all combinations of
         // [`MeshPipelineViewLayoutKey`] flags.
 
@@ -327,7 +321,7 @@ impl FromWorld for MeshPipelineViewLayouts {
         let visibility_ranges_buffer_binding_type = render_device
             .get_supported_read_only_binding_type(VISIBILITY_RANGES_STORAGE_BUFFER_COUNT);
 
-        Self(Arc::new(array::from_fn(|i| {
+        let res = MeshPipelineViewLayouts(Arc::new(array::from_fn(|i| {
             let key = MeshPipelineViewLayoutKey::from_bits_truncate(i as u32);
             let entries = layout_entries(
                 clustered_forward_buffer_binding_type,
@@ -355,9 +349,11 @@ impl FromWorld for MeshPipelineViewLayouts {
                 #[cfg(debug_assertions)]
                 texture_count,
             }
-        })))
+        })));
+
+        world.insert_resource(res);
     }
-}
+// }
 
 /// Generates all possible view layouts for the mesh pipeline, based on all combinations of
 /// [`MeshPipelineViewLayoutKey`] flags.
@@ -488,13 +484,13 @@ pub fn prepare_mesh_view_bind_groups(
                 .map(|t| &t.screen_space_ambient_occlusion_texture.default_view)
                 .unwrap_or(&fallback_ssao);
 
-            let mut layout_key = MeshPipelineViewLayoutKey::from(*msaa)
-                | MeshPipelineViewLayoutKey::from(prepass_textures);
+            let mut layout_key = meshPipelineViewLayoutKey_from_msaa(*msaa)
+                | meshPipelineViewLayoutKey_from_viewPrepassTexture(prepass_textures);
             if has_oit {
                 layout_key |= MeshPipelineViewLayoutKey::OIT_ENABLED;
             }
 
-            let layout = mesh_pipeline.get_view_layout(layout_key);
+            let layout = get_view_layout(&mesh_pipeline, layout_key);
 
             let mut entries = DynamicBindGroupEntries::new_with_indices((
                 (0, view_binding.clone()),

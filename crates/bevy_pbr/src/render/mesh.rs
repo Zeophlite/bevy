@@ -1,4 +1,4 @@
-use crate::material_bind_groups::{MaterialBindGroupIndex, MaterialBindGroupSlot};
+use crate::{material_bind_groups::{MaterialBindGroupIndex, MaterialBindGroupSlot}, render::mesh_bindings::MeshLayoutsBuilder};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId};
 use bevy_camera::{
     primitives::Aabb,
@@ -23,6 +23,7 @@ use bevy_light::{
     EnvironmentMapLight, IrradianceVolume, NotShadowCaster, NotShadowReceiver,
     ShadowFilteringMethod, TransmittedShadowReceiver,
 };
+use bevy_material::render::{MeshLayouts, MeshPipeline, MeshPipelineKey, MeshPipelineViewLayout, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts};
 use bevy_math::{Affine3, Rect, UVec2, Vec3, Vec4};
 use bevy_mesh::{
     skinning::SkinnedMesh, BaseMeshPipelineKey, Mesh, Mesh3d, MeshTag, MeshVertexBufferLayoutRef,
@@ -269,8 +270,8 @@ impl Plugin for MeshRenderPlugin {
             }
 
             render_app
-                .init_resource::<MeshPipelineViewLayouts>()
-                .init_resource::<MeshPipeline>();
+                .add_systems(RenderStartup, meshPipelineViewLayouts_from_world)
+                .add_systems(RenderStartup, meshPipeline_from_world);
         }
 
         // Load the mesh_bindings shader module here as it depends on runtime information about
@@ -1747,8 +1748,8 @@ pub fn collect_meshes_for_gpu_building(
     previous_input_buffer.ensure_nonempty();
 }
 
-impl FromWorld for MeshPipeline {
-    fn from_world(world: &mut World) -> Self {
+// impl FromWorld for MeshPipeline {
+    pub fn meshPipeline_from_world(world: &mut World) {
         let shader = load_embedded_asset!(world, "mesh.wgsl");
         let mut system_state: SystemState<(
             Res<RenderDevice>,
@@ -1763,46 +1764,48 @@ impl FromWorld for MeshPipeline {
         let clustered_forward_buffer_binding_type = render_device
             .get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
 
+        todo!("Build 1x1 image");
         // A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
-        let dummy_white_gpu_image = {
-            let image = Image::default();
-            let texture = render_device.create_texture(&image.texture_descriptor);
-            let sampler = match image.sampler {
-                ImageSampler::Default => (**default_sampler).clone(),
-                ImageSampler::Descriptor(ref descriptor) => {
-                    render_device.create_sampler(&descriptor.as_wgpu())
-                }
-            };
+        // let dummy_white_gpu_image = {
+        //     let image = Image::default();
+        //     let texture = render_device.create_texture(&image.texture_descriptor);
+        //     let sampler = match image.sampler {
+        //         ImageSampler::Default => (**default_sampler).clone(),
+        //         ImageSampler::Descriptor(ref descriptor) => {
+        //             render_device.create_sampler(&descriptor.as_wgpu())
+        //         }
+        //     };
 
-            if let Ok(format_size) = image.texture_descriptor.format.pixel_size() {
-                render_queue.write_texture(
-                    texture.as_image_copy(),
-                    image.data.as_ref().expect("Image was created without data"),
-                    TexelCopyBufferLayout {
-                        offset: 0,
-                        bytes_per_row: Some(image.width() * format_size as u32),
-                        rows_per_image: None,
-                    },
-                    image.texture_descriptor.size,
-                );
-            }
+        //     if let Ok(format_size) = image.texture_descriptor.format.pixel_size() {
+        //         render_queue.write_texture(
+        //             texture.as_image_copy(),
+        //             image.data.as_ref().expect("Image was created without data"),
+        //             TexelCopyBufferLayout {
+        //                 offset: 0,
+        //                 bytes_per_row: Some(image.width() * format_size as u32),
+        //                 rows_per_image: None,
+        //             },
+        //             image.texture_descriptor.size,
+        //         );
+        //     }
 
-            let texture_view = texture.create_view(&TextureViewDescriptor::default());
-            GpuImage {
-                texture,
-                texture_view,
-                texture_format: image.texture_descriptor.format,
-                sampler,
-                size: image.texture_descriptor.size,
-                mip_level_count: image.texture_descriptor.mip_level_count,
-            }
-        };
+        //     let texture_view = texture.create_view(&TextureViewDescriptor::default());
+        //     GpuImage {
+        //         texture,
+        //         texture_view,
+        //         texture_format: image.texture_descriptor.format,
+        //         sampler,
+        //         size: image.texture_descriptor.size,
+        //         mip_level_count: image.texture_descriptor.mip_level_count,
+        //     }
+        // };
+        let dummy_white_gpu_image : Handle<Image> = todo!();
 
-        MeshPipeline {
+        let res = MeshPipeline {
             view_layouts: view_layouts.clone(),
             clustered_forward_buffer_binding_type,
             dummy_white_gpu_image,
-            mesh_layouts: MeshLayouts::new(&render_device, &render_adapter),
+            mesh_layouts: MeshLayoutsBuilder::new(&render_device, &render_adapter),
             shader,
             per_object_buffer_batch_size: GpuArrayBuffer::<MeshUniform>::batch_size(&render_device),
             binding_arrays_are_usable: binding_arrays_are_usable(&render_device, &render_adapter),
@@ -1811,13 +1814,15 @@ impl FromWorld for MeshPipeline {
                 &render_adapter,
             ),
             skins_use_uniform_buffers: skins_use_uniform_buffers(&render_device),
-        }
-    }
-}
+        };
 
-impl MeshPipeline {
+        world.insert_resource(res);
+    }
+// }
+
+// impl MeshPipeline {
     pub fn get_image_texture<'a>(
-        &'a self,
+        sel: &'a MeshPipeline,
         gpu_images: &'a RenderAssets<GpuImage>,
         handle_option: &Option<Handle<Image>>,
     ) -> Option<(&'a TextureView, &'a Sampler)> {
@@ -1825,20 +1830,21 @@ impl MeshPipeline {
             let gpu_image = gpu_images.get(handle)?;
             Some((&gpu_image.texture_view, &gpu_image.sampler))
         } else {
-            Some((
-                &self.dummy_white_gpu_image.texture_view,
-                &self.dummy_white_gpu_image.sampler,
-            ))
+            todo!("Figure this out");
+            // Some((
+            //     &sel.dummy_white_gpu_image.texture_view,
+            //     &sel.dummy_white_gpu_image.sampler,
+            // ))
         }
     }
 
     pub fn get_view_layout(
-        &self,
+        sel: &MeshPipeline,
         layout_key: MeshPipelineViewLayoutKey,
     ) -> &MeshPipelineViewLayout {
-        self.view_layouts.get_view_layout(layout_key)
+        sel.view_layouts.get_view_layout(layout_key)
     }
-}
+// }
 
 impl GetBatchData for MeshPipeline {
     type Param = (
@@ -2131,7 +2137,7 @@ impl SpecializedMeshPipeline for MeshPipeline {
             shader_defs.push("PBR_SPECULAR_TEXTURES_SUPPORTED".into());
         }
 
-        let bind_group_layout = self.get_view_layout(key.into());
+        let bind_group_layout = get_view_layout(self, key.into());
         let mut bind_group_layout = vec![
             bind_group_layout.main_layout.clone(),
             bind_group_layout.binding_array_layout.clone(),

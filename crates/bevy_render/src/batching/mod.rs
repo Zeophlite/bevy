@@ -3,13 +3,14 @@ use bevy_ecs::{
     entity::Entity,
     system::{ResMut, SystemParam, SystemParamItem},
 };
+use bevy_material::render_phase::DrawFunctionId;
 use bytemuck::Pod;
 use gpu_preprocessing::UntypedPhaseIndirectParametersBuffers;
 use nonmax::NonMaxU32;
 
 use crate::{
     render_phase::{
-        BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId, PhaseItemExtraIndex,
+        BinnedPhaseItem, CachedRenderPipelinePhaseItem, PhaseItemExtraIndex,
         SortedPhaseItem, SortedRenderPhase, ViewBinnedRenderPhases,
     },
     render_resource::{CachedRenderPipelineId, GpuArrayBufferable},

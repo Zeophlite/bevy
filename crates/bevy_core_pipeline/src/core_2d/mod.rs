@@ -36,6 +36,7 @@ use core::ops::Range;
 use bevy_asset::UntypedAssetId;
 use bevy_camera::{Camera, Camera2d};
 use bevy_image::ToExtents;
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingMode,
@@ -58,7 +59,7 @@ use bevy_render::{
     extract_component::ExtractComponentPlugin,
     render_graph::{EmptyNode, RenderGraphExt, ViewNodeRunner},
     render_phase::{
-        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId,
+        sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem,
         DrawFunctions, PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
         ViewSortedRenderPhases,
     },

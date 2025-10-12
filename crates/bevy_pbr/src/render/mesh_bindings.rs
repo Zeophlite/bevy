@@ -1,5 +1,6 @@
 //! Bind group layout related definitions for the mesh pipeline.
 
+use bevy_material::render::MeshLayouts;
 use bevy_math::Mat4;
 use bevy_mesh::morph::MAX_MORPH_WEIGHTS;
 use bevy_render::{
@@ -160,11 +161,146 @@ mod entry {
     }
 }
 
-impl MeshLayouts {
+pub trait MeshLayoutsBuilder {
+    fn new(render_device: &RenderDevice, render_adapter: &RenderAdapter) -> Self;
+
+    // ---------- create individual BindGroupLayouts ----------
+
+    fn model_only_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    /// Creates the layout for skinned meshes.
+    fn skinned_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    /// Creates the layout for skinned meshes with the infrastructure to compute
+    /// motion vectors.
+    fn skinned_motion_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    /// Creates the layout for meshes with morph targets.
+    fn morphed_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    /// Creates the layout for meshes with morph targets and the infrastructure
+    /// to compute motion vectors.
+    fn morphed_motion_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    /// Creates the bind group layout for meshes with both skins and morph
+    /// targets.
+    fn morphed_skinned_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    /// Creates the bind group layout for meshes with both skins and morph
+    /// targets, in addition to the infrastructure to compute motion vectors.
+    fn morphed_skinned_motion_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
+
+    fn lightmapped_layout(
+        render_device: &RenderDevice,
+        render_adapter: &RenderAdapter,
+    ) -> BindGroupLayoutDescriptor;
+
+    // ---------- BindGroup methods ----------
+
+    fn model_only(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+    ) -> BindGroup;
+
+    fn lightmapped(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        lightmap_slab: &LightmapSlab,
+        bindless_lightmaps: bool,
+    ) -> BindGroup;
+
+    /// Creates the bind group for skinned meshes with no morph targets.
+    fn skinned(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+    ) -> BindGroup;
+
+    /// Creates the bind group for skinned meshes with no morph targets, with
+    /// the infrastructure to compute motion vectors.
+    ///
+    /// `current_skin` is the buffer of joint matrices for this frame;
+    /// `prev_skin` is the buffer for the previous frame. The latter is used for
+    /// motion vector computation. If there is no such applicable buffer,
+    /// `current_skin` and `prev_skin` will reference the same buffer.
+    fn skinned_motion(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+        prev_skin: &Buffer,
+    ) -> BindGroup;
+
+    /// Creates the bind group for meshes with no skins but morph targets.
+    fn morphed(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_weights: &Buffer,
+        targets: &TextureView,
+    ) -> BindGroup;
+
+    /// Creates the bind group for meshes with no skins but morph targets, in
+    /// addition to the infrastructure to compute motion vectors.
+    ///
+    /// `current_weights` is the buffer of morph weights for this frame;
+    /// `prev_weights` is the buffer for the previous frame. The latter is used
+    /// for motion vector computation. If there is no such applicable buffer,
+    /// `current_weights` and `prev_weights` will reference the same buffer.
+    fn morphed_motion(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_weights: &Buffer,
+        targets: &TextureView,
+        prev_weights: &Buffer,
+    ) -> BindGroup;
+
+    /// Creates the bind group for meshes with skins and morph targets.
+    fn morphed_skinned(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+        current_weights: &Buffer,
+        targets: &TextureView,
+    ) -> BindGroup;
+
+    /// Creates the bind group for meshes with skins and morph targets, in
+    /// addition to the infrastructure to compute motion vectors.
+    ///
+    /// See the documentation for [`MeshLayouts::skinned_motion`] and
+    /// [`MeshLayouts::morphed_motion`] above for more information about the
+    /// `current_skin`, `prev_skin`, `current_weights`, and `prev_weights`
+    /// buffers.
+    fn morphed_skinned_motion(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+        current_weights: &Buffer,
+        targets: &TextureView,
+        prev_skin: &Buffer,
+        prev_weights: &Buffer,
+    ) -> BindGroup;
+}
+
+impl MeshLayoutsBuilder for MeshLayouts {
     /// Prepare the layouts used by the default bevy [`Mesh`].
     ///
     /// [`Mesh`]: bevy_mesh::Mesh
-    pub fn new(render_device: &RenderDevice, render_adapter: &RenderAdapter) -> Self {
+    fn new(render_device: &RenderDevice, render_adapter: &RenderAdapter) -> Self {
         MeshLayouts {
             model_only: Self::model_only_layout(render_device),
             lightmapped: Self::lightmapped_layout(render_device, render_adapter),
@@ -332,7 +468,7 @@ impl MeshLayouts {
 
     // ---------- BindGroup methods ----------
 
-    pub fn model_only(
+    fn model_only(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -345,7 +481,7 @@ impl MeshLayouts {
         )
     }
 
-    pub fn lightmapped(
+    fn lightmapped(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -379,7 +515,7 @@ impl MeshLayouts {
     }
 
     /// Creates the bind group for skinned meshes with no morph targets.
-    pub fn skinned(
+    fn skinned(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -403,7 +539,7 @@ impl MeshLayouts {
     /// `prev_skin` is the buffer for the previous frame. The latter is used for
     /// motion vector computation. If there is no such applicable buffer,
     /// `current_skin` and `prev_skin` will reference the same buffer.
-    pub fn skinned_motion(
+    fn skinned_motion(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -423,7 +559,7 @@ impl MeshLayouts {
     }
 
     /// Creates the bind group for meshes with no skins but morph targets.
-    pub fn morphed(
+    fn morphed(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -449,7 +585,7 @@ impl MeshLayouts {
     /// `prev_weights` is the buffer for the previous frame. The latter is used
     /// for motion vector computation. If there is no such applicable buffer,
     /// `current_weights` and `prev_weights` will reference the same buffer.
-    pub fn morphed_motion(
+    fn morphed_motion(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -471,7 +607,7 @@ impl MeshLayouts {
     }
 
     /// Creates the bind group for meshes with skins and morph targets.
-    pub fn morphed_skinned(
+    fn morphed_skinned(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,
@@ -499,7 +635,7 @@ impl MeshLayouts {
     /// [`MeshLayouts::morphed_motion`] above for more information about the
     /// `current_skin`, `prev_skin`, `current_weights`, and `prev_weights`
     /// buffers.
-    pub fn morphed_skinned_motion(
+    fn morphed_skinned_motion(
         &self,
         render_device: &RenderDevice,
         pipeline_cache: &PipelineCache,

@@ -1,4 +1,5 @@
 use bevy_core_pipeline::prepass::ViewPrepassTextures;
+use bevy_material::render::MeshPipelineViewLayoutKey;
 use bevy_render::render_resource::{
     binding_types::{
         texture_2d, texture_2d_multisampled, texture_depth_2d, texture_depth_2d_multisampled,
@@ -7,8 +8,6 @@ use bevy_render::render_resource::{
     TextureViewDescriptor,
 };
 use bevy_utils::default;
-
-use crate::MeshPipelineViewLayoutKey;
 
 pub fn get_bind_group_layout_entries(
     layout_key: MeshPipelineViewLayoutKey,

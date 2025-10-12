@@ -28,6 +28,9 @@ use bevy_light::{
     Cascades, DirectionalLight, DirectionalLightShadowMap, NotShadowCaster, PointLight,
     PointLightShadowMap, ShadowFilteringMethod, SpotLight, VolumetricLight,
 };
+use bevy_material::material::ErasedMaterialPipelineKey;
+use bevy_material::render::MeshPipelineKey;
+use bevy_material::render_phase::DrawFunctionId;
 use bevy_math::{ops, Mat4, UVec4, Vec3, Vec3Swizzles, Vec4, Vec4Swizzles};
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_platform::hash::FixedHasher;

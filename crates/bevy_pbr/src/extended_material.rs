@@ -2,7 +2,7 @@ use alloc::borrow::Cow;
 
 use bevy_asset::Asset;
 use bevy_ecs::system::SystemParamItem;
-use bevy_material::alpha::AlphaMode;
+use bevy_material::{alpha::AlphaMode, material::MaterialPipeline, render::{MeshPipeline, MeshPipelineKey}};
 use bevy_mesh::MeshVertexBufferLayoutRef;
 use bevy_platform::{collections::HashSet, hash::FixedHasher};
 use bevy_reflect::{impl_type_path, Reflect};
@@ -16,7 +16,7 @@ use bevy_render::{
 };
 use bevy_shader::ShaderRef;
 
-use crate::{Material, MaterialPipeline, MaterialPipelineKey, MeshPipeline, MeshPipelineKey};
+use crate::{Material, MaterialPipelineKey};
 
 pub struct MaterialExtensionPipeline {
     pub mesh_pipeline: MeshPipeline,
