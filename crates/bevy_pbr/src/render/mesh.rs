@@ -1,4 +1,4 @@
-use crate::{material_bind_groups::MaterialBindGroupIndex, MaterialBindGroupSlot, skin::skin_uniforms_from_world};
+use crate::{material_bind_groups::MaterialBindGroupIndex, MaterialBindGroupSlot, render::mesh_bindings::MeshLayoutsBuilders as _, skin::skin_uniforms_from_world};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId};
 use bevy_camera::{
     primitives::Aabb,
