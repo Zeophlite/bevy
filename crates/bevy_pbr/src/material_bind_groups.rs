@@ -11,6 +11,7 @@ use bevy_ecs::{
     system::{Commands, Res},
 };
 use bevy_platform::collections::{HashMap, HashSet};
+pub use bevy_render::mesh::material_bind_group::*;
 use bevy_render::render_resource::{BindlessSlabResourceLimit, PipelineCache};
 use bevy_render::{
     render_resource::{
@@ -30,7 +31,6 @@ use bytemuck::Pod;
 use core::hash::Hash;
 use core::{cmp::Ordering, iter, mem, ops::Range};
 use tracing::{error, trace};
-pub use bevy_render::mesh::material_bind_group::*;
 
 #[derive(Resource, Deref, DerefMut, Default)]
 pub struct MaterialBindGroupAllocators(TypeIdMap<MaterialBindGroupAllocator>);

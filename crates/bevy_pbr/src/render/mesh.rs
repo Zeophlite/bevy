@@ -1,5 +1,4 @@
 use crate::{render::mesh_bindings::MeshLayoutsBuilders as _, skin::skin_uniforms_from_world};
-pub use bevy_render::mesh::render::*;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId};
 use bevy_camera::{
     primitives::Aabb,
@@ -26,6 +25,7 @@ use bevy_light::{
 use bevy_math::{Affine3, UVec2, Vec3, Vec4};
 use bevy_mesh::{skinning::SkinnedMesh, Mesh, Mesh3d, MeshTag};
 use bevy_platform::collections::{hash_map::Entry, HashMap};
+pub use bevy_render::mesh::render::*;
 use bevy_render::{
     batching::{
         gpu_preprocessing::{
@@ -44,8 +44,7 @@ use bevy_render::{
     renderer::{RenderAdapter, RenderDevice},
     sync_world::MainEntityHashSet,
     view::{
-        self, NoIndirectDrawing, RenderVisibilityRanges, RetainedViewEntity,
-        ViewUniformOffset,
+        self, NoIndirectDrawing, RenderVisibilityRanges, RetainedViewEntity, ViewUniformOffset,
     },
     Extract,
 };
@@ -78,10 +77,10 @@ use bevy_render::sync_world::{MainEntity, MainEntityHashMap};
 use bevy_render::view::ExtractedView;
 use bevy_render::RenderSystems::PrepareAssets;
 
+pub use bevy_material::render::*;
 use bytemuck::{Pod, Zeroable};
 use nonmax::NonMaxU32;
 use smallvec::{smallvec, SmallVec};
-pub use bevy_material::render::*;
 
 /// Provides support for rendering 3D meshes.
 pub struct MeshRenderPlugin {
@@ -1253,9 +1252,7 @@ pub fn collect_meshes_for_gpu_building(
     previous_input_buffer.ensure_nonempty();
 }
 
-fn init_mesh_pipeline(
-    world: &mut World,
-) {
+fn init_mesh_pipeline(world: &mut World) {
     let shader = load_embedded_asset!(world, "mesh.wgsl");
     let mut system_state: SystemState<(
         Res<RenderDevice>,
@@ -1263,11 +1260,10 @@ fn init_mesh_pipeline(
         Res<MeshPipelineViewLayouts>,
         ResMut<Assets<Image>>,
     )> = SystemState::new(world);
-    let (render_device, render_adapter, view_layouts, mut images) =
-        system_state.get_mut(world);
+    let (render_device, render_adapter, view_layouts, mut images) = system_state.get_mut(world);
 
-    let clustered_forward_buffer_binding_type = render_device
-        .get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
+    let clustered_forward_buffer_binding_type =
+        render_device.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
 
     // A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
     let image = Image::default();

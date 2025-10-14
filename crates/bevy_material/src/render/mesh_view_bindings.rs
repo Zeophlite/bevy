@@ -1,11 +1,7 @@
+use crate::{render::MeshPipelineKey, render_resource::*};
 use alloc::sync::Arc;
 use bevy_derive::{Deref, DerefMut};
-use bevy_ecs::{
-    resource::Resource,
-};
-use crate::{
-    render::MeshPipelineKey, render_resource::*
-};
+use bevy_ecs::resource::Resource;
 
 #[cfg(debug_assertions)]
 use {crate::render::MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES, bevy_utils::once, tracing::warn};
@@ -135,4 +131,3 @@ impl MeshPipelineViewLayouts {
         layout
     }
 }
-

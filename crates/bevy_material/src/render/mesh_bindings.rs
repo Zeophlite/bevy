@@ -1,6 +1,4 @@
-
 use crate::render_resource::BindGroupLayoutDescriptor;
-
 
 /// All possible [`BindGroupLayout`]s in bevy's default mesh shader (`mesh.wgsl`).
 #[derive(Clone)]

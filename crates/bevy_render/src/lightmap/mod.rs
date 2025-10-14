@@ -14,6 +14,7 @@ use bevy_image::Image;
 use bevy_math::{uvec2, vec4, Rect, UVec2};
 use bevy_platform::collections::HashSet;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
+use bevy_render::sync_world::MainEntityHashMap;
 use bevy_render::{
     render_asset::RenderAssets,
     render_resource::{Sampler, TextureView, WgpuSampler, WgpuTextureView},
@@ -21,7 +22,6 @@ use bevy_render::{
     texture::{FallbackImage, GpuImage},
     Extract,
 };
-use bevy_render::sync_world::MainEntityHashMap;
 use fixedbitset::FixedBitSet;
 use nonmax::{NonMaxU16, NonMaxU32};
 use tracing::error;

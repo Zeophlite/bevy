@@ -18,10 +18,8 @@ use nonmax::{NonMaxU16, NonMaxU32};
 use crate::{
     lightmap::{pack_lightmap_uv_rect, LightmapSlabIndex, LightmapSlotIndex},
     mesh::material_bind_group::{MaterialBindGroupSlot, MaterialBindingId},
-    render_phase::InputUniformIndex
+    render_phase::InputUniformIndex,
 };
-
-
 
 #[derive(Component)]
 pub struct MeshTransforms {
@@ -288,7 +286,6 @@ pub struct RenderMeshInstanceGpu {
 #[derive(Component, PartialEq, Default)]
 pub struct PreviousGlobalTransform(pub Affine3A);
 
-
 /// CPU data that the render world needs to keep about each entity that contains
 /// a mesh.
 pub struct RenderMeshInstanceShared {
@@ -425,7 +422,11 @@ impl RenderMeshInstances {
 
     /// Inserts the given flags into the CPU or GPU render mesh instance data
     /// for the given mesh as appropriate.
-    pub fn insert_mesh_instance_flags(&mut self, entity: MainEntity, flags: RenderMeshInstanceFlags) {
+    pub fn insert_mesh_instance_flags(
+        &mut self,
+        entity: MainEntity,
+        flags: RenderMeshInstanceFlags,
+    ) {
         match *self {
             RenderMeshInstances::CpuBuilding(ref mut instances) => {
                 instances.insert_mesh_instance_flags(entity, flags);

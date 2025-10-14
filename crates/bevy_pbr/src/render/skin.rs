@@ -7,6 +7,7 @@ use bevy_ecs::prelude::*;
 use bevy_math::Mat4;
 use bevy_mesh::skinning::{SkinnedMesh, SkinnedMeshInverseBindposes};
 use bevy_platform::collections::hash_map::Entry;
+pub use bevy_render::mesh::skin::*;
 use bevy_render::render_resource::BufferDescriptor;
 use bevy_render::settings::WgpuLimits;
 use bevy_render::sync_world::{MainEntity, MainEntityHashMap, MainEntityHashSet};
@@ -19,7 +20,6 @@ use bevy_render::{
 use bevy_transform::prelude::GlobalTransform;
 use offset_allocator::Allocator;
 use tracing::error;
-pub use bevy_render::mesh::skin::*;
 
 pub fn skin_uniforms_from_world(world: &mut World) {
     let device = world.resource::<RenderDevice>();

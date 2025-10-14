@@ -2,8 +2,12 @@ use crate::alpha::AlphaMode;
 use crate::opaque::OpaqueRendererMethod;
 use crate::render::MeshPipeline;
 use crate::render::MeshPipelineKey;
-use crate::render_phase::{DrawFunctionId, DrawFunctionLabel, InternedDrawFunctionLabel, InternedShaderLabel, ShaderLabel};
-use crate::render_resource::{BindGroupLayoutDescriptor, RenderPipelineDescriptor, SpecializedMeshPipelineError};
+use crate::render_phase::{
+    DrawFunctionId, DrawFunctionLabel, InternedDrawFunctionLabel, InternedShaderLabel, ShaderLabel,
+};
+use crate::render_resource::{
+    BindGroupLayoutDescriptor, RenderPipelineDescriptor, SpecializedMeshPipelineError,
+};
 use crate::*;
 use alloc::sync::Arc;
 use bevy_asset::Handle;
@@ -11,10 +15,10 @@ use bevy_ecs::resource::Resource;
 use bevy_mesh::MeshVertexBufferLayoutRef;
 use bevy_platform::hash::FixedHasher;
 use bevy_shader::Shader;
-use smallvec::SmallVec;
 use core::any::{Any, TypeId};
-use core::hash::{BuildHasher, Hasher};
 use core::hash::Hash;
+use core::hash::{BuildHasher, Hasher};
+use smallvec::SmallVec;
 
 pub const MATERIAL_BIND_GROUP_INDEX: usize = 3;
 
@@ -197,4 +201,3 @@ pub enum RenderPhaseType {
     Transmissive,
     Transparent,
 }
-
