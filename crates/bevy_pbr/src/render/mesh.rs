@@ -18,7 +18,7 @@ use bevy_ecs::{
     query::{QueryData, ROQueryItem},
     system::{lifetimeless::*, SystemParamItem, SystemState},
 };
-use bevy_image::{BevyDefault, ImageSampler, TextureFormatPixelInfo};
+use bevy_image::{BevyDefault, TextureFormatPixelInfo};
 use bevy_light::{
     EnvironmentMapLight, IrradianceVolume, NotShadowCaster, NotShadowReceiver,
     ShadowFilteringMethod, TransmittedShadowReceiver,
@@ -47,7 +47,7 @@ use bevy_render::{
     render_resource::*,
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
     sync_world::MainEntityHashSet,
-    texture::{DefaultImageSampler, GpuImage},
+    texture::GpuImage,
     view::{
         self, NoIndirectDrawing, RenderVisibilityRanges, RetainedViewEntity, ViewTarget,
         ViewUniformOffset,
@@ -1784,7 +1784,9 @@ pub struct MeshPipeline {
     pub skins_use_uniform_buffers: bool,
 }
 
-fn init_mesh_pipeline(world: &mut World) {
+fn init_mesh_pipeline(
+    world: &mut World,
+) {
     let shader = load_embedded_asset!(world, "mesh.wgsl");
     let mut system_state: SystemState<(
         Res<RenderDevice>,
