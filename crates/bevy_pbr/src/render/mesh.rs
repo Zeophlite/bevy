@@ -270,8 +270,8 @@ impl Plugin for MeshRenderPlugin {
             }
 
             render_app
-                .init_resource::<MeshPipelineViewLayouts>()
-                .init_resource::<MeshPipeline>();
+                .add_systems(RenderStartup, init_mesh_pipeline_view_layouts)
+                .add_systems(RenderStartup, init_mesh_pipeline);
         }
 
         // Load the mesh_bindings shader module here as it depends on runtime information about
@@ -1786,74 +1786,74 @@ pub struct MeshPipeline {
     pub skins_use_uniform_buffers: bool,
 }
 
-impl FromWorld for MeshPipeline {
-    fn from_world(world: &mut World) -> Self {
-        let shader = load_embedded_asset!(world, "mesh.wgsl");
-        let mut system_state: SystemState<(
-            Res<RenderDevice>,
-            Res<RenderAdapter>,
-            Res<DefaultImageSampler>,
-            Res<RenderQueue>,
-            Res<MeshPipelineViewLayouts>,
-        )> = SystemState::new(world);
-        let (render_device, render_adapter, default_sampler, render_queue, view_layouts) =
-            system_state.get_mut(world);
+fn init_mesh_pipeline(world: &mut World) {
+    let shader = load_embedded_asset!(world, "mesh.wgsl");
+    let mut system_state: SystemState<(
+        Res<RenderDevice>,
+        Res<RenderAdapter>,
+        Res<DefaultImageSampler>,
+        Res<RenderQueue>,
+        Res<MeshPipelineViewLayouts>,
+    )> = SystemState::new(world);
+    let (render_device, render_adapter, default_sampler, render_queue, view_layouts) =
+        system_state.get_mut(world);
 
-        let clustered_forward_buffer_binding_type = render_device
-            .get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
+    let clustered_forward_buffer_binding_type = render_device
+        .get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
 
-        // A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
-        let dummy_white_gpu_image = {
-            let image = Image::default();
-            let texture = render_device.create_texture(&image.texture_descriptor);
-            let sampler = match image.sampler {
-                ImageSampler::Default => (**default_sampler).clone(),
-                ImageSampler::Descriptor(ref descriptor) => {
-                    render_device.create_sampler(&descriptor.as_wgpu())
-                }
-            };
-
-            if let Ok(format_size) = image.texture_descriptor.format.pixel_size() {
-                render_queue.write_texture(
-                    texture.as_image_copy(),
-                    image.data.as_ref().expect("Image was created without data"),
-                    TexelCopyBufferLayout {
-                        offset: 0,
-                        bytes_per_row: Some(image.width() * format_size as u32),
-                        rows_per_image: None,
-                    },
-                    image.texture_descriptor.size,
-                );
-            }
-
-            let texture_view = texture.create_view(&TextureViewDescriptor::default());
-            GpuImage {
-                texture,
-                texture_view,
-                texture_format: image.texture_descriptor.format,
-                sampler,
-                size: image.texture_descriptor.size,
-                mip_level_count: image.texture_descriptor.mip_level_count,
+    // A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
+    let dummy_white_gpu_image = {
+        let image = Image::default();
+        let texture = render_device.create_texture(&image.texture_descriptor);
+        let sampler = match image.sampler {
+            ImageSampler::Default => (**default_sampler).clone(),
+            ImageSampler::Descriptor(ref descriptor) => {
+                render_device.create_sampler(&descriptor.as_wgpu())
             }
         };
 
-        MeshPipeline {
-            view_layouts: view_layouts.clone(),
-            clustered_forward_buffer_binding_type,
-            dummy_white_gpu_image,
-            mesh_layouts: MeshLayouts::new(&render_device, &render_adapter),
-            shader,
-            per_object_buffer_batch_size: GpuArrayBuffer::<MeshUniform>::batch_size(
-                &render_device.limits(),
-            ),
-            binding_arrays_are_usable: binding_arrays_are_usable(&render_device, &render_adapter),
-            clustered_decals_are_usable: decal::clustered::clustered_decals_are_usable(
-                &render_device,
-                &render_adapter,
-            ),
-            skins_use_uniform_buffers: skins_use_uniform_buffers(&render_device.limits()),
+        if let Ok(format_size) = image.texture_descriptor.format.pixel_size() {
+            render_queue.write_texture(
+                texture.as_image_copy(),
+                image.data.as_ref().expect("Image was created without data"),
+                TexelCopyBufferLayout {
+                    offset: 0,
+                    bytes_per_row: Some(image.width() * format_size as u32),
+                    rows_per_image: None,
+                },
+                image.texture_descriptor.size,
+            );
         }
-    }
+
+        let texture_view = texture.create_view(&TextureViewDescriptor::default());
+        GpuImage {
+            texture,
+            texture_view,
+            texture_format: image.texture_descriptor.format,
+            sampler,
+            size: image.texture_descriptor.size,
+            mip_level_count: image.texture_descriptor.mip_level_count,
+        }
+    };
+
+    let res = MeshPipeline {
+        view_layouts: view_layouts.clone(),
+        clustered_forward_buffer_binding_type,
+        dummy_white_gpu_image,
+        mesh_layouts: MeshLayouts::new(&render_device, &render_adapter),
+        shader,
+        per_object_buffer_batch_size: GpuArrayBuffer::<MeshUniform>::batch_size(
+            &render_device.limits(),
+        ),
+        binding_arrays_are_usable: binding_arrays_are_usable(&render_device, &render_adapter),
+        clustered_decals_are_usable: decal::clustered::clustered_decals_are_usable(
+            &render_device,
+            &render_adapter,
+        ),
+        skins_use_uniform_buffers: skins_use_uniform_buffers(&render_device.limits()),
+    };
+
+    world.insert_resource(res);
 }
 
 impl MeshPipeline {
