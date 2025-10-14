@@ -50,7 +50,9 @@ use bevy_utils::prelude::default;
 use bitflags::bitflags;
 
 use crate::{
-    mesh_pipeline_view_layout_key_from_msaa, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts, MeshViewBindGroup, ViewEnvironmentMapUniformOffset, ViewFogUniformOffset, ViewLightProbesUniformOffset, ViewLightsUniformOffset, ViewScreenSpaceReflectionsUniformOffset
+    mesh_pipeline_view_layout_key_from_msaa, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts,
+    MeshViewBindGroup, ViewEnvironmentMapUniformOffset, ViewFogUniformOffset,
+    ViewLightProbesUniformOffset, ViewLightsUniformOffset, ViewScreenSpaceReflectionsUniformOffset,
 };
 
 use super::FogAssets;

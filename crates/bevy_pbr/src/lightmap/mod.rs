@@ -36,11 +36,8 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Res},
 };
-use bevy_render::{
-    renderer::RenderAdapter,
-    ExtractSchedule, RenderApp, RenderStartup,
-};
 use bevy_render::renderer::RenderDevice;
+use bevy_render::{renderer::RenderAdapter, ExtractSchedule, RenderApp, RenderStartup};
 use bevy_shader::load_shader_library;
 use bevy_utils::default;
 use fixedbitset::FixedBitSet;
@@ -51,7 +48,6 @@ use crate::{binding_arrays_are_usable, MeshExtractionSystems};
 
 /// A plugin that provides an implementation of lightmaps.
 pub struct LightmapPlugin;
-
 
 impl Plugin for LightmapPlugin {
     fn build(&self, app: &mut App) {

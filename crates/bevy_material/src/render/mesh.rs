@@ -1,11 +1,15 @@
+use crate::{
+    render::{
+        MeshLayouts, MeshPipelineViewLayout, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts,
+    },
+    render_resource::*,
+};
 use bevy_asset::Handle;
 use bevy_ecs::resource::Resource;
 use bevy_mesh::BaseMeshPipelineKey;
 use bevy_shader::Shader;
-use crate::{render::{MeshLayouts, MeshPipelineViewLayout, MeshPipelineViewLayoutKey, MeshPipelineViewLayouts}, render_resource::*};
 
 use static_assertions::const_assert_eq;
-
 
 /// How many textures are allowed in the view bind group layout (`@group(0)`) before
 /// broader compatibility with WebGL and WebGPU is at risk, due to the minimum guaranteed
@@ -17,7 +21,6 @@ use static_assertions::const_assert_eq;
 /// See: <https://gpuweb.github.io/gpuweb/#limits>
 #[cfg(debug_assertions)]
 pub const MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES: usize = 10;
-
 
 /// All data needed to construct a pipeline for rendering 3D meshes.
 #[derive(Resource, Clone)]
@@ -223,4 +226,3 @@ const_assert_eq!(
         & MeshPipelineKey::ALL_RESERVED_BITS.bits(),
     0
 );
-

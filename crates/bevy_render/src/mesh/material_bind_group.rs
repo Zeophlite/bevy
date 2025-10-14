@@ -50,4 +50,3 @@ impl From<MaterialBindGroupSlot> for u32 {
         value.0
     }
 }
-

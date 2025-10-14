@@ -4,17 +4,13 @@ use bevy_ecs::{
     system::{lifetimeless::*, SystemParamItem},
 };
 use bevy_image::BevyDefault;
-use bevy_mesh::{
-    Mesh, MeshVertexBufferLayoutRef, VertexAttributeDescriptor,
-};
+use bevy_mesh::{Mesh, MeshVertexBufferLayoutRef, VertexAttributeDescriptor};
 use bevy_render::{
     batching::{
-        gpu_preprocessing::{
-            IndirectParametersCpuMetadata, UntypedPhaseIndirectParametersBuffers,
-        },
+        gpu_preprocessing::{IndirectParametersCpuMetadata, UntypedPhaseIndirectParametersBuffers},
         GetBatchData, GetFullBatchData,
     },
-    mesh::{allocator::MeshAllocator, RenderMesh,},
+    mesh::{allocator::MeshAllocator, RenderMesh},
     render_asset::RenderAssets,
     render_resource::*,
     view::ViewTarget,
@@ -25,12 +21,21 @@ use tracing::error;
 
 use bevy_render::sync_world::MainEntity;
 
-use nonmax::NonMaxU32;
 pub use bevy_material::render::*;
+use nonmax::NonMaxU32;
 
-use crate::{lightmap::{LightmapSlabIndex, RenderLightmaps}, mesh::{material_bind_group::MaterialBindGroupIndex, render::{MeshInputUniform, MeshUniform, RenderMeshInstances}, skin::SkinUniforms, util::{CORE_3D_DEPTH_FORMAT, IRRADIANCE_VOLUMES_ARE_USABLE, TONEMAPPING_LUT_SAMPLER_BINDING_INDEX, TONEMAPPING_LUT_TEXTURE_BINDING_INDEX}}};
-
-
+use crate::{
+    lightmap::{LightmapSlabIndex, RenderLightmaps},
+    mesh::{
+        material_bind_group::MaterialBindGroupIndex,
+        render::{MeshInputUniform, MeshUniform, RenderMeshInstances},
+        skin::SkinUniforms,
+        util::{
+            CORE_3D_DEPTH_FORMAT, IRRADIANCE_VOLUMES_ARE_USABLE,
+            TONEMAPPING_LUT_SAMPLER_BINDING_INDEX, TONEMAPPING_LUT_TEXTURE_BINDING_INDEX,
+        },
+    },
+};
 
 impl GetBatchData for MeshPipeline {
     type Param = (
@@ -197,7 +202,6 @@ impl GetFullBatchData for MeshPipeline {
         }
     }
 }
-
 
 impl SpecializedMeshPipeline for MeshPipeline {
     type Key = MeshPipelineKey;
@@ -565,7 +569,6 @@ impl SpecializedMeshPipeline for MeshPipeline {
         })
     }
 }
-
 
 pub fn is_skinned(layout: &MeshVertexBufferLayoutRef) -> bool {
     layout.0.contains(Mesh::ATTRIBUTE_JOINT_INDEX)

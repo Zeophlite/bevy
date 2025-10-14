@@ -31,30 +31,22 @@ pub use texture::*;
 pub use uniform_buffer::*;
 
 // TODO: decide where re-exports should go
+pub use bevy_material::render_resource::*;
 pub use wgpu::{
     util::{
         BufferInitDescriptor, DispatchIndirectArgs, DrawIndexedIndirectArgs, DrawIndirectArgs,
         TextureDataOrder,
     },
-    BindGroupDescriptor, BindGroupEntry, BindingResource,
-    Blas, BlasBuildEntry, BlasGeometries,
-    BlasTriangleGeometry,
-    BufferAsyncError, BufferBinding,
-    CommandEncoder,
-    ComputePass, ComputePassDescriptor,
-    ComputePipelineDescriptor as RawComputePipelineDescriptor,
-    FragmentState as RawFragmentState,
-    MapMode,
-    PipelineCompilationOptions, PipelineLayout, PipelineLayoutDescriptor,
-    RenderPassColorAttachment, RenderPassDepthStencilAttachment, RenderPassDescriptor,
-    RenderPipelineDescriptor as RawRenderPipelineDescriptor, Sampler as WgpuSampler,
-    ShaderModule, ShaderModuleDescriptor, ShaderSource,
-    TextureDescriptor,
-    TextureView as WgpuTextureView,
-    Tlas, TlasInstance,
+    BindGroupDescriptor, BindGroupEntry, BindingResource, Blas, BlasBuildEntry, BlasGeometries,
+    BlasTriangleGeometry, BufferAsyncError, BufferBinding, CommandEncoder, ComputePass,
+    ComputePassDescriptor, ComputePipelineDescriptor as RawComputePipelineDescriptor,
+    FragmentState as RawFragmentState, MapMode, PipelineCompilationOptions, PipelineLayout,
+    PipelineLayoutDescriptor, RenderPassColorAttachment, RenderPassDepthStencilAttachment,
+    RenderPassDescriptor, RenderPipelineDescriptor as RawRenderPipelineDescriptor,
+    Sampler as WgpuSampler, ShaderModule, ShaderModuleDescriptor, ShaderSource, TextureDescriptor,
+    TextureView as WgpuTextureView, Tlas, TlasInstance,
     VertexBufferLayout as RawVertexBufferLayout, VertexState as RawVertexState,
 };
-pub use bevy_material::render_resource::*;
 
 pub mod encase {
     pub use bevy_encase_derive::ShaderType;

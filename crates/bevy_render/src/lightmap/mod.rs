@@ -14,6 +14,7 @@ use bevy_image::Image;
 use bevy_math::{uvec2, vec4, Rect, UVec2};
 use bevy_platform::collections::HashSet;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
+use bevy_render::sync_world::MainEntityHashMap;
 use bevy_render::{
     render_asset::RenderAssets,
     render_resource::{Sampler, TextureView, WgpuSampler, WgpuTextureView},
@@ -21,7 +22,6 @@ use bevy_render::{
     texture::{FallbackImage, GpuImage},
     Extract,
 };
-use bevy_render::sync_world::MainEntityHashMap;
 use fixedbitset::FixedBitSet;
 use nonmax::{NonMaxU16, NonMaxU32};
 use tracing::error;
@@ -35,11 +35,6 @@ pub const LIGHTMAPS_PER_SLAB: usize = 4;
 
 /// A component that applies baked indirect diffuse global illumination from a
 /// lightmap.
-///
-/// When assigned to an entity that contains a [`Mesh3d`](bevy_mesh::Mesh3d) and a
-/// [`MeshMaterial3d<StandardMaterial>`](crate::StandardMaterial), if the mesh
-/// has a second UV layer ([`ATTRIBUTE_UV_1`](bevy_mesh::Mesh::ATTRIBUTE_UV_1)),
-/// then the lightmap will render using those UVs.
 #[derive(Component, Clone, Reflect)]
 #[reflect(Component, Default, Clone)]
 pub struct Lightmap {

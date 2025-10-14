@@ -46,8 +46,7 @@ use bevy_render::{
     sync_world::MainEntityHashSet,
     texture::GpuImage,
     view::{
-        self, NoIndirectDrawing, RenderVisibilityRanges, RetainedViewEntity,
-        ViewUniformOffset,
+        self, NoIndirectDrawing, RenderVisibilityRanges, RetainedViewEntity, ViewUniformOffset,
     },
     Extract,
 };
@@ -80,10 +79,10 @@ use bevy_render::sync_world::{MainEntity, MainEntityHashMap};
 use bevy_render::view::ExtractedView;
 use bevy_render::RenderSystems::PrepareAssets;
 
+pub use bevy_material::render::*;
 use bytemuck::{Pod, Zeroable};
 use nonmax::NonMaxU32;
 use smallvec::{smallvec, SmallVec};
-pub use bevy_material::render::*;
 
 /// Provides support for rendering 3D meshes.
 pub struct MeshRenderPlugin {
@@ -267,7 +266,10 @@ impl Plugin for MeshRenderPlugin {
 
             render_app
                 .add_systems(RenderStartup, init_mesh_pipeline_view_layouts)
-                .add_systems(RenderStartup, init_mesh_pipeline);
+                .add_systems(
+                    RenderStartup,
+                    init_mesh_pipeline.after(init_mesh_pipeline_view_layouts),
+                );
         }
 
         // Load the mesh_bindings shader module here as it depends on runtime information about
@@ -617,6 +619,8 @@ impl RenderMeshInstanceGpuQueue {
 impl RenderMeshInstanceGpuBuilder {
     /// Flushes this mesh instance to the [`RenderMeshInstanceGpu`] and
     /// [`MeshInputUniform`] tables, replacing the existing entry if applicable.
+    ///
+    /// Provides the mesh instance id for [`RenderMeshInstanceShared::for_gpu_building`]
     fn update(
         mut self,
         entity: MainEntity,
@@ -1255,20 +1259,17 @@ pub fn collect_meshes_for_gpu_building(
     previous_input_buffer.ensure_nonempty();
 }
 
-fn init_mesh_pipeline(
-    world: &mut World,
-) {
+pub fn init_mesh_pipeline(world: &mut World) {
     let shader = load_embedded_asset!(world, "mesh.wgsl");
     let mut system_state: SystemState<(
         Res<RenderDevice>,
         Res<RenderAdapter>,
         Res<MeshPipelineViewLayouts>,
     )> = SystemState::new(world);
-    let (render_device, render_adapter, view_layouts) =
-        system_state.get_mut(world);
+    let (render_device, render_adapter, view_layouts) = system_state.get_mut(world);
 
-    let clustered_forward_buffer_binding_type = render_device
-        .get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
+    let clustered_forward_buffer_binding_type =
+        render_device.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
 
     let res = MeshPipeline {
         view_layouts: view_layouts.clone(),

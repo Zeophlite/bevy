@@ -171,16 +171,77 @@ pub trait MeshLayoutsBuilders {
     fn morphed_motion_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
     fn morphed_skinned_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
     fn morphed_skinned_motion_layout(render_device: &RenderDevice) -> BindGroupLayoutDescriptor;
-    fn lightmapped_layout(render_device: &RenderDevice, render_adapter: &RenderAdapter) -> BindGroupLayoutDescriptor;
+    fn lightmapped_layout(
+        render_device: &RenderDevice,
+        render_adapter: &RenderAdapter,
+    ) -> BindGroupLayoutDescriptor;
 
-    fn model_only(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource) -> BindGroup;
-    fn lightmapped(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, lightmap_slab: &LightmapSlab, bindless_lightmaps: bool) -> BindGroup;
-    fn skinned(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, current_skin: &Buffer) -> BindGroup;
-    fn skinned_motion(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, current_skin: &Buffer, prev_skin: &Buffer) -> BindGroup;
-    fn morphed(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, current_weights: &Buffer, targets: &TextureView) -> BindGroup;
-    fn morphed_motion(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, current_weights: &Buffer, targets: &TextureView, prev_weights: &Buffer) -> BindGroup;
-    fn morphed_skinned(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, current_skin: &Buffer, current_weights: &Buffer, targets: &TextureView) -> BindGroup;
-    fn morphed_skinned_motion(&self, render_device: &RenderDevice, pipeline_cache: &PipelineCache, model: &BindingResource, current_skin: &Buffer, current_weights: &Buffer, targets: &TextureView, prev_skin: &Buffer, prev_weights: &Buffer) -> BindGroup;
+    fn model_only(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+    ) -> BindGroup;
+    fn lightmapped(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        lightmap_slab: &LightmapSlab,
+        bindless_lightmaps: bool,
+    ) -> BindGroup;
+    fn skinned(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+    ) -> BindGroup;
+    fn skinned_motion(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+        prev_skin: &Buffer,
+    ) -> BindGroup;
+    fn morphed(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_weights: &Buffer,
+        targets: &TextureView,
+    ) -> BindGroup;
+    fn morphed_motion(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_weights: &Buffer,
+        targets: &TextureView,
+        prev_weights: &Buffer,
+    ) -> BindGroup;
+    fn morphed_skinned(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+        current_weights: &Buffer,
+        targets: &TextureView,
+    ) -> BindGroup;
+    fn morphed_skinned_motion(
+        &self,
+        render_device: &RenderDevice,
+        pipeline_cache: &PipelineCache,
+        model: &BindingResource,
+        current_skin: &Buffer,
+        current_weights: &Buffer,
+        targets: &TextureView,
+        prev_skin: &Buffer,
+        prev_weights: &Buffer,
+    ) -> BindGroup;
 }
 
 impl MeshLayoutsBuilders for MeshLayouts {
