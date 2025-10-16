@@ -6,6 +6,7 @@ pull_requests: [21543]
 TODO: This is just a commit log, need to clean up
 
 The following have moved:
+
 - initial bevy_material
 - Opaque move
 - Move ShaderLabel, DrawFunctionLabel, wgpu exports from render_resource, bind_group_layout_entries
