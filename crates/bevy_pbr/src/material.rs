@@ -72,6 +72,8 @@ pub use bevy_material::material::*;
 /// Materials must implement [`AsBindGroup`] to define how data will be transferred to the GPU and bound in shaders.
 /// [`AsBindGroup`] can be derived, which makes generating bindings straightforward. See the [`AsBindGroup`] docs for details.
 ///
+/// Doc refs [MaterialPipeline], [`MaterialProperties`]
+///
 /// # Example
 ///
 /// Here is a simple [`Material`] implementation. The [`AsBindGroup`] derive has many features. To see what else is available,
@@ -1152,6 +1154,8 @@ pub fn specialize_material_meshes(
 
 /// For each view, iterates over all the meshes visible from that view and adds
 /// them to [`BinnedRenderPhase`]s or [`SortedRenderPhase`]s as appropriate.
+///
+/// Uses data from [`RenderMeshQueueData`] in order to place entities that contain meshes in the right batch.
 pub fn queue_material_meshes(
     render_materials: Res<ErasedRenderAssets<PreparedMaterial>>,
     render_mesh_instances: Res<RenderMeshInstances>,

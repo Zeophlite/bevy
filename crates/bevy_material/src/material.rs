@@ -22,7 +22,7 @@ use smallvec::SmallVec;
 
 pub const MATERIAL_BIND_GROUP_INDEX: usize = 3;
 
-/// Render pipeline data for a given [`Material`].
+/// Render pipeline data for a given material.
 #[derive(Resource, Clone)]
 pub struct MaterialPipeline {
     pub mesh_pipeline: MeshPipeline,
@@ -114,7 +114,7 @@ impl Default for ErasedMaterialKey {
     }
 }
 
-/// Common [`Material`] properties, calculated for a specific material instance.
+/// Common material properties, calculated for a specific material instance.
 #[derive(Default)]
 pub struct MaterialProperties {
     /// Is this material should be rendered by the deferred renderer when.
@@ -124,17 +124,16 @@ pub struct MaterialProperties {
     pub alpha_mode: AlphaMode,
     /// The bits in the [`MeshPipelineKey`] for this material.
     ///
-    /// These are precalculated so that we can just "or" them together in
-    /// [`queue_material_meshes`].
+    /// These are precalculated so that we can just "or" them together.
     pub mesh_pipeline_key_bits: MeshPipelineKey,
     /// Add a bias to the view depth of the mesh which can be used to force a specific render order
     /// for meshes with equal depth, to avoid z-fighting.
     /// The bias is in depth-texture units so large values may be needed to overcome small depth differences.
     pub depth_bias: f32,
-    /// Whether the material would like to read from [`ViewTransmissionTexture`](bevy_core_pipeline::core_3d::ViewTransmissionTexture).
+    /// Whether the material would like to read from a view transmission texture
     ///
-    /// This allows taking color output from the [`Opaque3d`] pass as an input, (for screen-space transmission) but requires
-    /// rendering to take place in a separate [`Transmissive3d`] pass.
+    /// This allows taking color output from the opaque 3d pass as an input, (for screen-space transmission) but requires
+    /// rendering to take place in a separate transmissive 3d pass.
     pub reads_view_transmission_texture: bool,
     pub render_phase_type: RenderPhaseType,
     pub material_layout: Option<BindGroupLayoutDescriptor>,
