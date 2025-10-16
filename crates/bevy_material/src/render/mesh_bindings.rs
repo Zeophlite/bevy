@@ -1,6 +1,6 @@
 use crate::render_resource::BindGroupLayoutDescriptor;
 
-/// All possible [`BindGroupLayout`]s in bevy's default mesh shader (`mesh.wgsl`).
+/// All possible [`BindGroupLayoutDescriptor`]s in bevy's default mesh shader (`mesh.wgsl`).
 #[derive(Clone)]
 pub struct MeshLayouts {
     /// The mesh model uniform (transform) and nothing else.

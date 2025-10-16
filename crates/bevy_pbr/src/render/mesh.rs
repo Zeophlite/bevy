@@ -1252,7 +1252,7 @@ pub fn collect_meshes_for_gpu_building(
     previous_input_buffer.ensure_nonempty();
 }
 
-fn init_mesh_pipeline(world: &mut World) {
+pub fn init_mesh_pipeline(world: &mut World) {
     let shader = load_embedded_asset!(world, "mesh.wgsl");
     let mut system_state: SystemState<(
         Res<RenderDevice>,
