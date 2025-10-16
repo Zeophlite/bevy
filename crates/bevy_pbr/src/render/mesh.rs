@@ -264,7 +264,10 @@ impl Plugin for MeshRenderPlugin {
 
             render_app
                 .add_systems(RenderStartup, init_mesh_pipeline_view_layouts)
-                .add_systems(RenderStartup, init_mesh_pipeline);
+                .add_systems(
+                    RenderStartup,
+                    init_mesh_pipeline.after(init_mesh_pipeline_view_layouts),
+                );
         }
 
         // Load the mesh_bindings shader module here as it depends on runtime information about
