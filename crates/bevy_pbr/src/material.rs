@@ -72,7 +72,7 @@ pub use bevy_material::material::*;
 /// Materials must implement [`AsBindGroup`] to define how data will be transferred to the GPU and bound in shaders.
 /// [`AsBindGroup`] can be derived, which makes generating bindings straightforward. See the [`AsBindGroup`] docs for details.
 ///
-/// Doc refs [MaterialPipeline], [`MaterialProperties`]
+/// Doc refs [`MaterialPipeline`], [`MaterialProperties`]
 ///
 /// # Example
 ///

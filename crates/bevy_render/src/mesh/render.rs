@@ -53,7 +53,7 @@ pub struct MeshUniform {
     /// The index of this mesh's first vertex in the vertex buffer.
     ///
     /// Multiple meshes can be packed into a single vertex buffer (see
-    /// [`MeshAllocator`](`mesh::allocator::MeshAllocator`) ). This value stores the offset of the first vertex in
+    /// [`MeshAllocator`](`crate::mesh::allocator::MeshAllocator`) ). This value stores the offset of the first vertex in
     /// this mesh in that buffer.
     pub first_vertex_index: u32,
     /// The current skin index, or `u32::MAX` if there's no skin.
@@ -100,13 +100,13 @@ pub struct MeshInputUniform {
     /// The index of this mesh's first vertex in the vertex buffer.
     ///
     /// Multiple meshes can be packed into a single vertex buffer (see
-    /// [`MeshAllocator`](`mesh::allocator::MeshAllocator`) ). This value stores the offset of the first vertex in
+    /// [`MeshAllocator`](`crate::mesh::allocator::MeshAllocator`) ). This value stores the offset of the first vertex in
     /// this mesh in that buffer.
     pub first_vertex_index: u32,
     /// The index of this mesh's first index in the index buffer, if any.
     ///
     /// Multiple meshes can be packed into a single index buffer (see
-    /// [`MeshAllocator`](`mesh::allocator::MeshAllocator`) ). This value stores the offset of the first index in
+    /// [`MeshAllocator`](`crate::mesh::allocator::MeshAllocator`) ). This value stores the offset of the first index in
     /// this mesh in that buffer.
     ///
     /// If this mesh isn't indexed, this value is ignored.

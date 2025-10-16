@@ -618,7 +618,7 @@ impl RenderMeshInstanceGpuBuilder {
     /// Flushes this mesh instance to the [`RenderMeshInstanceGpu`] and
     /// [`MeshInputUniform`] tables, replacing the existing entry if applicable.
     ///
-    /// Provides the mesh instance id for [`RenderMeshInstanceShared:for_gpu_building`]
+    /// Provides the mesh instance id for [`RenderMeshInstanceShared::for_gpu_building`]
     fn update(
         mut self,
         entity: MainEntity,
