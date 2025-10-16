@@ -23,13 +23,18 @@ use static_assertions::const_assert_eq;
 #[cfg(debug_assertions)]
 pub const MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES: usize = 10;
 
+// A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
+#[derive(Resource, Clone)]
+pub struct DummyImage {
+    // This dummy white texture is to be used in place of optional StandardMaterial textures
+    pub dummy_white_image: Handle<Image>,
+}
+
 /// All data needed to construct a pipeline for rendering 3D meshes.
 #[derive(Resource, Clone)]
 pub struct MeshPipeline {
     /// A reference to all the mesh pipeline view layouts.
     pub view_layouts: MeshPipelineViewLayouts,
-    // This dummy white texture is to be used in place of optional StandardMaterial textures
-    pub dummy_white_image: Handle<Image>,
     pub clustered_forward_buffer_binding_type: BufferBindingType,
     pub mesh_layouts: MeshLayouts,
     /// The shader asset handle.

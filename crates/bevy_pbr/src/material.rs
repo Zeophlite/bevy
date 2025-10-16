@@ -280,6 +280,14 @@ pub struct MaterialsPlugin {
 
 impl Plugin for MaterialsPlugin {
     fn build(&self, app: &mut App) {
+        let mut images = app.world_mut().resource_mut::<Assets<Image>>();
+
+        // A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
+        let image = Image::default();
+        let dummy_white_image = images.add(image);
+
+        let dummy_image = DummyImage { dummy_white_image };
+
         app.add_plugins((PrepassPipelinePlugin, PrepassPlugin::new(self.debug_flags)));
         if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
             render_app
@@ -292,6 +300,7 @@ impl Plugin for MaterialsPlugin {
                 .init_resource::<DrawFunctions<Shadow>>()
                 .init_resource::<RenderMaterialInstances>()
                 .init_resource::<MaterialBindGroupAllocators>()
+                .insert_resource(dummy_image)
                 .add_render_command::<Shadow, DrawPrepass>()
                 .add_render_command::<Transmissive3d, DrawMaterial>()
                 .add_render_command::<Transparent3d, DrawMaterial>()

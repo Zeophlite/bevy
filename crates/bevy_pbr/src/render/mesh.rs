@@ -1261,21 +1261,15 @@ pub fn init_mesh_pipeline(world: &mut World) {
         Res<RenderDevice>,
         Res<RenderAdapter>,
         Res<MeshPipelineViewLayouts>,
-        ResMut<Assets<Image>>,
     )> = SystemState::new(world);
-    let (render_device, render_adapter, view_layouts, mut images) = system_state.get_mut(world);
+    let (render_device, render_adapter, view_layouts) = system_state.get_mut(world);
 
     let clustered_forward_buffer_binding_type =
         render_device.get_supported_read_only_binding_type(CLUSTERED_FORWARD_STORAGE_BUFFER_COUNT);
 
-    // A 1x1x1 'all 1.0' texture to use as a dummy texture to use in place of optional StandardMaterial textures
-    let image = Image::default();
-    let dummy_white_image = images.add(image);
-
     let res = MeshPipeline {
         view_layouts: view_layouts.clone(),
         clustered_forward_buffer_binding_type,
-        dummy_white_image,
         mesh_layouts: MeshLayouts::new(&render_device, &render_adapter),
         shader,
         per_object_buffer_batch_size: GpuArrayBuffer::<MeshUniform>::batch_size(
