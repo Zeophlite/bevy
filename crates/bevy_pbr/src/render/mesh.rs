@@ -1,5 +1,4 @@
 use crate::{render::mesh_bindings::MeshLayoutsBuilders as _, skin::skin_uniforms_from_world};
-pub use bevy_render::mesh::render::*;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId};
 use bevy_camera::{
     primitives::Aabb,
@@ -27,6 +26,7 @@ use bevy_light::{
 use bevy_math::{Affine3, UVec2, Vec3, Vec4};
 use bevy_mesh::{skinning::SkinnedMesh, Mesh, Mesh3d, MeshTag};
 use bevy_platform::collections::{hash_map::Entry, HashMap};
+pub use bevy_render::mesh::render::*;
 use bevy_render::{
     batching::{
         gpu_preprocessing::{
