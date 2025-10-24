@@ -7,7 +7,7 @@ use bevy_reflect::prelude::*;
 use bevy_utils::{default, once};
 use core::fmt::{Debug, Formatter};
 use core::str::from_utf8;
-use cosmic_text::{Buffer, Metrics};
+use cosmic_text::{Buffer, Metrics, Wrap};
 use serde::{Deserialize, Serialize};
 use smallvec::SmallVec;
 use tracing::warn;
@@ -592,6 +592,17 @@ pub enum LineBreak {
     /// No soft wrapping, where text is automatically broken up into separate lines when it overflows a boundary, will ever occur.
     /// Hard wrapping, where text contains an explicit linebreak such as the escape sequence `\n`, is still enabled.
     NoWrap,
+}
+
+impl From<LineBreak> for Wrap {
+    fn from(value: LineBreak) -> Self {
+        match value {
+            LineBreak::WordBoundary => Wrap::Word,
+            LineBreak::AnyCharacter => Wrap::Glyph,
+            LineBreak::WordOrCharacter => Wrap::WordOrGlyph,
+            LineBreak::NoWrap => Wrap::None,
+        }
+    }
 }
 
 /// A text entity with this component is drawn with strikethrough.

@@ -1,6 +1,6 @@
 use alloc::sync::Arc;
 
-use bevy_asset::{AssetId, Assets};
+use bevy_asset::{AssetId, Assets, Handle};
 use bevy_color::Color;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -152,7 +152,7 @@ impl TextPipeline {
 
             // Load Bevy fonts into cosmic-text's font system.
             let face_info = load_font_to_fontdb(
-                text_font,
+                text_font.font.clone(),
                 font_system,
                 &mut self.map_handle_to_font_id,
                 fonts,
@@ -504,8 +504,32 @@ pub struct TextLayoutInfo {
     ///
     /// The coordinates are unscaled and relative to the top left corner of the text layout.
     pub run_geometry: Vec<RunGeometry>,
+    /// Rects bounding the text block's text sections.
+    /// A text section spanning more than one line will have multiple bounding rects
+    pub section_rects: Vec<(Entity, Rect)>,
+    /// Rects bounding the selected text
+    pub selection_rects: Vec<Rect>,
     /// The glyphs resulting size
     pub size: Vec2,
+    /// Cursor position and size
+    pub cursor: Option<(Vec2, Vec2, bool)>,
+    /// Index of glyph under the cursor
+    pub cursor_index: Option<usize>,
+    /// Offset for scrolled text
+    pub scroll: Vec2,
+}
+
+impl TextLayoutInfo {
+    /// Clear the text layout    
+    pub fn clear(&mut self) {
+        self.glyphs.clear();
+        self.section_rects.clear();
+        self.selection_rects.clear();
+        self.size = Vec2::ZERO;
+        self.cursor = None;
+        self.cursor_index = None;
+        self.scroll = Vec2::ZERO;
+    }
 }
 
 impl TextLayoutInfo {
@@ -597,20 +621,22 @@ impl TextMeasureInfo {
 
 /// Add the font to the cosmic text's `FontSystem`'s in-memory font database
 pub fn load_font_to_fontdb(
-    text_font: &TextFont,
+    font_handle: Handle<Font>,
     font_system: &mut cosmic_text::FontSystem,
     map_handle_to_font_id: &mut HashMap<AssetId<Font>, (cosmic_text::fontdb::ID, Arc<str>)>,
     fonts: &Assets<Font>,
 ) -> FontFaceInfo {
     let font_id = text_font.font.id();
-    let (face_id, family_name) = map_handle_to_font_id.entry(font_id).or_insert_with(|| {
-        let font = fonts.get(font_id).expect(
-            "Tried getting a font that was not available, probably due to not being loaded yet",
-        );
-        let data = Arc::clone(&font.data);
-        let ids = font_system
-            .db_mut()
-            .load_font_source(cosmic_text::fontdb::Source::Binary(data));
+    let (face_id, family_name) = map_handle_to_font_id
+        .entry(font_id)
+        .or_insert_with(|| {
+            let font = fonts.get(font_id).expect(
+                "Tried getting a font that was not available, probably due to not being loaded yet",
+            );
+            let data = Arc::clone(&font.data);
+            let ids = font_system
+                .db_mut()
+                .load_font_source(cosmic_text::fontdb::Source::Binary(data));
 
         // TODO: it is assumed this is the right font face
         let face_id = *ids.last().unwrap();
@@ -664,6 +690,16 @@ fn buffer_dimensions(buffer: &Buffer) -> Vec2 {
         size.y += run.line_height;
     }
     size.ceil()
+}
+
+pub(crate) fn buffer_dimensions2(buffer: &Buffer) -> Vec2 {
+    let (width, height) = buffer
+        .layout_runs()
+        .map(|run| (run.line_w, run.line_height))
+        .reduce(|(w1, h1), (w2, h2)| (w1.max(w2), h1 + h2))
+        .unwrap_or((0.0, 0.0));
+
+    Vec2::new(width, height).ceil()
 }
 
 /// Discards stale data cached in `FontSystem`.
