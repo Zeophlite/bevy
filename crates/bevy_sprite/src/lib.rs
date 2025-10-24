@@ -89,7 +89,10 @@ impl Plugin for SpritePlugin {
             PostUpdate,
             (
                 bevy_text::detect_text_needs_rerender::<Text2d>,
-                update_text2d_layout.after(bevy_camera::CameraUpdateSystems),
+                update_text2d_layout
+                    .after(bevy_camera::CameraUpdateSystems)
+                    .after(bevy_text::free_unused_font_atlases_system)
+                    .ambiguous_with(bevy_text::update_placeholder_layouts),
                 calculate_bounds_text2d.in_set(VisibilitySystems::CalculateBounds),
             )
                 .chain()

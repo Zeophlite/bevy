@@ -1,4 +1,6 @@
-use bevy_asset::Assets;
+use alloc::sync::Arc;
+
+use bevy_asset::{AssetId, Assets, Handle};
 use bevy_color::Color;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -183,6 +185,124 @@ impl TextPipeline {
             .into_iter()
             .map(|_| -> (&str, Attrs) { unreachable!() })
             .collect();
+
+        // START
+        let mut spans: Vec<(usize, &str, &TextFont, FontFaceInfo, Color, LineHeight)> =
+            core::mem::take(&mut self.spans_buffer)
+                .into_iter()
+                .map(
+                    |_| -> (usize, &str, &TextFont, FontFaceInfo, Color, LineHeight) {
+                        unreachable!()
+                    },
+                )
+                .collect();
+
+        computed.entities.clear();
+
+        for (span_index, (entity, depth, span, text_font, color, line_height)) in
+            text_spans.enumerate()
+        {
+            // Save this span entity in the computed text block.
+            computed.entities.push(TextEntity { entity, depth });
+
+            if span.is_empty() {
+                continue;
+            }
+            // Return early if a font is not loaded yet.
+            if !fonts.contains(text_font.font.id()) {
+                spans.clear();
+                self.spans_buffer = spans
+                    .into_iter()
+                    .map(
+                        |_| -> (
+                            usize,
+                            &'static str,
+                            &'static TextFont,
+                            FontFaceInfo,
+                            LineHeight,
+                        ) { unreachable!() },
+                    )
+                    .collect();
+
+                return Err(TextError::NoSuchFont);
+            }
+
+            // Load Bevy fonts into cosmic-text's font system.
+            let face_info = load_font_to_fontdb(
+                text_font.font.clone(),
+                font_system,
+                &mut self.map_handle_to_font_id,
+                fonts,
+            );
+
+            // Save spans that aren't zero-sized.
+            if scale_factor <= 0.0 || text_font.font_size <= 0.0 {
+                once!(warn!(
+                    "Text span {entity} has a font size <= 0.0. Nothing will be displayed.",
+                ));
+
+                continue;
+            }
+            spans.push((span_index, span, text_font, face_info, color, line_height));
+        }
+
+        // Map text sections to cosmic-text spans, and ignore sections with negative or zero fontsizes,
+        // since they cannot be rendered by cosmic-text.
+        //
+        // The section index is stored in the metadata of the spans, and could be used
+        // to look up the section the span came from and is not used internally
+        // in cosmic-text.
+        let spans_iter = spans.iter().map(
+            |(span_index, span, text_font, font_info, color, line_height)| {
+                (
+                    *span,
+                    get_attrs(
+                        *span_index,
+                        text_font,
+                        *line_height,
+                        *color,
+                        font_info,
+                        scale_factor,
+                    ),
+                )
+            },
+        );
+
+        // Update the buffer.
+        let buffer = &mut computed.buffer;
+
+        buffer.set_wrap(
+            font_system,
+            match linebreak {
+                LineBreak::WordBoundary => Wrap::Word,
+                LineBreak::AnyCharacter => Wrap::Glyph,
+                LineBreak::WordOrCharacter => Wrap::WordOrGlyph,
+                LineBreak::NoWrap => Wrap::None,
+            },
+        );
+
+        buffer.set_rich_text(
+            font_system,
+            spans_iter,
+            &Attrs::new(),
+            Shaping::Advanced,
+            Some(justify.into()),
+        );
+
+        // Workaround for alignment not working for unbounded text.
+        // See https://github.com/pop-os/cosmic-text/issues/343
+        let width = (bounds.width.is_none() && justify != Justify::Left)
+            .then(|| buffer_dimensions(buffer).x)
+            .or(bounds.width);
+        buffer.set_size(font_system, width, bounds.height);
+
+        // Recover the spans buffer.
+        spans.clear();
+        self.spans_buffer = spans
+            .into_iter()
+            .map(|_| -> (&str, Attrs) { unreachable!() })
+            .collect();
+        // END
 
         let result = {
             for (span_index, (entity, depth, span, text_font, _color, line_height)) in
@@ -521,8 +641,32 @@ pub struct TextLayoutInfo {
     ///
     /// The coordinates are unscaled and relative to the top left corner of the text layout.
     pub run_geometry: Vec<RunGeometry>,
+    /// Rects bounding the text block's text sections.
+    /// A text section spanning more than one line will have multiple bounding rects
+    pub section_rects: Vec<(Entity, Rect)>,
+    /// Rects bounding the selected text
+    pub selection_rects: Vec<Rect>,
     /// The glyphs resulting size
     pub size: Vec2,
+    /// Cursor position and size
+    pub cursor: Option<(Vec2, Vec2, bool)>,
+    /// Index of glyph under the cursor
+    pub cursor_index: Option<usize>,
+    /// Offset for scrolled text
+    pub scroll: Vec2,
+}
+
+impl TextLayoutInfo {
+    /// Clear the text layout    
+    pub fn clear(&mut self) {
+        self.glyphs.clear();
+        self.section_rects.clear();
+        self.selection_rects.clear();
+        self.size = Vec2::ZERO;
+        self.cursor = None;
+        self.cursor_index = None;
+        self.scroll = Vec2::ZERO;
+    }
 }
 
 impl TextLayoutInfo {
@@ -612,6 +756,43 @@ impl TextMeasureInfo {
     }
 }
 
+/// Add the font to the cosmic text's `FontSystem`'s in-memory font database
+pub fn load_font_to_fontdb(
+    font_handle: Handle<Font>,
+    font_system: &mut cosmic_text::FontSystem,
+    map_handle_to_font_id: &mut HashMap<AssetId<Font>, (cosmic_text::fontdb::ID, Arc<str>)>,
+    fonts: &Assets<Font>,
+) -> FontFaceInfo {
+    let font_id = text_font.font.id();
+    let (face_id, family_name) = map_handle_to_font_id
+        .entry(font_id)
+        .or_insert_with(|| {
+            let font = fonts.get(font_id).expect(
+                "Tried getting a font that was not available, probably due to not being loaded yet",
+            );
+            let data = Arc::clone(&font.data);
+            let ids = font_system
+                .db_mut()
+                .load_font_source(cosmic_text::fontdb::Source::Binary(data));
+
+        // TODO: it is assumed this is the right font face
+        let face_id = *ids.last().unwrap();
+        let face = font_system.db().face(face_id).unwrap();
+
+        let family_name = Arc::from(face.families[0].0.as_str());
+        (face_id, family_name)
+    });
+
+    let face = font_system.db().face(*face_id).unwrap();
+
+    FontFaceInfo {
+        stretch: face.stretch,
+        style: face.style,
+        weight: face.weight,
+        family_name: family_name.clone(),
+    }
+}
+
 /// Translates [`TextFont`] to [`Attrs`].
 fn get_attrs<'a>(
     span_index: usize,
@@ -653,6 +834,16 @@ fn buffer_dimensions(buffer: &Buffer) -> Vec2 {
     } else {
         Vec2::ZERO
     }
+}
+
+pub(crate) fn buffer_dimensions2(buffer: &Buffer) -> Vec2 {
+    let (width, height) = buffer
+        .layout_runs()
+        .map(|run| (run.line_w, run.line_height))
+        .reduce(|(w1, h1), (w2, h2)| (w1.max(w2), h1 + h2))
+        .unwrap_or((0.0, 0.0));
+
+    Vec2::new(width, height).ceil()
 }
 
 /// Discards stale data cached in `FontSystem`.
