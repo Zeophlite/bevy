@@ -77,7 +77,10 @@ pub enum TextEdit {
     Scroll {
         /// Number of lines to scroll.
         /// Negative values scroll upwards towards the start of the text, positive downwards to the end of the text.
-        lines: i32,
+        // lines: i32,
+
+        /// Number of pixels to scroll.
+        pixels: f32,
     },
     /// Select the entire contents of the text input buffer.
     SelectAll,
@@ -252,8 +255,8 @@ pub fn apply_text_edit(
                 y: point.y,
             });
         }
-        &TextEdit::Scroll { lines } => {
-            editor.action(Action::Scroll { lines });
+        TextEdit::Scroll { pixels } => {
+            editor.action(Action::Scroll { pixels: *pixels });
         }
         TextEdit::SelectAll => {
             editor.action(Action::Motion(Motion::BufferStart));

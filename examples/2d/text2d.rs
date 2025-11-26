@@ -6,22 +6,66 @@
 //! viewport, you may want to look at `games/contributors.rs` or `ui/text.rs`.
 
 use bevy::{
-    color::palettes::css::*,
+    camera::primitives::Aabb,
+    color::palettes::{
+        css::{GREEN, NAVY, RED, YELLOW, *},
+        tailwind::{BLUE_900, GRAY_300, GRAY_400, SKY_300},
+    },
+    input::keyboard::{Key, KeyboardInput},
     math::ops,
     prelude::*,
     sprite::{Anchor, Text2dShadow},
-    text::{FontSmoothing, LineBreak, TextBounds},
+    text::{
+        FontSmoothing, LineBreak, Text2dUpdateSystems, TextBounds, TextInputAttributes,
+        TextInputBuffer, TextInputSystems,
+    },
+};
+use bevy_render::RenderApp;
+
+use crate::text_input::{
+    extract_text_input, update_inputs, update_targets, DisplayConfig, Overwrite,
+    TextInputKeyConfig, TextInputSize, TextSubmission,
 };
 
+#[path = "../helpers/text_input.rs"]
+mod text_input;
+
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
+    let mut app = App::new();
+
+    app.add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
+        .insert_resource(TextInputKeyConfig {
+            allow_indent: false,
+            allow_newline: false,
+            allow_scroll: false,
+        })
+        .insert_resource(SelectedTextable { idx: -1 })
+        .add_systems(PreUpdate, rotate_selected_input)
+        .add_systems(
+            PostUpdate,
+            // TODO: these are both from helpers
+            // TODO: allow disable scroll in inputs
+            (update_inputs, update_targets).before(TextInputSystems),
+        )
+        .add_message::<TextSubmission>()
+        .add_systems(Update, handle_submissions)
         .add_systems(
             Update,
             (animate_translation, animate_rotation, animate_scale),
-        )
-        .run();
+        );
+    app.sub_app_mut(RenderApp)
+        .add_systems(ExtractSchedule, extract_text_input);
+
+    app.run();
+}
+
+#[derive(Component)]
+struct Textable(i32);
+
+#[derive(Resource)]
+struct SelectedTextable {
+    pub idx: i32,
 }
 
 #[derive(Component)]
@@ -49,6 +93,16 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         TextLayout::new_with_justify(text_justification),
         TextBackgroundColor(Color::BLACK.with_alpha(0.5)),
         Text2dShadow::default(),
+        Textable(0),
+        Anchor::TOP_LEFT,
+        TextInputSize(Vec2::new(100., 40.)),
+        DisplayConfig {
+            placeholder_text: SKY_300.into(),
+            input_text: GRAY_300.into(),
+            input_background: NAVY.into(),
+            selected_highlight: BLUE_900.into(),
+            cursor: GRAY_400.into(),
+        },
         AnimateTranslation,
     ));
     // Demonstrate changing rotation
@@ -58,6 +112,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         TextLayout::new_with_justify(text_justification),
         TextBackgroundColor(Color::BLACK.with_alpha(0.5)),
         Text2dShadow::default(),
+        Textable(1),
+        Anchor::TOP_LEFT,
+        TextInputSize(Vec2::new(100., 40.)),
         AnimateRotation,
     ));
     // Demonstrate changing scale
@@ -68,6 +125,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_translation(Vec3::new(400.0, 0.0, 0.0)),
         TextBackgroundColor(Color::BLACK.with_alpha(0.5)),
         Text2dShadow::default(),
+        // Textable(2),
+        Anchor::TOP_LEFT,
+        TextInputSize(Vec2::new(100., 40.)),
         AnimateScale,
     ));
     // Demonstrate text wrapping
@@ -97,6 +157,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ..default()
             },
             Underline,
+            // Textable(3),
+            Anchor::TOP_LEFT,
+            TextInputSize(Vec2::new(100., 40.)),
+            // observer(over_text),
+            // observer(out_text),
         )],
     ));
 
@@ -117,7 +182,12 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Text2dShadow {
                 color: text_shadow_color,
                 ..default()
-            }
+            },
+            // Textable(4),
+            Anchor::TOP_LEFT,
+            TextInputSize(Vec2::new(100., 40.)),
+            // observe(over_text),
+            // observe(out_text),
         )],
     ));
 
@@ -131,27 +201,38 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Transform::from_translation(Vec3::new(-400.0, -250.0, 0.0)),
         // Add a black shadow to the text
         Text2dShadow::default(),
+        // Textable(5),
+        Anchor::TOP_LEFT,
+        TextInputSize(Vec2::new(100., 40.)),
     ));
 
-    let make_child = move |(text_anchor, color): (Anchor, Color)| {
+    let make_child = move |(text_anchor, color, delta): (Anchor, Color, i32)| {
         (
             Text2d::new(" Anchor".to_string()),
             slightly_smaller_text_font.clone(),
             text_anchor,
             TextBackgroundColor(Color::WHITE.darker(0.8)),
             Transform::from_translation(-1. * Vec3::Z),
+            // Textable(6 + delta * 3),
+            TextInputSize(Vec2::new(100., 40.)),
             children![
                 (
                     TextSpan("::".to_string()),
                     slightly_smaller_text_font.clone(),
                     TextColor(LIGHT_GREY.into()),
                     TextBackgroundColor(DARK_BLUE.into()),
+                    // Textable(7 + delta * 3),
+                    Anchor::TOP_LEFT,
+                    TextInputSize(Vec2::new(100., 40.)),
                 ),
                 (
                     TextSpan(format!("{text_anchor:?} ")),
                     slightly_smaller_text_font.clone(),
                     TextColor(color),
                     TextBackgroundColor(color.darker(0.3)),
+                    // Textable(8 + delta * 3),
+                    Anchor::TOP_LEFT,
+                    TextInputSize(Vec2::new(100., 40.)),
                 )
             ],
         )
@@ -165,10 +246,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Transform::from_translation(250. * Vec3::Y),
         children![
-            make_child((Anchor::TOP_LEFT, Color::Srgba(LIGHT_SALMON))),
-            make_child((Anchor::TOP_RIGHT, Color::Srgba(LIGHT_GREEN))),
-            make_child((Anchor::BOTTOM_RIGHT, Color::Srgba(LIGHT_BLUE))),
-            make_child((Anchor::BOTTOM_LEFT, Color::Srgba(LIGHT_YELLOW))),
+            make_child((Anchor::TOP_LEFT, Color::Srgba(LIGHT_SALMON), 0)),
+            make_child((Anchor::TOP_RIGHT, Color::Srgba(LIGHT_GREEN), 1)),
+            make_child((Anchor::BOTTOM_RIGHT, Color::Srgba(LIGHT_BLUE), 2)),
+            make_child((Anchor::BOTTOM_LEFT, Color::Srgba(LIGHT_YELLOW), 3)),
         ],
     ));
 }
@@ -202,5 +283,95 @@ fn animate_scale(
         let scale = (ops::sin(time.elapsed_secs()) + 1.1) * 2.0;
         transform.scale.x = scale;
         transform.scale.y = scale;
+    }
+}
+
+fn handle_submissions(
+    mut submit_events: MessageReader<TextSubmission>,
+    text_query: Single<&mut Text2d>,
+    buffer_query: Single<&TextInputBuffer>,
+) {
+    let mut text = text_query.into_inner();
+    let buffer = *buffer_query;
+
+    for _ in submit_events.read() {
+        text.0 = buffer.get_text().clone();
+    }
+}
+
+fn rotate_selected_input(
+    mut commands: Commands,
+    mut keyboard_events: MessageReader<KeyboardInput>,
+    keyboard_state: Res<ButtonInput<Key>>,
+    mut selectable_textable: ResMut<SelectedTextable>,
+    mut query: Query<(
+        Entity,
+        &mut Textable,
+        &mut Text2d,
+        Option<&mut TextInputBuffer>,
+    )>,
+) {
+    let current_selection = selectable_textable.idx;
+    let mut delta: i32 = 0;
+
+    for key_input in keyboard_events.read() {
+        if !key_input.state.is_pressed() {
+            continue;
+        }
+
+        let pressed_key = &key_input.logical_key;
+        let is_shift_pressed = keyboard_state.pressed(Key::Shift);
+
+        match &pressed_key {
+            Key::Tab => {
+                if is_shift_pressed {
+                    // backward
+                    println!("go backward");
+                    delta -= 1;
+                } else {
+                    // forward
+                    println!("go forward");
+                    delta += 1;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    if delta == 0 {
+        return;
+    }
+
+    println!("current_selection is {:?}", current_selection);
+    println!("delta is {:?}", delta);
+
+    let count_textable: i32 = query.iter().len() as i32;
+
+    let mut new_idx = current_selection + delta;
+    if new_idx >= count_textable {
+        new_idx = 0;
+    }
+
+    selectable_textable.idx = new_idx;
+
+    for (entity, mut textable, mut text, maybe_buffer) in query.iter_mut() {
+        println!(
+            "found textable {:?} {:?} #{:?}#",
+            textable.0,
+            maybe_buffer.is_some(),
+            text.0
+        );
+
+        if textable.0 == new_idx {
+            let mut b = TextInputBuffer::default();
+            b.with_text(&text.0);
+            // let c = TextInputAttributes::from(value);
+            commands.entity(entity).insert(b);
+        } else {
+            if let Some(buffer) = maybe_buffer {
+                // remove buffer
+            }
+            commands.entity(entity).remove::<TextInputBuffer>();
+        }
     }
 }

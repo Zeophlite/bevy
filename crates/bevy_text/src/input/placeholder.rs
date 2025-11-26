@@ -140,14 +140,15 @@ pub fn update_placeholder_layouts(
             .weight(face_info.weight)
             .metrics(metrics);
 
+        let align = Some(attributes.justify.into());
         buffer.set_text(
             &mut font_system,
             &placeholder.0,
             &attrs,
             cosmic_text::Shaping::Advanced,
+            align,
         );
 
-        let align = Some(attributes.justify.into());
         for buffer_line in buffer.lines.iter_mut() {
             buffer_line.set_align(align);
         }
@@ -239,6 +240,15 @@ pub fn update_placeholder_layouts(
             Err(TextError::NoSuchFont) => {
                 // There was an error processing the text layout, try again next frame
                 prompt_layout.layout.clear();
+            }
+            Err(TextError::MissingAtlasLayout) => {
+                //
+            }
+            Err(TextError::MissingAtlasTexture) => {
+                //
+            }
+            Err(TextError::InconsistentAtlasState) => {
+                //
             }
             Err(e @ (TextError::FailedToAddGlyph(_) | TextError::FailedToGetGlyphImage(_))) => {
                 panic!("Fatal error when processing text: {e}.");

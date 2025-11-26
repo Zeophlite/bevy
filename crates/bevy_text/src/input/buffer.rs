@@ -148,6 +148,11 @@ impl Default for TextInputBuffer {
 }
 
 impl TextInputBuffer {
+    /// add starting text
+    pub fn with_text(&mut self, text: &str) {
+        self.editor.insert_string(text, None);
+    }
+
     /// Use the cosmic text buffer mutably
     pub fn with_buffer_mut<F, T>(&mut self, f: F) -> T
     where
@@ -230,6 +235,8 @@ pub fn update_text_input_buffers(
                     _ => false,
                 })
             {
+                println!("attributes.font_size = {:?}", attributes.font_size);
+                println!("target.scale_factor = {:?}", target.scale_factor);
                 let line_height = attributes.line_height.eval(attributes.font_size);
                 let metrics =
                     Metrics::new(attributes.font_size, line_height).scale(target.scale_factor);
@@ -266,20 +273,27 @@ pub fn update_text_input_buffers(
                     text.truncate(max_chars);
                 }
 
-                buffer.set_text(font_system, &text, &attrs, cosmic_text::Shaping::Advanced);
                 let align = Some(attributes.justify.into());
+                buffer.set_text(
+                    font_system,
+                    &text,
+                    &attrs,
+                    cosmic_text::Shaping::Advanced,
+                    align,
+                );
                 for buffer_line in buffer.lines.iter_mut() {
                     buffer_line.set_align(align);
                 }
 
                 *space_advance = font_id_map
                     .get(&attributes.font.id())
-                    .and_then(|(id, ..)| font_system.get_font(*id))
-                    .and_then(|font| {
-                        let face = font.rustybuzz();
-                        face.glyph_index(' ')
-                            .and_then(|gid| face.glyph_hor_advance(gid))
-                            .map(|advance| advance as f32 / face.units_per_em() as f32)
+                    .and_then(|(id, ..)| font_system.get_font(*id, attrs.weight))
+                    .and_then(|_font| {
+                        None
+                        // let face = font.rustybuzz();
+                        // face.glyph_index(' ')
+                        //     .and_then(|gid| face.glyph_hor_advance(gid))
+                        //     .map(|advance| advance as f32 / face.units_per_em() as f32)
                     })
                     .unwrap_or(0.0)
                     * buffer.metrics().font_size;

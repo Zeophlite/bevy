@@ -1,24 +1,19 @@
 //! basic bevy 2d text input helpers
-use std::any::TypeId;
-
 use bevy::{
-    camera::{primitives::Aabb, visibility::VisibilityClass},
-
+    camera::primitives::Aabb,
     input::keyboard::{Key, KeyboardInput},
     prelude::*,
-    render::{sync_world::TemporaryRenderEntity, Extract, RenderApp},
+    render::{sync_world::TemporaryRenderEntity, Extract},
     sprite::Anchor,
     sprite_render::{
         ExtractedSlice, ExtractedSlices, ExtractedSprite, ExtractedSpriteKind, ExtractedSprites,
     },
     text::{
-        CursorBlink, LineBreak, Motion, Placeholder, PlaceholderLayout, PositionedGlyph,
-        TextBounds, TextCursorBlinkInterval, TextEdit, TextEdits, TextInputBuffer,
-        TextInputSystems, TextInputTarget, TextLayoutInfo,
+        CursorBlink, Motion, PlaceholderLayout, PositionedGlyph, TextCursorBlinkInterval, TextEdit,
+        TextEdits, TextInputBuffer, TextInputTarget, TextLayoutInfo,
     },
     window::PrimaryWindow,
 };
-
 
 // TextSubmission is a mid-level text input event
 #[derive(Message, Clone, Debug, Component)]
@@ -30,10 +25,17 @@ pub struct TextInputSize(pub Vec2);
 #[derive(Component, Default)]
 pub struct Overwrite(pub bool);
 
-
+// TODO: probably should be a component on the text
+#[derive(Resource)]
+pub struct TextInputKeyConfig {
+    pub allow_scroll: bool,
+    pub allow_newline: bool,
+    pub allow_indent: bool,
+}
 
 // This example demonstrates how to convert keyboard input to text edits that get resolved
 pub fn update_inputs(
+    text_config: Res<TextInputKeyConfig>,
     mut keyboard_events: MessageReader<KeyboardInput>,
     mut query: Query<(&mut TextEdits, &mut Overwrite)>,
     keyboard_state: Res<ButtonInput<Key>>,
@@ -81,10 +83,14 @@ pub fn update_inputs(
                         });
                     }
                     Key::ArrowUp => {
-                        actions.queue(TextEdit::Scroll { lines: -1 });
+                        if text_config.allow_scroll {
+                            actions.queue(TextEdit::Scroll { pixels: -1.0 });
+                        }
                     }
                     Key::ArrowDown => {
-                        actions.queue(TextEdit::Scroll { lines: 1 });
+                        if text_config.allow_scroll {
+                            actions.queue(TextEdit::Scroll { pixels: 1.0 });
+                        }
                     }
                     Key::Home => {
                         actions.queue(TextEdit::motion(Motion::BufferStart, is_shift_pressed));
@@ -116,7 +122,9 @@ pub fn update_inputs(
                         if is_shift_pressed {
                             submit_events.write(TextSubmission);
                         } else {
-                            actions.queue(TextEdit::NewLine);
+                            if text_config.allow_newline {
+                                actions.queue(TextEdit::NewLine);
+                            }
                         }
                     }
                     Key::Backspace => {
@@ -126,10 +134,14 @@ pub fn update_inputs(
                         actions.queue(TextEdit::Delete);
                     }
                     Key::PageUp => {
-                        actions.queue(TextEdit::motion(Motion::PageUp, is_shift_pressed));
+                        if text_config.allow_scroll {
+                            actions.queue(TextEdit::motion(Motion::PageUp, is_shift_pressed));
+                        }
                     }
                     Key::PageDown => {
-                        actions.queue(TextEdit::motion(Motion::PageDown, is_shift_pressed));
+                        if text_config.allow_scroll {
+                            actions.queue(TextEdit::motion(Motion::PageDown, is_shift_pressed));
+                        }
                     }
                     Key::ArrowLeft => {
                         actions.queue(TextEdit::motion(Motion::Left, is_shift_pressed));
@@ -138,7 +150,9 @@ pub fn update_inputs(
                         actions.queue(TextEdit::motion(Motion::Right, is_shift_pressed));
                     }
                     Key::ArrowUp => {
-                        actions.queue(TextEdit::motion(Motion::Up, is_shift_pressed));
+                        if text_config.allow_scroll {
+                            actions.queue(TextEdit::motion(Motion::Up, is_shift_pressed));
+                        }
                     }
                     Key::ArrowDown => {
                         actions.queue(TextEdit::motion(Motion::Down, is_shift_pressed));
@@ -153,11 +167,13 @@ pub fn update_inputs(
                         actions.queue(TextEdit::Escape);
                     }
                     Key::Tab => {
-                        actions.queue(if is_shift_pressed {
-                            TextEdit::Unindent
-                        } else {
-                            TextEdit::Indent
-                        });
+                        if text_config.allow_indent {
+                            actions.queue(if is_shift_pressed {
+                                TextEdit::Unindent
+                            } else {
+                                TextEdit::Indent
+                            });
+                        }
                     }
                     Key::Insert => {
                         overwrite.0 = !overwrite.0;
@@ -173,17 +189,16 @@ pub fn update_inputs(
 #[derive(Component)]
 pub struct DisplayConfig {
     ///
-    pub placeholder_text : Color,
+    pub placeholder_text: Color,
     ///
-    pub input_text : Color,
+    pub input_text: Color,
     ///
-    pub input_background : Color,
+    pub input_background: Color,
     ///
-    pub selected_highlight : Color,
+    pub selected_highlight: Color,
     ///
-    pub cursor : Color,
+    pub cursor: Color,
 }
-
 
 /// Each text fragment is extracted as a sprite for rendering
 pub fn extract_text_input(
@@ -386,7 +401,9 @@ pub fn update_targets(
         .single()
         .map(|window| window.resolution.scale_factor())
         .unwrap_or(1.0);
+    // println!("update_targets = {:?}", scale_factor);
     for (entity, size, mut target, anchor, aabb) in query.iter_mut() {
+        // println!("-- size = {:?}", size.0);
         if target.set_if_neq(TextInputTarget {
             size: size.0 * scale_factor,
             scale_factor,

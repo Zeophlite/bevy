@@ -954,6 +954,7 @@ wasm = true
 name = "text2d"
 path = "examples/2d/text2d.rs"
 doc-scrape-examples = true
+required-features = ["sprite_picking"]
 
 [package.metadata.example.text2d]
 name = "Text 2D"
