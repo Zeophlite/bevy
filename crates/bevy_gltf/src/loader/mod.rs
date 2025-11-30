@@ -26,6 +26,7 @@ use bevy_image::{
     ImageType, TextureError,
 };
 use bevy_light::{DirectionalLight, PointLight, SpotLight};
+use bevy_material::pbr_material::{MarkerMeshMaterial3d, ShortStandardMaterial};
 #[cfg(feature = "pbr_transmission_textures")]
 use bevy_material::UvChannel;
 use bevy_math::{Mat4, Vec3};
@@ -34,9 +35,8 @@ use bevy_mesh::{
     skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
     Indices, Mesh, Mesh3d, MeshVertexAttribute, PrimitiveTopology,
 };
-use bevy_pbr::{MeshMaterial3d, StandardMaterial, MAX_JOINTS};
 use bevy_platform::collections::{HashMap, HashSet};
-use bevy_render::render_resource::Face;
+use bevy_render::{mesh::skin::MAX_JOINTS, render_resource::Face};
 use bevy_scene::Scene;
 #[cfg(not(target_arch = "wasm32"))]
 use bevy_tasks::IoTaskPool;
@@ -1143,13 +1143,13 @@ async fn load_image<'a, 'b>(
     }
 }
 
-/// Loads a glTF material as a bevy [`StandardMaterial`] and returns it.
+/// Loads a glTF material as a bevy [`ShortStandardMaterial`] and returns it.
 fn load_material(
     material: &Material,
     load_context: &mut LoadContext,
     document: &Document,
     is_scale_inverted: bool,
-) -> Handle<StandardMaterial> {
+) -> Handle<ShortStandardMaterial> {
     let material_label = material_label(material, is_scale_inverted);
     load_context
         .labeled_asset_scope::<_, ()>(material_label.to_string(), |load_context| {
@@ -1303,7 +1303,7 @@ fn load_material(
             let base_emissive = LinearRgba::rgb(emissive[0], emissive[1], emissive[2]);
             let emissive = base_emissive * material.emissive_strength().unwrap_or(1.0);
 
-            Ok(StandardMaterial {
+            Ok(ShortStandardMaterial {
                 base_color: Color::linear_rgba(color[0], color[1], color[2], color[3]),
                 base_color_channel,
                 base_color_texture,
@@ -1534,9 +1534,7 @@ fn load_node(
                 let mut mesh_entity = parent.spawn((
                     // TODO: handle missing label handle errors here?
                     Mesh3d(load_context.get_label_handle(primitive_label.to_string())),
-                    MeshMaterial3d::<StandardMaterial>(
-                        load_context.get_label_handle(&material_label),
-                    ),
+                    MarkerMeshMaterial3d(load_context.get_label_handle(&material_label)),
                 ));
 
                 let target_count = primitive.morph_targets().len();

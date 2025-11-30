@@ -16,7 +16,7 @@ pub mod render_resource;
 /// This includes the most common types in this crate, re-exported for your convenience.
 pub mod prelude {
     #[doc(hidden)]
-    pub use crate::alpha::AlphaMode;
+    pub use crate::{alpha::AlphaMode, pbr_material::ShortMaterialPlugin};
 }
 
 pub use pbr_material::*;

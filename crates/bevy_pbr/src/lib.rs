@@ -42,6 +42,7 @@ mod parallax;
 mod pbr_material;
 mod prepass;
 mod render;
+mod short;
 mod ssao;
 mod ssr;
 mod volumetric_fog;
@@ -69,6 +70,7 @@ pub use parallax::*;
 pub use pbr_material::*;
 pub use prepass::*;
 pub use render::*;
+pub use short::*;
 pub use ssao::*;
 pub use ssr::*;
 pub use volumetric_fog::VolumetricFogPlugin;
@@ -230,6 +232,7 @@ impl Plugin for PbrPlugin {
                     ..Default::default()
                 },
                 ScreenSpaceAmbientOcclusionPlugin,
+                ShortPlugin,
                 FogPlugin,
                 ExtractResourcePlugin::<DefaultOpaqueRendererMethod>::default(),
                 SyncComponentPlugin::<ShadowFilteringMethod>::default(),
