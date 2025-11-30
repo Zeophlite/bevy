@@ -44,6 +44,7 @@ mod render;
 mod ssao;
 mod ssr;
 mod volumetric_fog;
+mod short;
 
 use bevy_color::{Color, LinearRgba};
 
@@ -70,6 +71,7 @@ pub use render::*;
 pub use ssao::*;
 pub use ssr::*;
 pub use volumetric_fog::VolumetricFogPlugin;
+pub use short::*;
 
 /// The PBR prelude.
 ///
@@ -228,6 +230,7 @@ impl Plugin for PbrPlugin {
                     ..Default::default()
                 },
                 ScreenSpaceAmbientOcclusionPlugin,
+                ShortPlugin,
                 FogPlugin,
                 ExtractResourcePlugin::<DefaultOpaqueRendererMethod>::default(),
                 SyncComponentPlugin::<ShadowFilteringMethod>::default(),

@@ -64,6 +64,8 @@ plugin_group! {
         bevy_ui:::UiPlugin,
         #[cfg(feature = "bevy_ui_render")]
         bevy_ui_render:::UiRenderPlugin,
+        #[cfg(feature = "bevy_material")]
+        bevy_material::pbr_material:::ShortMaterialPlugin,
         #[cfg(feature = "bevy_pbr")]
         bevy_pbr:::PbrPlugin,
         // NOTE: Load this after renderer initialization so that it knows about the supported

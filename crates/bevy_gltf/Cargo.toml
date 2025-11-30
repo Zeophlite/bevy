@@ -9,12 +9,12 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 
 [features]
-pbr_transmission_textures = ["bevy_pbr/pbr_transmission_textures"]
+pbr_transmission_textures = ["bevy_material/pbr_transmission_textures"]
 pbr_multi_layer_material_textures = [
-  "bevy_pbr/pbr_multi_layer_material_textures",
+  "bevy_material/pbr_multi_layer_material_textures",
 ]
-pbr_anisotropy_texture = ["bevy_pbr/pbr_anisotropy_texture"]
-pbr_specular_textures = ["bevy_pbr/pbr_specular_textures"]
+pbr_anisotropy_texture = ["bevy_material/pbr_anisotropy_texture"]
+pbr_specular_textures = ["bevy_material/pbr_specular_textures"]
 
 [dependencies]
 # bevy
@@ -27,8 +27,10 @@ bevy_image = { path = "../bevy_image", version = "0.18.0-dev" }
 bevy_light = { path = "../bevy_light", version = "0.18.0-dev" }
 bevy_camera = { path = "../bevy_camera", version = "0.18.0-dev" }
 bevy_math = { path = "../bevy_math", version = "0.18.0-dev" }
-bevy_mesh = { path = "../bevy_mesh", version = "0.18.0-dev" }
-bevy_pbr = { path = "../bevy_pbr", version = "0.18.0-dev" }
+bevy_mesh = { path = "../bevy_mesh", version = "0.18.0-dev", features = [
+  "morph",
+  "bevy_mikktspace",
+]}
 bevy_reflect = { path = "../bevy_reflect", version = "0.18.0-dev" }
 bevy_render = { path = "../bevy_render", version = "0.18.0-dev" }
 bevy_material = { path = "../bevy_material", version = "0.18.0-dev" }
