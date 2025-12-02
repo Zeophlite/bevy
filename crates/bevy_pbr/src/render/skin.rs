@@ -4,6 +4,9 @@ use std::sync::OnceLock;
 use bevy_asset::{prelude::AssetChanged, Assets};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_ecs::prelude::*;
+use bevy_material::mesh::skin::{
+    JOINTS_PER_ALLOCATION_UNIT, JOINT_EXTRACTION_THRESHOLD_FACTOR, MAX_JOINTS, MAX_TOTAL_JOINTS,
+};
 use bevy_math::Mat4;
 use bevy_mesh::skinning::{SkinnedMesh, SkinnedMeshInverseBindposes};
 use bevy_platform::collections::hash_map::Entry;

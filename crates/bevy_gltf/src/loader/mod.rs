@@ -29,6 +29,7 @@ use bevy_light::{DirectionalLight, PointLight, SpotLight};
 use bevy_material::pbr_material::{MarkerMeshMaterial3d, ShortStandardMaterial};
 #[cfg(feature = "pbr_transmission_textures")]
 use bevy_material::UvChannel;
+use bevy_material::{mesh::skin::MAX_JOINTS, render_resource::Face};
 use bevy_math::{Mat4, Vec3};
 use bevy_mesh::{
     morph::{MeshMorphWeights, MorphAttributes, MorphTargetImage, MorphWeights},
@@ -36,7 +37,6 @@ use bevy_mesh::{
     Indices, Mesh, Mesh3d, MeshVertexAttribute, PrimitiveTopology,
 };
 use bevy_platform::collections::{HashMap, HashSet};
-use bevy_render::{mesh::skin::MAX_JOINTS, render_resource::Face};
 use bevy_scene::Scene;
 #[cfg(not(target_arch = "wasm32"))]
 use bevy_tasks::IoTaskPool;
@@ -1913,9 +1913,9 @@ mod test {
     use bevy_ecs::{resource::Resource, world::World};
     use bevy_image::{Image, ImageLoaderSettings};
     use bevy_log::LogPlugin;
+    use bevy_material::ShortStandardMaterial;
     use bevy_mesh::skinning::SkinnedMeshInverseBindposes;
     use bevy_mesh::MeshPlugin;
-    use bevy_pbr::StandardMaterial;
     use bevy_scene::ScenePlugin;
 
     fn test_app(dir: Dir) -> App {
@@ -2406,7 +2406,7 @@ mod test {
     fn reads_images_in_custom_asset_source() {
         let (mut app, dir) = test_app_custom_asset_source();
 
-        app.init_asset::<StandardMaterial>();
+        app.init_asset::<ShortStandardMaterial>();
 
         // Note: We need the material here since otherwise we don't store the texture handle, which
         // can result in the image getting dropped leading to the gltf never being loaded with
