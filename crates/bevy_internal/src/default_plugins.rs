@@ -45,6 +45,8 @@ plugin_group! {
         bevy_camera:::CameraPlugin,
         #[cfg(feature = "bevy_light")]
         bevy_light:::LightPlugin,
+        #[cfg(feature = "bevy_gltf")]
+        bevy_gltf:::GltfPlugin,
         #[cfg(feature = "bevy_render")]
         #[custom(cfg(all(not(target_arch = "wasm32"), feature = "multi_threaded")))]
         bevy_render::pipelined_rendering:::PipelinedRenderingPlugin,
@@ -68,8 +70,8 @@ plugin_group! {
         bevy_pbr:::PbrPlugin,
         // NOTE: Load this after renderer initialization so that it knows about the supported
         // compressed texture formats.
-        #[cfg(feature = "bevy_gltf")]
-        bevy_gltf:::GltfPlugin,
+        #[cfg(feature = "bevy_gltf_render")]
+        bevy_gltf_render:::GltfRenderPlugin,
         #[cfg(feature = "bevy_audio")]
         bevy_audio:::AudioPlugin,
         #[cfg(feature = "bevy_gilrs")]

@@ -28,15 +28,14 @@ use bevy_image::{
 use bevy_light::{DirectionalLight, PointLight, SpotLight};
 #[cfg(feature = "pbr_transmission_textures")]
 use bevy_material::UvChannel;
+use bevy_material::{mesh::skin::MAX_JOINTS, render_resource::Face};
 use bevy_math::{Mat4, Vec3};
 use bevy_mesh::{
     morph::{MeshMorphWeights, MorphAttributes, MorphTargetImage, MorphWeights},
     skinning::{SkinnedMesh, SkinnedMeshInverseBindposes},
     Indices, Mesh, Mesh3d, MeshVertexAttribute, PrimitiveTopology,
 };
-use bevy_pbr::{MeshMaterial3d, StandardMaterial, MAX_JOINTS};
 use bevy_platform::collections::{HashMap, HashSet};
-use bevy_render::render_resource::Face;
 use bevy_scene::Scene;
 #[cfg(not(target_arch = "wasm32"))]
 use bevy_tasks::IoTaskPool;
@@ -57,8 +56,7 @@ use thiserror::Error;
 use tracing::{error, info_span, warn};
 
 use crate::{
-    vertex_attributes::convert_attribute, Gltf, GltfAssetLabel, GltfExtras, GltfMaterialExtras,
-    GltfMaterialName, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin,
+    vertex_attributes::convert_attribute, Gltf, GltfAssetLabel, GltfExtras, GltfMaterial, GltfMaterialExtras, GltfMaterialName, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin, MarkerMeshMaterial3d
 };
 
 #[cfg(feature = "bevy_animation")]
@@ -1143,13 +1141,13 @@ async fn load_image<'a, 'b>(
     }
 }
 
-/// Loads a glTF material as a bevy [`StandardMaterial`] and returns it.
+/// Loads a glTF material as a bevy [`GltfMaterial`] and returns it.
 fn load_material(
     material: &Material,
     load_context: &mut LoadContext,
     document: &Document,
     is_scale_inverted: bool,
-) -> Handle<StandardMaterial> {
+) -> Handle<GltfMaterial> {
     let material_label = material_label(material, is_scale_inverted);
     load_context
         .labeled_asset_scope::<_, ()>(material_label.to_string(), |load_context| {
@@ -1303,7 +1301,7 @@ fn load_material(
             let base_emissive = LinearRgba::rgb(emissive[0], emissive[1], emissive[2]);
             let emissive = base_emissive * material.emissive_strength().unwrap_or(1.0);
 
-            Ok(StandardMaterial {
+            Ok(GltfMaterial {
                 base_color: Color::linear_rgba(color[0], color[1], color[2], color[3]),
                 base_color_channel,
                 base_color_texture,
@@ -1534,9 +1532,7 @@ fn load_node(
                 let mut mesh_entity = parent.spawn((
                     // TODO: handle missing label handle errors here?
                     Mesh3d(load_context.get_label_handle(primitive_label.to_string())),
-                    MeshMaterial3d::<StandardMaterial>(
-                        load_context.get_label_handle(&material_label),
-                    ),
+                    MarkerMeshMaterial3d(load_context.get_label_handle(&material_label)),
                 ));
 
                 let target_count = primitive.morph_targets().len();
@@ -1915,9 +1911,9 @@ mod test {
     use bevy_ecs::{resource::Resource, world::World};
     use bevy_image::{Image, ImageLoaderSettings};
     use bevy_log::LogPlugin;
+    use bevy_material::GltfMaterial;
     use bevy_mesh::skinning::SkinnedMeshInverseBindposes;
     use bevy_mesh::MeshPlugin;
-    use bevy_pbr::StandardMaterial;
     use bevy_scene::ScenePlugin;
 
     fn test_app(dir: Dir) -> App {
@@ -2408,7 +2404,7 @@ mod test {
     fn reads_images_in_custom_asset_source() {
         let (mut app, dir) = test_app_custom_asset_source();
 
-        app.init_asset::<StandardMaterial>();
+        app.init_asset::<GltfMaterial>();
 
         // Note: We need the material here since otherwise we don't store the texture handle, which
         // can result in the image getting dropped leading to the gltf never being loaded with

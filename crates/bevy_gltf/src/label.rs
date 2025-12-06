@@ -54,16 +54,16 @@ pub enum GltfAssetLabel {
     },
     /// `Texture{}`: glTF Texture as a Bevy [`Image`](bevy_image::prelude::Image)
     Texture(usize),
-    /// `Material{}`: glTF Material as a Bevy [`StandardMaterial`](bevy_pbr::StandardMaterial)
+    /// `Material{}`: glTF Material as a Bevy [`GltfMaterial`](bevy_material::GltfMaterial)
     Material {
         /// Index of this material
         index: usize,
-        /// Used to set the [`Face`](bevy_render::render_resource::Face) of the material,
+        /// Used to set the [`Face`](bevy_material::render_resource::Face) of the material,
         /// useful if it is used with negative scale
         is_scale_inverted: bool,
     },
     /// `DefaultMaterial`: glTF's default Material as a
-    /// Bevy [`StandardMaterial`](bevy_pbr::StandardMaterial)
+    /// Bevy [`GltfMaterial`](bevy_material::GltfMaterial)
     DefaultMaterial,
     /// `Animation{}`: glTF Animation as Bevy [`AnimationClip`](bevy_animation::AnimationClip)
     Animation(usize),

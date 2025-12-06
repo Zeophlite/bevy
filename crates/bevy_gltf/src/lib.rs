@@ -131,6 +131,7 @@ mod assets;
 mod convert_coordinates;
 mod label;
 mod loader;
+pub mod material;
 mod vertex_attributes;
 
 extern crate alloc;
@@ -155,7 +156,7 @@ pub mod prelude {
     pub use crate::{assets::Gltf, assets::GltfExtras, label::GltfAssetLabel};
 }
 
-pub use {assets::*, label::GltfAssetLabel, loader::*};
+pub use {assets::*, label::GltfAssetLabel, loader::*, material::*};
 
 // Has to store an Arc<Mutex<...>> as there is no other way to mutate fields of asset loaders.
 /// Stores default [`ImageSamplerDescriptor`] in main world.
@@ -247,6 +248,7 @@ impl Plugin for GltfPlugin {
         app.init_asset::<Gltf>()
             .init_asset::<GltfNode>()
             .init_asset::<GltfPrimitive>()
+            .init_asset::<GltfMaterial>()
             .init_asset::<GltfMesh>()
             .init_asset::<GltfSkin>()
             .preregister_asset_loader::<GltfLoader>(&["gltf", "glb"]);

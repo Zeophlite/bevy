@@ -253,6 +253,7 @@ common_api = [
   "bevy_gizmos_render",
   "bevy_anti_alias",
   "bevy_gltf",
+  "bevy_gltf_render",
   "bevy_pbr",
   "bevy_post_process",
   "gltf_animation",
@@ -316,6 +317,9 @@ bevy_gilrs = ["bevy_internal/bevy_gilrs"]
 
 # [glTF](https://www.khronos.org/gltf/) support
 bevy_gltf = ["bevy_internal/bevy_gltf"]
+
+# Renders GLTFs via PBR
+bevy_gltf_render = ["bevy_internal/bevy_gltf_render"]
 
 # Adds PBR rendering
 bevy_pbr = ["bevy_internal/bevy_pbr"]
