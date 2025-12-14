@@ -86,6 +86,22 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     };
     let text_justification = Justify::Center;
     commands.spawn(Camera2d);
+
+    let small_text_font = TextFont {
+        font: font.clone(),
+        font_size: 20.0,
+        ..default()
+    };
+    commands.spawn((
+        Text2d::new("Press Tab to cycle input, shift tab to cycle backwards"),
+        small_text_font.clone(),
+        TextBackgroundColor(Color::BLACK.with_alpha(0.5)),
+        Text2dShadow::default(),
+        Anchor::TOP_LEFT,
+        Transform::from_translation(Vec3::new(-600.0, 340.0, 0.0)),
+        TextInputSize(Vec2::new(100., 40.)),
+    ));
+
     // Demonstrate changing translation
     commands.spawn((
         Text2d::new(" translation "),
@@ -105,6 +121,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         AnimateTranslation,
     ));
+
     // Demonstrate changing rotation
     commands.spawn((
         Text2d::new(" rotation "),
@@ -117,6 +134,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         TextInputSize(Vec2::new(100., 40.)),
         AnimateRotation,
     ));
+
     // Demonstrate changing scale
     commands.spawn((
         Text2d::new(" scale "),
@@ -130,6 +148,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         TextInputSize(Vec2::new(100., 40.)),
         AnimateScale,
     ));
+
     // Demonstrate text wrapping
     let slightly_smaller_text_font = TextFont {
         font,
