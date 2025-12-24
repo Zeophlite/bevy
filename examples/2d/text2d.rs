@@ -112,6 +112,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Textable(0),
         Anchor::TOP_LEFT,
         TextInputSize(Vec2::new(100., 40.)),
+        // Overwrite,
         DisplayConfig {
             placeholder_text: SKY_300.into(),
             input_text: GRAY_300.into(),
@@ -132,6 +133,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         Textable(1),
         Anchor::TOP_LEFT,
         TextInputSize(Vec2::new(100., 40.)),
+        // Overwrite,
+        DisplayConfig {
+            placeholder_text: SKY_300.into(),
+            input_text: GRAY_300.into(),
+            input_background: NAVY.into(),
+            selected_highlight: BLUE_900.into(),
+            cursor: GRAY_400.into(),
+        },
         AnimateRotation,
     ));
 
@@ -146,6 +155,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         // Textable(2),
         Anchor::TOP_LEFT,
         TextInputSize(Vec2::new(100., 40.)),
+        // Overwrite,
+        DisplayConfig {
+            placeholder_text: SKY_300.into(),
+            input_text: GRAY_300.into(),
+            input_background: NAVY.into(),
+            selected_highlight: BLUE_900.into(),
+            cursor: GRAY_400.into(),
+        },
         AnimateScale,
     ));
 
@@ -179,6 +196,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             // Textable(3),
             Anchor::TOP_LEFT,
             TextInputSize(Vec2::new(100., 40.)),
+            // Overwrite,
+            DisplayConfig {
+                placeholder_text: SKY_300.into(),
+                input_text: GRAY_300.into(),
+                input_background: NAVY.into(),
+                selected_highlight: BLUE_900.into(),
+                cursor: GRAY_400.into(),
+            },
             // observer(over_text),
             // observer(out_text),
         )],
@@ -205,6 +230,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             // Textable(4),
             Anchor::TOP_LEFT,
             TextInputSize(Vec2::new(100., 40.)),
+            // Overwrite,
+            DisplayConfig {
+                placeholder_text: SKY_300.into(),
+                input_text: GRAY_300.into(),
+                input_background: NAVY.into(),
+                selected_highlight: BLUE_900.into(),
+                cursor: GRAY_400.into(),
+            },
             // observe(over_text),
             // observe(out_text),
         )],
@@ -223,6 +256,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         // Textable(5),
         Anchor::TOP_LEFT,
         TextInputSize(Vec2::new(100., 40.)),
+        // Overwrite,
+        DisplayConfig {
+            placeholder_text: SKY_300.into(),
+            input_text: GRAY_300.into(),
+            input_background: NAVY.into(),
+            selected_highlight: BLUE_900.into(),
+            cursor: GRAY_400.into(),
+        },
     ));
 
     let make_child = move |(text_anchor, color, delta): (Anchor, Color, i32)| {
@@ -234,6 +275,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Transform::from_translation(-1. * Vec3::Z),
             // Textable(6 + delta * 3),
             TextInputSize(Vec2::new(100., 40.)),
+            // Overwrite,
+            DisplayConfig {
+                placeholder_text: SKY_300.into(),
+                input_text: GRAY_300.into(),
+                input_background: NAVY.into(),
+                selected_highlight: BLUE_900.into(),
+                cursor: GRAY_400.into(),
+            },
             children![
                 (
                     TextSpan("::".to_string()),
@@ -243,6 +292,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     // Textable(7 + delta * 3),
                     Anchor::TOP_LEFT,
                     TextInputSize(Vec2::new(100., 40.)),
+                    // Overwrite,
+                    DisplayConfig {
+                        placeholder_text: SKY_300.into(),
+                        input_text: GRAY_300.into(),
+                        input_background: NAVY.into(),
+                        selected_highlight: BLUE_900.into(),
+                        cursor: GRAY_400.into(),
+                    },
                 ),
                 (
                     TextSpan(format!("{text_anchor:?} ")),
@@ -252,6 +309,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     // Textable(8 + delta * 3),
                     Anchor::TOP_LEFT,
                     TextInputSize(Vec2::new(100., 40.)),
+                    // Overwrite,
+                    DisplayConfig {
+                        placeholder_text: SKY_300.into(),
+                        input_text: GRAY_300.into(),
+                        input_background: NAVY.into(),
+                        selected_highlight: BLUE_900.into(),
+                        cursor: GRAY_400.into(),
+                    },
                 )
             ],
         )
@@ -385,12 +450,12 @@ fn rotate_selected_input(
             let mut b = TextInputBuffer::default();
             b.with_text(&text.0);
             // let c = TextInputAttributes::from(value);
-            commands.entity(entity).insert(b);
+            commands.entity(entity).insert(b).insert(Overwrite(false));
         } else {
             if let Some(buffer) = maybe_buffer {
                 // remove buffer
             }
-            commands.entity(entity).remove::<TextInputBuffer>();
+            commands.entity(entity).remove::<TextInputBuffer>().remove::<Overwrite>();
         }
     }
 }

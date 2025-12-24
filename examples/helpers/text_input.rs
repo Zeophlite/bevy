@@ -54,6 +54,7 @@ pub fn update_inputs(
         let is_command_pressed = keyboard_state.pressed(Key::Super);
 
         for (mut actions, mut overwrite) in query.iter_mut() {
+            println!("K1");
             if is_command_pressed {
                 match &pressed_key {
                     Key::Character(str) => {
@@ -111,6 +112,7 @@ pub fn update_inputs(
                             " ".chars()
                         };
                         for char in str {
+                            println!("K1 - {:?}", char);
                             actions.queue(if overwrite.0 {
                                 TextEdit::Overwrite(char)
                             } else {
@@ -403,11 +405,11 @@ pub fn update_targets(
         .unwrap_or(1.0);
     // println!("update_targets = {:?}", scale_factor);
     for (entity, size, mut target, anchor, aabb) in query.iter_mut() {
-        // println!("-- size = {:?}", size.0);
         if target.set_if_neq(TextInputTarget {
             size: size.0 * scale_factor,
             scale_factor,
         }) {
+            // println!("-- size = {:?}", size.0);
             let new_aabb = anchor.calculate_bounds(size.0);
 
             if let Some(mut aabb) = aabb {
