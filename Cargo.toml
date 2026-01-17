@@ -1674,6 +1674,7 @@ name = "animated_mesh"
 path = "examples/animation/animated_mesh.rs"
 # Causes an ICE on docs.rs
 doc-scrape-examples = false
+required-features = ["bevy_remote"]
 
 [package.metadata.example.animated_mesh]
 name = "Animated Mesh"

@@ -71,6 +71,7 @@ impl Aabb {
         let maximum = Vec3A::from(maximum);
         let center = 0.5 * (maximum + minimum);
         let half_extents = 0.5 * (maximum - minimum);
+        println!("center = {:?} half_extents = {:?}", center, half_extents);
         Self {
             center,
             half_extents,

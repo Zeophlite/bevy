@@ -54,13 +54,18 @@ mod volumetric_fog;
 use bevy_color::{Color, LinearRgba};
 
 pub use atmosphere::*;
+use bevy_asset::LoadContext;
+use bevy_gltf::{GltfAssetLabel, GltfMaterial, GltfMaterialTranslator};
 use bevy_light::{
     AmbientLight, DirectionalLight, PointLight, ShadowFilteringMethod, SimulationLightSystems,
     SpotLight,
 };
+use bevy_platform::sync::Arc;
 use bevy_shader::{load_shader_library, ShaderRef};
 pub use cluster::*;
 pub use components::*;
+use tracing::info;
+use core::{error::Error, fmt};
 pub use decal::clustered::ClusteredDecalPlugin;
 pub use extended_material::*;
 pub use fog::*;
@@ -196,6 +201,17 @@ pub struct Bluenoise {
     pub texture: Handle<Image>,
 }
 
+#[derive(Debug)]
+struct PbrGltfError;
+
+impl fmt::Display for PbrGltfError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "unable to convert pbr to gltf")
+    }
+}
+
+impl Error for PbrGltfError {}
+
 impl Plugin for PbrPlugin {
     fn build(&self, app: &mut App) {
         load_shader_library!(app, "render/pbr_types.wgsl");
@@ -265,6 +281,69 @@ impl Plugin for PbrPlugin {
                 )
                     .chain(),
             );
+
+        info!("Adding GltfMaterialTranslator in bevy_pbr");
+        let gltf_material_translator = GltfMaterialTranslator {
+            load_material: Arc::new(
+                |gltf_material: &GltfMaterial,
+                 label: &GltfAssetLabel,
+                 load_context: &mut LoadContext| {
+                    info!("translator load_material {:?}", label.to_string());
+
+                    let t = load_context
+                        .labeled_asset_scope::<_, ()>(label.to_string(), |_load_context| {
+                            Ok(standard_material_from_gltf_material(gltf_material))
+                        });
+                    // .untyped()
+                    if let Some(tt) = t.ok() {
+                        info!("translator load_material got handle");
+                        return Ok(tt.untyped());
+                    } else {
+                        info!("translator load_material got error");
+                        // let _k = t.err().into();
+                        return Err(BevyError::from(PbrGltfError));
+                    }
+                },
+            ),
+            insert_material: Arc::new(
+                |label: &GltfAssetLabel,
+                 load_context: &mut LoadContext,
+                 entity: &mut EntityWorldMut| {
+                    info!("translator insert_material1: {:?}", label.to_string());
+                    let handle =
+                        load_context.get_label_handle::<StandardMaterial>(label.to_string());
+                    // .ok_or_else(|| "TODO: error".into())?;
+                    info!("translator insert_material2: {:?}", handle);
+
+                    entity.insert(MeshMaterial3d(handle));
+                    Ok(())
+                },
+            ),
+            // insert_material: Arc::new(
+            //     |label: &GltfAssetLabel,
+            //      load_context: &mut LoadContext,
+            //      parent: &mut RelatedSpawner<'_, ChildOf>,
+            //      mesh_entity_transform: Transform,
+            //      mesh: Mesh3d| {
+            //         info!("translator insert_material");
+            //         let handle =
+            //             load_context.get_label_handle::<StandardMaterial>(label.to_string());
+            //         // .ok_or_else(|| "TODO: error".into())?;
+            //         info!("translator insert_material: {:?}", handle);
+
+            //         let mut mesh_entity = parent.spawn((
+            //             // TODO: handle missing label handle errors here?
+            //             mesh,
+            //             MeshMaterial3d(handle),
+            //             mesh_entity_transform,
+            //         ));
+
+            //         mesh_entity
+            //     },
+            // ),
+        };
+
+        app.insert_resource(gltf_material_translator);
 
         if self.add_default_deferred_lighting_plugin {
             app.add_plugins(DeferredPbrLightingPlugin);
@@ -398,5 +477,49 @@ pub fn stbn_placeholder() -> Image {
         texture_view_descriptor: None,
         asset_usage: RenderAssetUsages::RENDER_WORLD,
         copy_on_resize: false,
+    }
+}
+
+fn standard_material_from_gltf_material(material: &GltfMaterial) -> StandardMaterial {
+    StandardMaterial {
+        base_color: material.base_color,
+        base_color_channel: material.base_color_channel.clone(),
+        base_color_texture: material.base_color_texture.clone(),
+        emissive: material.emissive,
+        emissive_channel: material.emissive_channel.clone(),
+        emissive_texture: material.emissive_texture.clone(),
+        perceptual_roughness: material.perceptual_roughness,
+        metallic: material.metallic,
+        metallic_roughness_channel: material.metallic_roughness_channel.clone(),
+        metallic_roughness_texture: material.metallic_roughness_texture.clone(),
+        reflectance: material.reflectance,
+        specular_tint: material.specular_tint,
+        specular_transmission: material.specular_transmission,
+        #[cfg(feature = "pbr_transmission_textures")]
+        specular_transmission_channel: material.specular_transmission_channel.clone(),
+        #[cfg(feature = "pbr_transmission_textures")]
+        specular_transmission_texture: material.specular_transmission_texture.clone(),
+        thickness: material.thickness,
+        #[cfg(feature = "pbr_transmission_textures")]
+        thickness_channel: material.thickness_channel.clone(),
+        #[cfg(feature = "pbr_transmission_textures")]
+        thickness_texture: material.thickness_texture.clone(),
+        ior: material.ior,
+        attenuation_distance: material.attenuation_distance,
+        attenuation_color: material.attenuation_color,
+        normal_map_channel: material.normal_map_channel.clone(),
+        normal_map_texture: material.normal_map_texture.clone(),
+        occlusion_channel: material.occlusion_channel.clone(),
+        occlusion_texture: material.occlusion_texture.clone(),
+        clearcoat: material.clearcoat,
+        clearcoat_perceptual_roughness: material.clearcoat_perceptual_roughness,
+        anisotropy_strength: material.anisotropy_strength,
+        anisotropy_rotation: material.anisotropy_rotation,
+        double_sided: material.double_sided,
+        cull_mode: material.cull_mode,
+        unlit: material.unlit,
+        alpha_mode: material.alpha_mode,
+        uv_transform: material.uv_transform,
+        ..Default::default()
     }
 }

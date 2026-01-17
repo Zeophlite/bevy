@@ -2,7 +2,9 @@
 
 use std::f32::consts::PI;
 
-use bevy::{light::CascadeShadowConfigBuilder, prelude::*, scene::SceneInstanceReady};
+use bevy::{light::CascadeShadowConfigBuilder, prelude::*, scene::SceneInstanceReady,
+    remote::{http::RemoteHttpPlugin, RemotePlugin},
+};
 
 // An example asset that contains a mesh and animation.
 const GLTF_PATH: &str = "models/animated/Fox.glb";
@@ -14,7 +16,11 @@ fn main() {
             brightness: 2000.,
             ..default()
         })
+        .register_type::<StandardMaterial>()
+        .register_type::<MeshMaterial3d<StandardMaterial>>()
         .add_plugins(DefaultPlugins)
+        .add_plugins(RemotePlugin::default()) // Core remote protocol
+        .add_plugins(RemoteHttpPlugin::default()) // Enable HTTP transport
         .add_systems(Startup, setup_mesh_and_animation)
         .add_systems(Startup, setup_camera_and_environment)
         .run();
@@ -52,7 +58,10 @@ fn setup_mesh_and_animation(
     // Start loading the asset as a scene and store a reference to it in a
     // SceneRoot component. This component will automatically spawn a scene
     // containing our mesh once it has loaded.
-    let mesh_scene = SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset(GLTF_PATH)));
+    println!("do load");
+    let k = asset_server.load(GltfAssetLabel::Scene(0).from_asset(GLTF_PATH));
+    println!("build scene root");
+    let mesh_scene = SceneRoot(k);
 
     // Spawn an entity with our components, and connect it to an observer that
     // will trigger when the scene is loaded and spawned.
@@ -68,6 +77,7 @@ fn play_animation_when_ready(
     animations_to_play: Query<&AnimationToPlay>,
     mut players: Query<&mut AnimationPlayer>,
 ) {
+    println!("play_animation_when_ready");
     // The entity we spawned in `setup_mesh_and_animation` is the trigger's target.
     // Start by finding the AnimationToPlay component we added to that entity.
     if let Ok(animation_to_play) = animations_to_play.get(scene_ready.entity) {
