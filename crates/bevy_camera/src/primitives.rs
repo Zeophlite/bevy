@@ -18,6 +18,7 @@ pub trait MeshAabb {
 
 impl MeshAabb for Mesh {
     fn compute_aabb(&self) -> Option<Aabb> {
+        println!("AA compute_aabb");
         if let Some(aabb) = self.final_aabb {
             // use precomputed extents
             return Some(aabb.into());
@@ -67,6 +68,7 @@ pub struct Aabb {
 impl Aabb {
     #[inline]
     pub fn from_min_max(minimum: Vec3, maximum: Vec3) -> Self {
+        println!("minimum = {:?} maximum = {:?}", minimum, maximum);
         let minimum = Vec3A::from(minimum);
         let maximum = Vec3A::from(maximum);
         let center = 0.5 * (maximum + minimum);
@@ -92,6 +94,7 @@ impl Aabb {
     /// assert_eq!(bb.max(), Vec3A::new(1.0, 0.0, 2.0));
     /// ```
     pub fn enclosing<T: Borrow<Vec3>>(iter: impl IntoIterator<Item = T>) -> Option<Self> {
+        println!("AA encl");
         let mut iter = iter.into_iter().map(|p| *p.borrow());
         let mut min = iter.next()?;
         let mut max = min;

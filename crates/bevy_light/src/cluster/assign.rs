@@ -925,6 +925,7 @@ fn compute_aabb_for_cluster(
         cluster_min = p_min_near.min(p_min_far).min(p_max_near.min(p_max_far));
         cluster_max = p_min_near.max(p_min_far).max(p_max_near.max(p_max_far));
     }
+    println!("AA light");
 
     Aabb::from_min_max(cluster_min, cluster_max)
 }

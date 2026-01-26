@@ -2142,6 +2142,7 @@ impl Mesh {
     ///
     /// Returns an error if the mesh data has been extracted to `RenderWorld`.
     pub fn take_gpu_data(&mut self) -> Result<Self, MeshAccessError> {
+        println!("AA take_gpu_data");
         let attributes = self.attributes.extract()?;
         let indices = self.indices.extract()?;
         #[cfg(feature = "morph")]

@@ -65,10 +65,10 @@ plugin_group! {
         bevy_ui:::UiPlugin,
         #[cfg(feature = "bevy_ui_render")]
         bevy_ui_render:::UiRenderPlugin,
-        #[cfg(feature = "bevy_gltf")]
-        bevy_gltf:::GltfPlugin,
         #[cfg(feature = "bevy_pbr")]
         bevy_pbr:::PbrPlugin,
+        #[cfg(feature = "bevy_gltf")]
+        bevy_gltf:::GltfPlugin,
         #[cfg(feature = "bevy_audio")]
         bevy_audio:::AudioPlugin,
         #[cfg(feature = "bevy_gilrs")]
