@@ -56,9 +56,7 @@ use thiserror::Error;
 use tracing::{error, info_span, warn};
 
 use crate::{
-    convert_coordinates::ConvertCoordinates as _, vertex_attributes::convert_attribute, Gltf,
-    GltfAssetLabel, GltfExtras, GltfMaterialExtras, GltfMaterialName, GltfMeshExtras, GltfMeshName,
-    GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy,
+    Gltf, GltfAssetLabel, GltfExtras, GltfMaterial, GltfMaterialExtras, GltfMaterialName, GltfMaterialTranslator, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy, convert_coordinates::ConvertCoordinates as _, standard_material_from_gltf_material, vertex_attributes::convert_attribute
 };
 
 #[cfg(feature = "bevy_animation")]
@@ -160,6 +158,8 @@ pub struct GltfLoader {
     /// The default policy for skinned mesh bounds. Can be overridden by
     /// [`GltfLoaderSettings::skinned_mesh_bounds_policy`].
     pub default_skinned_mesh_bounds_policy: GltfSkinnedMeshBoundsPolicy,
+    ///  Converts `GltfMaterial` to something the renderer understands
+    pub material_translator: GltfMaterialTranslator,
 }
 
 /// Specifies optional settings for processing gltfs at load time. By default, all recognized contents of
@@ -1208,7 +1208,7 @@ fn load_material(
     textures: &[Handle<Image>],
     is_scale_inverted: bool,
     asset_path: AssetPath<'_>,
-) -> (String, StandardMaterial) {
+) -> (String, GltfMaterial) {
     let pbr = material.pbr_metallic_roughness();
 
     // TODO: handle missing label handle errors here?
@@ -1367,7 +1367,7 @@ fn load_material(
     let base_emissive = LinearRgba::rgb(emissive[0], emissive[1], emissive[2]);
     let emissive = base_emissive * material.emissive_strength().unwrap_or(1.0);
 
-    let standard_material = StandardMaterial {
+    let gltf_material = GltfMaterial {
         base_color: Color::linear_rgba(color[0], color[1], color[2], color[3]),
         base_color_channel,
         base_color_texture,
@@ -1451,7 +1451,7 @@ fn load_material(
 
     (
         material_label(material, is_scale_inverted).to_string(),
-        standard_material,
+        gltf_material,
     )
 }
 

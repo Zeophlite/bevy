@@ -2,22 +2,46 @@
 
 use std::f32::consts::PI;
 
-use bevy::{light::CascadeShadowConfigBuilder, prelude::*, scene::SceneInstanceReady};
+use bevy::{
+    camera::primitives::Aabb,
+    light::CascadeShadowConfigBuilder,
+    prelude::*,
+    remote::{http::RemoteHttpPlugin, RemotePlugin},
+    scene::SceneInstanceReady,
+};
+use bevy_ecs::query::Spawned;
+use bevy_render::RenderApp;
 
 // An example asset that contains a mesh and animation.
 const GLTF_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
-    App::new()
+    let mut app = App::new();
+    app
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 2000.,
             ..default()
         })
+        .register_type::<StandardMaterial>()
+        .register_type::<MeshMaterial3d<StandardMaterial>>()
         .add_plugins(DefaultPlugins)
+        .add_plugins(RemotePlugin::default()) // Core remote protocol
+        .add_plugins(RemoteHttpPlugin::default()) // Enable HTTP transport
         .add_systems(Startup, setup_mesh_and_animation)
         .add_systems(Startup, setup_camera_and_environment)
-        .run();
+        .add_systems(PreUpdate, do_thing)
+        .add_systems(PreUpdate, do_thing2)
+        .add_systems(PreUpdate, do_thing3);
+        // .add_systems(PreUpdate, do_thing4);
+
+        // app.sub_app_mut(RenderApp)
+        //     .add_systems(PreUpdate, do_thing)
+        //     .add_systems(PreUpdate, do_thing2)
+        //     .add_systems(PreUpdate, do_thing3);
+        //     .add_systems(PreUpdate, do_thing4);
+
+    app.run();
 }
 
 // A component that stores a reference to an animation we want to play. This is
@@ -52,12 +76,15 @@ fn setup_mesh_and_animation(
     // Start loading the asset as a scene and store a reference to it in a
     // SceneRoot component. This component will automatically spawn a scene
     // containing our mesh once it has loaded.
-    let mesh_scene = SceneRoot(asset_server.load(GltfAssetLabel::Scene(0).from_asset(GLTF_PATH)));
+    println!("do load");
+    let k = asset_server.load(GltfAssetLabel::Scene(0).from_asset(GLTF_PATH));
+    println!("build scene root");
+    let mesh_scene = SceneRoot(k);
 
     // Spawn an entity with our components, and connect it to an observer that
     // will trigger when the scene is loaded and spawned.
     commands
-        .spawn((animation_to_play, mesh_scene))
+        .spawn((Name::new("animated"), animation_to_play, mesh_scene))
         .observe(play_animation_when_ready);
 }
 
@@ -68,6 +95,7 @@ fn play_animation_when_ready(
     animations_to_play: Query<&AnimationToPlay>,
     mut players: Query<&mut AnimationPlayer>,
 ) {
+    println!("play_animation_when_ready");
     // The entity we spawned in `setup_mesh_and_animation` is the trigger's target.
     // Start by finding the AnimationToPlay component we added to that entity.
     if let Ok(animation_to_play) = animations_to_play.get(scene_ready.entity) {
@@ -102,18 +130,21 @@ fn setup_camera_and_environment(
 ) {
     // Camera
     commands.spawn((
+        Name::new("camera"),
         Camera3d::default(),
         Transform::from_xyz(100.0, 100.0, 150.0).looking_at(Vec3::new(0.0, 20.0, 0.0), Vec3::Y),
     ));
 
     // Plane
-    commands.spawn((
+    let mut t = commands.spawn((
+        Name::new("plane"),
         Mesh3d(meshes.add(Plane3d::default().mesh().size(500000.0, 500000.0))),
         MeshMaterial3d(materials.add(Color::srgb(0.3, 0.5, 0.3))),
     ));
 
     // Light
     commands.spawn((
+        Name::new("light"),
         Transform::from_rotation(Quat::from_euler(EulerRot::ZYX, 0.0, 1.0, -PI / 4.)),
         DirectionalLight {
             shadow_maps_enabled: true,
@@ -126,4 +157,28 @@ fn setup_camera_and_environment(
         }
         .build(),
     ));
+}
+
+fn do_thing(changed_foo: Query<(Entity, &Aabb), Changed<Aabb>>) {
+    for (entity, aabb) in &changed_foo {
+        // println!("entity1 = {:?} aabb1 = {:?}", entity, aabb);
+    }
+}
+
+fn do_thing2(changed_foo: Query<(Entity, &Aabb), Added<Aabb>>) {
+    for (entity, aabb) in &changed_foo {
+        println!("entity2 = {:?} aabb2 = {:?}", entity, aabb);
+    }
+}
+
+fn do_thing3(changed_foo: Query<(Entity, &Aabb), Spawned>) {
+    for (entity, aabb) in &changed_foo {
+        println!("entity3 = {:?} aabb3 = {:?}", entity, aabb);
+    }
+}
+
+fn do_thing4(changed_foo: Query<(Entity, &Aabb)>) {
+    for (entity, aabb) in &changed_foo {
+        println!("entity4 = {:?} aabb4 = {:?}", entity, aabb);
+    }
 }

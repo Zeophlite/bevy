@@ -55,13 +55,17 @@ mod volumetric_fog;
 use bevy_color::{Color, LinearRgba};
 
 pub use atmosphere::*;
+use bevy_asset::LoadContext;
+// use bevy_gltf::{GltfAssetLabel, GltfMaterial, GltfMaterialTranslator};
 use bevy_light::{
     AmbientLight, DirectionalLight, PointLight, ShadowFilteringMethod, SimulationLightSystems,
     SpotLight,
 };
+use bevy_platform::sync::Arc;
 use bevy_shader::{load_shader_library, ShaderRef};
 pub use cluster::*;
 pub use components::*;
+use core::{error::Error, fmt};
 pub use decal::clustered::ClusteredDecalPlugin;
 pub use extended_material::*;
 pub use fog::*;
@@ -77,6 +81,7 @@ pub use prepass::*;
 pub use render::*;
 pub use ssao::*;
 pub use ssr::*;
+use tracing::info;
 pub use transmission::*;
 pub use volumetric_fog::VolumetricFogPlugin;
 
@@ -160,6 +165,8 @@ pub struct Bluenoise {
     pub texture: Handle<Image>,
 }
 
+// TODO: Move PbrGltfError here
+
 impl Plugin for PbrPlugin {
     fn build(&self, app: &mut App) {
         load_shader_library!(app, "render/pbr_types.wgsl");
@@ -229,6 +236,8 @@ impl Plugin for PbrPlugin {
                 )
                     .chain(),
             );
+
+        // TODO: move GltfTranslator here
 
         if self.add_default_deferred_lighting_plugin {
             app.add_plugins(DeferredPbrLightingPlugin);
@@ -366,3 +375,5 @@ pub fn stbn_placeholder() -> Image {
         copy_on_resize: false,
     }
 }
+
+// TODO: move standard_material_from_gltf_material here
