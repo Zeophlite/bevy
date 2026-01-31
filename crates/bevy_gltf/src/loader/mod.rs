@@ -57,7 +57,7 @@ use thiserror::Error;
 use tracing::{error, info, info_span, warn};
 
 use crate::{
-    Gltf, GltfAssetLabel, GltfExtras, GltfMaterial, GltfMaterialExtras, GltfMaterialName, GltfMaterialTranslator, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy, convert_coordinates::ConvertCoordinates as _, standard_material_from_gltf_material, vertex_attributes::convert_attribute,
+    Gltf, GltfAssetLabel, GltfExtras, GltfMaterial, GltfMaterialExtras, GltfMaterialName, GltfMaterialTranslator, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy, convert_coordinates::ConvertCoordinates as _, vertex_attributes::convert_attribute,
     convert_coordinates::ConvertCoordinates as _,
 };
 
