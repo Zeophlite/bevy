@@ -170,7 +170,7 @@ struct PbrGltfError;
 
 impl fmt::Display for PbrGltfError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "unable to convert pbr to gltf")
+        write!(f, "unable to convert gltf to pbr")
     }
 }
 
@@ -246,26 +246,21 @@ impl Plugin for PbrPlugin {
                     .chain(),
             );
 
-        info!("Adding GltfMaterialTranslator in bevy_pbr");
         let gltf_material_translator = GltfMaterialTranslator {
             load_material: Arc::new(
                 |gltf_material: &GltfMaterial,
                  label: &GltfAssetLabel,
                  load_context: &mut LoadContext| {
-                    info!("translator load_material {:?}", label.to_string());
                     let std_label = format!("{:?}#std", label.to_string());
 
-                    let t = load_context
-                        .labeled_asset_scope::<_, ()>(std_label, |_load_context| {
-                            Ok(standard_material_from_gltf_material(gltf_material))
-                        });
-                    // .untyped()
+                    let t = load_context.labeled_asset_scope::<_, ()>(std_label, |_load_context| {
+                        Ok(standard_material_from_gltf_material(gltf_material))
+                    });
+
                     if let Some(tt) = t.ok() {
-                        info!("translator load_material got handle");
                         return Ok(tt.untyped());
                     } else {
                         info!("translator load_material got error");
-                        // let _k = t.err().into();
                         return Err(BevyError::from(PbrGltfError));
                     }
                 },
@@ -276,41 +271,16 @@ impl Plugin for PbrPlugin {
                  entity: &mut EntityWorldMut| {
                     info!("translator insert_material1: {:?}", label.to_string());
                     let std_label = format!("{:?}#std", label.to_string());
-                    let handle =
-                        load_context.get_label_handle::<StandardMaterial>(std_label);
-                    // .ok_or_else(|| "TODO: error".into())?;
+                    let handle = load_context.get_label_handle::<StandardMaterial>(std_label);
                     info!("translator insert_material2: {:?}", handle);
 
                     entity.insert(MeshMaterial3d(handle));
                     Ok(())
                 },
             ),
-            // insert_material: Arc::new(
-            //     |label: &GltfAssetLabel,
-            //      load_context: &mut LoadContext,
-            //      parent: &mut RelatedSpawner<'_, ChildOf>,
-            //      mesh_entity_transform: Transform,
-            //      mesh: Mesh3d| {
-            //         info!("translator insert_material");
-            //         let handle =
-            //             load_context.get_label_handle::<StandardMaterial>(label.to_string());
-            //         // .ok_or_else(|| "TODO: error".into())?;
-            //         info!("translator insert_material: {:?}", handle);
-
-            //         let mut mesh_entity = parent.spawn((
-            //             // TODO: handle missing label handle errors here?
-            //             mesh,
-            //             MeshMaterial3d(handle),
-            //             mesh_entity_transform,
-            //         ));
-
-            //         mesh_entity
-            //     },
-            // ),
         };
 
         app.insert_resource(gltf_material_translator);
-
 
         if self.add_default_deferred_lighting_plugin {
             app.add_plugins(DeferredPbrLightingPlugin);

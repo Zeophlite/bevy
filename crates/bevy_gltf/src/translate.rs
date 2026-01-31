@@ -1,10 +1,7 @@
-// use std::any::Any;
-
 use crate::{GltfAssetLabel, GltfMaterial};
 use bevy_asset::{LoadContext, UntypedHandle};
 use bevy_ecs::{prelude::*, resource::Resource};
 use bevy_platform::sync::Arc;
-// use bevy_reflect::PartialReflect;
 
 /// Utility for letting renderers translate `GltfMaterial` into their own material type. The renderer
 /// should add this as a resource during `Plugin::build`.
@@ -22,9 +19,4 @@ pub struct GltfMaterialTranslator {
             + Send
             + Sync,
     >,
-    // pub insert_material: Arc<
-    //     dyn Fn(&GltfAssetLabel, &mut LoadContext, &mut RelatedSpawner<'_, ChildOf>, Transform, Mesh3d) -> Entity
-    //         + Send
-    //         + Sync
-    //         >
 }

@@ -138,10 +138,10 @@ mod vertex_attributes;
 extern crate alloc;
 
 use alloc::sync::Arc;
+use core::{error::Error, fmt};
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
-use tracing::{/*info,*/ info, warn};
-use core::{error::Error, fmt};
+use tracing::{info, warn};
 
 use bevy_platform::collections::HashMap;
 

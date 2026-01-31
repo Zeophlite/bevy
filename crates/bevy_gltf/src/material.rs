@@ -1,16 +1,15 @@
 use bevy_asset::{Asset, Handle};
 use bevy_color::{Color, LinearRgba};
-// use bevy_ecs::{component::Component, reflect::ReflectComponent};
 use bevy_image::Image;
 use bevy_material::{AlphaMode, UvChannel};
 use bevy_math::Affine2;
 use bevy_reflect::TypePath;
-// use bevy_reflect::{std_traits::ReflectDefault, Reflect, TypePath};
 use wgpu_types::Face;
 
 /// Data to build a Gltf Material
 #[derive(Asset, Debug, TypePath)]
 pub struct GltfMaterial {
+    // TODO: copy comments from standard material?
     /// A
     pub base_color: Color,
     /// A

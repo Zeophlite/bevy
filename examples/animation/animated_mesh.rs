@@ -3,10 +3,7 @@
 use std::f32::consts::PI;
 
 use bevy::{
-    camera::primitives::Aabb,
-    light::CascadeShadowConfigBuilder,
-    prelude::*,
-    remote::{http::RemoteHttpPlugin, RemotePlugin},
+    camera::primitives::Aabb, light::CascadeShadowConfigBuilder, prelude::*,
     scene::SceneInstanceReady,
 };
 use bevy_ecs::query::Spawned;
@@ -16,34 +13,16 @@ use bevy_render::RenderApp;
 const GLTF_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
-    let mut app = App::new();
-    app
+    App::new()
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 2000.,
             ..default()
         })
-        .register_type::<StandardMaterial>()
-        .register_type::<MeshMaterial3d<StandardMaterial>>()
         .add_plugins(DefaultPlugins)
-        .add_plugins(RemotePlugin::default()) // Core remote protocol
-        .add_plugins(RemoteHttpPlugin::default()) // Enable HTTP transport
         .add_systems(Startup, setup_mesh_and_animation)
         .add_systems(Startup, setup_camera_and_environment)
-        .add_systems(PreUpdate, do_thing)
-        .add_systems(PreUpdate, do_thing2)
-        .add_systems(PreUpdate, do_thing3)
-        // .add_systems(PreUpdate, do_thing4)
-        // .add_systems(PreUpdate, do_thing5)
-    ;
-
-        // app.sub_app_mut(RenderApp)
-        //     .add_systems(PreUpdate, do_thing)
-        //     .add_systems(PreUpdate, do_thing2)
-        //     .add_systems(PreUpdate, do_thing3);
-        //     .add_systems(PreUpdate, do_thing4);
-
-    app.run();
+        .run();
 }
 
 // A component that stores a reference to an animation we want to play. This is
@@ -78,9 +57,7 @@ fn setup_mesh_and_animation(
     // Start loading the asset as a scene and store a reference to it in a
     // SceneRoot component. This component will automatically spawn a scene
     // containing our mesh once it has loaded.
-    println!("do load");
     let k = asset_server.load(GltfAssetLabel::Scene(0).from_asset(GLTF_PATH));
-    println!("build scene root");
     let mesh_scene = SceneRoot(k);
 
     // Spawn an entity with our components, and connect it to an observer that
@@ -97,7 +74,6 @@ fn play_animation_when_ready(
     animations_to_play: Query<&AnimationToPlay>,
     mut players: Query<&mut AnimationPlayer>,
 ) {
-    println!("play_animation_when_ready");
     // The entity we spawned in `setup_mesh_and_animation` is the trigger's target.
     // Start by finding the AnimationToPlay component we added to that entity.
     if let Ok(animation_to_play) = animations_to_play.get(scene_ready.entity) {
@@ -159,38 +135,4 @@ fn setup_camera_and_environment(
         }
         .build(),
     ));
-}
-
-fn do_thing(changed_foo: Query<(Entity, &Aabb), Changed<Aabb>>) {
-    for (entity, aabb) in &changed_foo {
-        // println!("entity1 = {:?} aabb1 = {:?}", entity, aabb);
-    }
-}
-
-fn do_thing2(changed_foo: Query<(Entity, &Aabb), Added<Aabb>>) {
-    for (entity, aabb) in &changed_foo {
-        println!("entity2 = {:?} aabb2 = {:?}", entity, aabb);
-    }
-}
-
-fn do_thing3(changed_foo: Query<(Entity, &Aabb), Spawned>) {
-    for (entity, aabb) in &changed_foo {
-        println!("entity3 = {:?} aabb3 = {:?}", entity, aabb);
-    }
-}
-
-fn do_thing4(changed_foo: Query<(Entity, &Aabb)>) {
-    for (entity, aabb) in &changed_foo {
-        println!("entity4 = {:?} aabb4 = {:?}", entity, aabb);
-    }
-}
-
-fn do_thing5(
-    changed_foo: Query<(Entity, &MeshMaterial3d<StandardMaterial>)>,
-    asset_server: Res<AssetServer>,
-) {
-    for (entity, mm3d) in &changed_foo {
-        let il = asset_server.is_loaded(mm3d.id());
-        println!("entity5 = {:?} mm3d = {:?} il = {:?}", entity, mm3d, il);
-    }
 }

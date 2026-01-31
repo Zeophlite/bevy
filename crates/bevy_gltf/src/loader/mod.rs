@@ -17,8 +17,6 @@ use bevy_camera::{
 use bevy_color::{Color, LinearRgba};
 use bevy_ecs::{
     entity::{Entity, EntityHashMap},
-    // prelude::Component,
-    // prelude::Bundle,
     hierarchy::ChildSpawner,
     name::Name,
     world::World,
@@ -52,13 +50,15 @@ use gltf::{
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "bevy_animation")]
 use smallvec::SmallVec;
-use std::{/*any::Any,*/ io::Error, sync::Mutex};
+use std::{io::Error, sync::Mutex};
 use thiserror::Error;
 use tracing::{error, info, info_span, warn};
 
 use crate::{
-    Gltf, GltfAssetLabel, GltfExtras, GltfMaterial, GltfMaterialExtras, GltfMaterialName, GltfMaterialTranslator, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy, convert_coordinates::ConvertCoordinates as _, vertex_attributes::convert_attribute,
-    convert_coordinates::ConvertCoordinates as _,
+    convert_coordinates::ConvertCoordinates as _, convert_coordinates::ConvertCoordinates as _,
+    vertex_attributes::convert_attribute, Gltf, GltfAssetLabel, GltfExtras, GltfMaterial,
+    GltfMaterialExtras, GltfMaterialName, GltfMaterialTranslator, GltfMeshExtras, GltfMeshName,
+    GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy,
 };
 
 #[cfg(feature = "bevy_animation")]
@@ -243,7 +243,6 @@ impl GltfLoader {
         load_context: &'b mut LoadContext<'c>,
         settings: &'b GltfLoaderSettings,
     ) -> Result<Gltf, GltfError> {
-        println!("load_gltf");
         let gltf = gltf::Gltf::from_slice(bytes)?;
 
         // clone extensions to start with a fresh processing state
@@ -674,15 +673,12 @@ impl GltfLoader {
             // NOTE: materials must be loaded after textures because image load() calls will happen before load_with_settings, preventing is_srgb from being set properly
             for material in gltf.materials() {
                 let handle = {
-                    info!("pre load material 1");
-                    // let mut z = load_context.begin_labeled_asset();
                     let (label, material) = load_material(
                         &material,
                         &texture_handles,
                         false,
                         load_context.path().clone(),
                         &loader.material_translator.clone(),
-                        // &mut z,
                         load_context,
                     );
                     load_context.add_labeled_asset(label, material)
@@ -1212,6 +1208,7 @@ async fn load_image<'a, 'b>(
 }
 
 /// Loads a glTF material as a bevy [`GltfMaterial`] and returns the label and material.
+/// Uses the `material_translator` to load a second asset via the `load_context`.
 fn load_material(
     material: &Material,
     textures: &[Handle<Image>],
@@ -1461,15 +1458,10 @@ fn load_material(
 
     let mat_label = material_label(material, is_scale_inverted);
 
-    info!("pre material_translator.load_material");
-    // let mut x = load_context.begin_labeled_asset();
     let _k = (material_translator.load_material)(&gltf_material, &mat_label, load_context);
-    //     Ok(handle) return handle;
-    //     Err(err) { warn!("{err}"); return /* TODO? Does `load_material` return a Result?*/; }
-    // };
+    // TODO: at least log an error here
+    // TODO: could consider changing `load_material` to return a result
 
-    info!("todo: send _k = {:?} ", _k);
-    // todo!("send _k?");
     (mat_label.to_string(), gltf_material)
 }
 
@@ -1499,7 +1491,6 @@ fn load_node(
     skinned_mesh_bounds_policy: GltfSkinnedMeshBoundsPolicy,
     material_translator: &GltfMaterialTranslator,
 ) -> Result<(), GltfError> {
-    println!("Load node");
     let mut gltf_error = None;
     let transform = node_transform(gltf_node);
     let world_transform = *parent_transform * transform;
@@ -1609,25 +1600,16 @@ fn load_node(
                 if !root_load_context.has_labeled_asset(&material_label)
                     && !load_context.has_labeled_asset(&material_label)
                 {
-                    // let mut x = load_context.begin_labeled_asset();
-
-                    info!("pre load material 2");
-                    let (_label, _material) = load_material(
+                    let (label, material) = load_material(
                         &material,
                         textures,
                         is_scale_inverted,
                         load_context.path().clone(),
                         material_translator,
-                        // &mut x,
                         load_context,
                     );
-
-                    info!("todo: do something with x?");
-                    // todo!("do something with x?");
-
-                    // let y = x.finish(material);
-                    // let z = y.take();
-                    // load_context.add_labeled_asset(label, z);
+                    // TODO: maybe move this into `load_material` ?
+                    load_context.add_labeled_asset(label, material);
                 }
 
                 let primitive_label = GltfAssetLabel::Primitive {
@@ -1635,28 +1617,26 @@ fn load_node(
                     primitive: primitive.index(),
                 };
                 let bounds = primitive.bounding_box();
-                println!("primitive bounds {:?}", bounds);
 
                 // Apply the inverse of the conversion transform that's been
                 // applied to the mesh asset. This preserves the mesh's relation
                 // to the node transform.
                 let mesh_entity_transform = convert_coordinates.mesh_conversion_transform_inverse();
-                // let mmesh = Mesh3d(load_context.get_label_handle(primitive_label.to_string()));
-
-                println!("type 1");
-
-                // let mut mesh_entity = (material_translator.insert_material)(
-                //         &mat_label,
-                //         load_context,
-                //         parent,
-                //         mesh_entity_transform,
-                //         mmesh
-                //     );
 
                 let mut mesh_entity = parent.spawn((
                     // TODO: handle missing label handle errors here?
+                    Mesh3d(load_context.get_label_handle(primitive_label.to_string())),
+                    // TODO: could add the `GltfMaterial` here
                     mesh_entity_transform,
                 ));
+
+                if let Err(err) = (material_translator.insert_material)(
+                    &mat_label,
+                    load_context,
+                    &mut mesh_entity,
+                ) {
+                    warn!("gltf material_translator insert_material error: {:?}", err);
+                }
 
                 if gltf_node.skin().is_some() {
                     match skinned_mesh_bounds_policy {
@@ -1669,19 +1649,6 @@ fn load_node(
                         _ => {}
                     }
                 }
-
-                if let Err(err) = (material_translator.insert_material)(
-                    &mat_label,
-                    load_context,
-                    &mut mesh_entity,
-                ) {
-                    warn!("gltf material_translator insert_material error: {:?}", err);
-                }
-
-                println!("prim = {:?}", primitive_label.to_string());
-                mesh_entity.insert(Mesh3d(
-                    load_context.get_label_handle(primitive_label.to_string()),
-                ));
 
                 let target_count = primitive.morph_targets().len();
                 if target_count != 0 {
@@ -1705,8 +1672,6 @@ fn load_node(
 
                 let mut bounds_min = Vec3::from_slice(&bounds.min);
                 let mut bounds_max = Vec3::from_slice(&bounds.max);
-                println!("bounds_min1 {:?}", bounds_min);
-                println!("bounds_max1 {:?}", bounds_max);
 
                 if convert_coordinates.rotate_meshes {
                     let converted_min = bounds_min.convert_coordinates();
@@ -1714,8 +1679,6 @@ fn load_node(
 
                     bounds_min = converted_min.min(converted_max);
                     bounds_max = converted_min.max(converted_max);
-                    println!("bounds_min2 {:?}", bounds_min);
-                    println!("bounds_max2 {:?}", bounds_max);
                 }
 
                 mesh_entity.insert(Aabb::from_min_max(bounds_min, bounds_max));

@@ -278,7 +278,6 @@ impl SceneSpawner {
         world: &mut World,
         id: impl Into<AssetId<DynamicScene>>,
     ) -> Result<InstanceId, SceneSpawnError> {
-        println!("spawn_dynamic_sync");
         let mut entity_map = EntityHashMap::default();
         let id = id.into();
         Self::spawn_dynamic_internal(world, id, &mut entity_map)?;
@@ -318,7 +317,6 @@ impl SceneSpawner {
         world: &mut World,
         id: impl Into<AssetId<Scene>>,
     ) -> Result<InstanceId, SceneSpawnError> {
-        println!("spawn_sync");
         let mut entity_map = EntityHashMap::default();
         let id = id.into();
         Self::spawn_sync_internal(world, id, &mut entity_map)?;
@@ -377,7 +375,6 @@ impl SceneSpawner {
                         Self::set_scene_instance_parent_sync(world, instance_info);
                         // We trigger `SceneInstanceReady` events after processing all scenes
                         // SceneSpawner may not be available in the observer.
-                        println!("update_spawned_scenes");
                         self.instances_ready
                             .push((*instance_id, instance_info.parent));
                     }
@@ -408,7 +405,6 @@ impl SceneSpawner {
                         Self::set_scene_instance_parent_sync(world, instance_info);
                         // We trigger `SceneInstanceReady` events after processing all scenes
                         // SceneSpawner may not be available in the observer.
-                        println!("update_spawned_dynamic_scenes");
                         self.instances_ready
                             .push((*instance_id, instance_info.parent));
                     }
@@ -457,7 +453,6 @@ impl SceneSpawner {
                     spawned.insert(instance_id);
                     // We trigger `SceneInstanceReady` events after processing all scenes
                     // SceneSpawner may not be available in the observer.
-                    println!("spawn_queued_scenes a");
                     self.instances_ready.push((instance_id, parent));
                 }
                 Err(SceneSpawnError::NonExistentScene { .. }) => {
@@ -484,7 +479,6 @@ impl SceneSpawner {
 
                     // We trigger `SceneInstanceReady` events after processing all scenes
                     // SceneSpawner may not be available in the observer.
-                    println!("spawn_queued_scenes b");
                     self.instances_ready.push((instance_id, parent));
                 }
                 Err(SceneSpawnError::NonExistentRealScene { .. }) => {
@@ -523,7 +517,6 @@ impl SceneSpawner {
         for (instance_id, parent) in self.instances_ready.drain(..) {
             if let Some(parent) = parent {
                 // Defer via commands otherwise SceneSpawner is not available in the observer.
-                println!("trigger1 SceneInstanceReady");
                 world.commands().trigger(SceneInstanceReady {
                     instance_id,
                     entity: parent,
@@ -532,7 +525,6 @@ impl SceneSpawner {
                 // Defer via commands otherwise SceneSpawner is not available in the observer.
                 // TODO: triggering this for PLACEHOLDER is suboptimal, but this scene system is on
                 // its way out, so lets avoid breaking people by making a second event.
-                println!("trigger2 SceneInstanceReady");
                 world.commands().trigger(SceneInstanceReady {
                     instance_id,
                     entity: Entity::PLACEHOLDER,
@@ -908,7 +900,6 @@ mod tests {
             move |event: On<SceneInstanceReady>,
                   scene_spawner: Res<SceneSpawner>,
                   mut trigger_count: ResMut<TriggerCount>| {
-                println!("On<SceneInstanceReady>");
                 assert_eq!(
                     event.event().instance_id,
                     scene_id,
