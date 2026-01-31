@@ -32,8 +32,10 @@ fn main() {
         .add_systems(Startup, setup_camera_and_environment)
         .add_systems(PreUpdate, do_thing)
         .add_systems(PreUpdate, do_thing2)
-        .add_systems(PreUpdate, do_thing3);
-        // .add_systems(PreUpdate, do_thing4);
+        .add_systems(PreUpdate, do_thing3)
+        // .add_systems(PreUpdate, do_thing4)
+        // .add_systems(PreUpdate, do_thing5)
+    ;
 
         // app.sub_app_mut(RenderApp)
         //     .add_systems(PreUpdate, do_thing)
@@ -180,5 +182,15 @@ fn do_thing3(changed_foo: Query<(Entity, &Aabb), Spawned>) {
 fn do_thing4(changed_foo: Query<(Entity, &Aabb)>) {
     for (entity, aabb) in &changed_foo {
         println!("entity4 = {:?} aabb4 = {:?}", entity, aabb);
+    }
+}
+
+fn do_thing5(
+    changed_foo: Query<(Entity, &MeshMaterial3d<StandardMaterial>)>,
+    asset_server: Res<AssetServer>,
+) {
+    for (entity, mm3d) in &changed_foo {
+        let il = asset_server.is_loaded(mm3d.id());
+        println!("entity5 = {:?} mm3d = {:?} il = {:?}", entity, mm3d, il);
     }
 }

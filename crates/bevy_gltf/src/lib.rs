@@ -312,9 +312,10 @@ impl Plugin for GltfPlugin {
                  label: &GltfAssetLabel,
                  load_context: &mut LoadContext| {
                     info!("translator load_material {:?}", label.to_string());
+                    let std_label = format!("{:?}#std", label.to_string());
 
                     let t = load_context
-                        .labeled_asset_scope::<_, ()>(label.to_string(), |_load_context| {
+                        .labeled_asset_scope::<_, ()>(std_label, |_load_context| {
                             Ok(standard_material_from_gltf_material(gltf_material))
                         });
                     // .untyped()
@@ -333,8 +334,9 @@ impl Plugin for GltfPlugin {
                  load_context: &mut LoadContext,
                  entity: &mut EntityWorldMut| {
                     info!("translator insert_material1: {:?}", label.to_string());
+                    let std_label = format!("{:?}#std", label.to_string());
                     let handle =
-                        load_context.get_label_handle::<StandardMaterial>(label.to_string());
+                        load_context.get_label_handle::<StandardMaterial>(std_label);
                     // .ok_or_else(|| "TODO: error".into())?;
                     info!("translator insert_material2: {:?}", handle);
 
