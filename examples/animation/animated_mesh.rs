@@ -2,12 +2,7 @@
 
 use std::f32::consts::PI;
 
-use bevy::{
-    camera::primitives::Aabb, light::CascadeShadowConfigBuilder, prelude::*,
-    scene::SceneInstanceReady,
-};
-use bevy_ecs::query::Spawned;
-use bevy_render::RenderApp;
+use bevy::{light::CascadeShadowConfigBuilder, prelude::*, scene::SceneInstanceReady};
 
 // An example asset that contains a mesh and animation.
 const GLTF_PATH: &str = "models/animated/Fox.glb";
@@ -114,7 +109,7 @@ fn setup_camera_and_environment(
     ));
 
     // Plane
-    let mut t = commands.spawn((
+    let _t = commands.spawn((
         Name::new("plane"),
         Mesh3d(meshes.add(Plane3d::default().mesh().size(500000.0, 500000.0))),
         MeshMaterial3d(materials.add(Color::srgb(0.3, 0.5, 0.3))),

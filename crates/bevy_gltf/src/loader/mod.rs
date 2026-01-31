@@ -52,13 +52,13 @@ use serde::{Deserialize, Serialize};
 use smallvec::SmallVec;
 use std::{io::Error, sync::Mutex};
 use thiserror::Error;
-use tracing::{error, info, info_span, warn};
+use tracing::{error, info_span, warn};
 
 use crate::{
-    convert_coordinates::ConvertCoordinates as _, convert_coordinates::ConvertCoordinates as _,
-    vertex_attributes::convert_attribute, Gltf, GltfAssetLabel, GltfExtras, GltfMaterial,
-    GltfMaterialExtras, GltfMaterialName, GltfMaterialTranslator, GltfMeshExtras, GltfMeshName,
-    GltfNode, GltfSceneExtras, GltfSkin, GltfSkinnedMeshBoundsPolicy,
+    convert_coordinates::ConvertCoordinates as _, vertex_attributes::convert_attribute, Gltf,
+    GltfAssetLabel, GltfExtras, GltfMaterial, GltfMaterialExtras, GltfMaterialName,
+    GltfMaterialTranslator, GltfMeshExtras, GltfMeshName, GltfNode, GltfSceneExtras, GltfSkin,
+    GltfSkinnedMeshBoundsPolicy,
 };
 
 #[cfg(feature = "bevy_animation")]

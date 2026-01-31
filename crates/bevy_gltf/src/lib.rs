@@ -138,16 +138,15 @@ mod vertex_attributes;
 extern crate alloc;
 
 use alloc::sync::Arc;
-use core::{error::Error, fmt};
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
-use tracing::{info, warn};
+use tracing::warn;
 
 use bevy_platform::collections::HashMap;
 
 use bevy_app::prelude::*;
-use bevy_asset::{AssetApp, LoadContext};
-use bevy_ecs::{error::BevyError, prelude::Resource, world::EntityWorldMut};
+use bevy_asset::AssetApp;
+use bevy_ecs::prelude::Resource;
 use bevy_image::{CompressedImageFormatSupport, CompressedImageFormats, ImageSamplerDescriptor};
 use bevy_mesh::MeshVertexAttribute;
 

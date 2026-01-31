@@ -269,10 +269,8 @@ impl Plugin for PbrPlugin {
                 |label: &GltfAssetLabel,
                  load_context: &mut LoadContext,
                  entity: &mut EntityWorldMut| {
-                    info!("translator insert_material1: {:?}", label.to_string());
                     let std_label = format!("{:?}#std", label.to_string());
                     let handle = load_context.get_label_handle::<StandardMaterial>(std_label);
-                    info!("translator insert_material2: {:?}", handle);
 
                     entity.insert(MeshMaterial3d(handle));
                     Ok(())
