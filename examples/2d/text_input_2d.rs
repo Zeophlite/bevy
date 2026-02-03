@@ -22,7 +22,10 @@ use bevy::{
     window::PrimaryWindow,
 };
 
-use crate::text_input::{TextSubmission, Overwrite, TextInputSize, DisplayConfig, update_inputs, extract_text_input, update_targets};
+use crate::text_input::{
+    extract_text_input, update_inputs, update_targets, DisplayConfig, Overwrite,
+    TextInputKeyConfig, TextInputSize, TextSubmission,
+};
 
 #[path = "../helpers/text_input.rs"]
 mod text_input;
@@ -32,6 +35,11 @@ fn main() {
 
     app.add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
+        .insert_resource(TextInputKeyConfig {
+            allow_indent: true,
+            allow_newline: true,
+            allow_scroll: true,
+        })
         .add_systems(
             PostUpdate,
             // TODO: these are both from helpers
@@ -82,7 +90,7 @@ fn setup(mut commands: Commands) {
             input_background: NAVY.into(),
             selected_highlight: BLUE_900.into(),
             cursor: GRAY_400.into(),
-        }
+        },
     ));
 }
 

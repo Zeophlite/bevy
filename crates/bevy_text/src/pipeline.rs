@@ -658,6 +658,8 @@ pub struct TextLayoutInfo {
 
 impl TextLayoutInfo {
     /// Clear the text layout    
+    /// Clear the layout, retaining capacity
+
     pub fn clear(&mut self) {
         self.glyphs.clear();
         self.section_rects.clear();
@@ -666,16 +668,9 @@ impl TextLayoutInfo {
         self.cursor = None;
         self.cursor_index = None;
         self.scroll = Vec2::ZERO;
-    }
-}
 
-impl TextLayoutInfo {
-    /// Clear the layout, retaining capacity
-    pub fn clear(&mut self) {
         self.scale_factor = 1.;
-        self.glyphs.clear();
         self.run_geometry.clear();
-        self.size = Vec2::ZERO;
     }
 }
 
@@ -763,17 +758,15 @@ pub fn load_font_to_fontdb(
     map_handle_to_font_id: &mut HashMap<AssetId<Font>, (cosmic_text::fontdb::ID, Arc<str>)>,
     fonts: &Assets<Font>,
 ) -> FontFaceInfo {
-    let font_id = text_font.font.id();
-    let (face_id, family_name) = map_handle_to_font_id
-        .entry(font_id)
-        .or_insert_with(|| {
-            let font = fonts.get(font_id).expect(
-                "Tried getting a font that was not available, probably due to not being loaded yet",
-            );
-            let data = Arc::clone(&font.data);
-            let ids = font_system
-                .db_mut()
-                .load_font_source(cosmic_text::fontdb::Source::Binary(data));
+    let font_id = font_handle.id();
+    let (face_id, family_name) = map_handle_to_font_id.entry(font_id).or_insert_with(|| {
+        let font = fonts.get(font_id).expect(
+            "Tried getting a font that was not available, probably due to not being loaded yet",
+        );
+        let data = Arc::clone(&font.data);
+        let ids = font_system
+            .db_mut()
+            .load_font_source(cosmic_text::fontdb::Source::Binary(data));
 
         // TODO: it is assumed this is the right font face
         let face_id = *ids.last().unwrap();
@@ -822,7 +815,7 @@ fn get_attrs<'a>(
 }
 
 /// Calculate the size of the text area for the given buffer.
-fn buffer_dimensions(buffer: &Buffer) -> Vec2 {
+pub(crate) fn buffer_dimensions(buffer: &Buffer) -> Vec2 {
     let mut size = Vec2::ZERO;
     for run in buffer.layout_runs() {
         size.x = size.x.max(run.line_w);
@@ -834,16 +827,6 @@ fn buffer_dimensions(buffer: &Buffer) -> Vec2 {
     } else {
         Vec2::ZERO
     }
-}
-
-pub(crate) fn buffer_dimensions2(buffer: &Buffer) -> Vec2 {
-    let (width, height) = buffer
-        .layout_runs()
-        .map(|run| (run.line_w, run.line_height))
-        .reduce(|(w1, h1), (w2, h2)| (w1.max(w2), h1 + h2))
-        .unwrap_or((0.0, 0.0));
-
-    Vec2::new(width, height).ceil()
 }
 
 /// Discards stale data cached in `FontSystem`.

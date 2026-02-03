@@ -257,6 +257,15 @@ pub fn update_text_input_layouts(
                 Err(e @ (TextError::FailedToAddGlyph(_) | TextError::FailedToGetGlyphImage(_))) => {
                     panic!("Fatal error when processing text: {e}.");
                 }
+                Err(TextError::MissingAtlasLayout) => {
+                    //
+                }
+                Err(TextError::MissingAtlasTexture) => {
+                    //
+                }
+                Err(TextError::InconsistentAtlasState) => {
+                    //
+                }
                 Ok(()) => {
                     layout_info.scroll =
                         editor.with_buffer(|buffer| Vec2::new(buffer.scroll().horizontal, 0.));
