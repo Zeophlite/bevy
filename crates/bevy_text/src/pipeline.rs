@@ -10,6 +10,7 @@ use bevy_ecs::{
 use bevy_image::prelude::*;
 use bevy_log::warn_once;
 use bevy_math::{Rect, UVec2, Vec2};
+use bevy_platform::collections::HashMap;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 
 use crate::{
@@ -185,124 +186,6 @@ impl TextPipeline {
             .into_iter()
             .map(|_| -> (&str, Attrs) { unreachable!() })
             .collect();
-
-        // START
-        let mut spans: Vec<(usize, &str, &TextFont, FontFaceInfo, Color, LineHeight)> =
-            core::mem::take(&mut self.spans_buffer)
-                .into_iter()
-                .map(
-                    |_| -> (usize, &str, &TextFont, FontFaceInfo, Color, LineHeight) {
-                        unreachable!()
-                    },
-                )
-                .collect();
-
-        computed.entities.clear();
-
-        for (span_index, (entity, depth, span, text_font, color, line_height)) in
-            text_spans.enumerate()
-        {
-            // Save this span entity in the computed text block.
-            computed.entities.push(TextEntity { entity, depth });
-
-            if span.is_empty() {
-                continue;
-            }
-            // Return early if a font is not loaded yet.
-            if !fonts.contains(text_font.font.id()) {
-                spans.clear();
-                self.spans_buffer = spans
-                    .into_iter()
-                    .map(
-                        |_| -> (
-                            usize,
-                            &'static str,
-                            &'static TextFont,
-                            FontFaceInfo,
-                            LineHeight,
-                        ) { unreachable!() },
-                    )
-                    .collect();
-
-                return Err(TextError::NoSuchFont);
-            }
-
-            // Load Bevy fonts into cosmic-text's font system.
-            let face_info = load_font_to_fontdb(
-                text_font.font.clone(),
-                font_system,
-                &mut self.map_handle_to_font_id,
-                fonts,
-            );
-
-            // Save spans that aren't zero-sized.
-            if scale_factor <= 0.0 || text_font.font_size <= 0.0 {
-                once!(warn!(
-                    "Text span {entity} has a font size <= 0.0. Nothing will be displayed.",
-                ));
-
-                continue;
-            }
-            spans.push((span_index, span, text_font, face_info, color, line_height));
-        }
-
-        // Map text sections to cosmic-text spans, and ignore sections with negative or zero fontsizes,
-        // since they cannot be rendered by cosmic-text.
-        //
-        // The section index is stored in the metadata of the spans, and could be used
-        // to look up the section the span came from and is not used internally
-        // in cosmic-text.
-        let spans_iter = spans.iter().map(
-            |(span_index, span, text_font, font_info, color, line_height)| {
-                (
-                    *span,
-                    get_attrs(
-                        *span_index,
-                        text_font,
-                        *line_height,
-                        *color,
-                        font_info,
-                        scale_factor,
-                    ),
-                )
-            },
-        );
-
-        // Update the buffer.
-        let buffer = &mut computed.buffer;
-
-        buffer.set_wrap(
-            font_system,
-            match linebreak {
-                LineBreak::WordBoundary => Wrap::Word,
-                LineBreak::AnyCharacter => Wrap::Glyph,
-                LineBreak::WordOrCharacter => Wrap::WordOrGlyph,
-                LineBreak::NoWrap => Wrap::None,
-            },
-        );
-
-        buffer.set_rich_text(
-            font_system,
-            spans_iter,
-            &Attrs::new(),
-            Shaping::Advanced,
-            Some(justify.into()),
-        );
-
-        // Workaround for alignment not working for unbounded text.
-        // See https://github.com/pop-os/cosmic-text/issues/343
-        let width = (bounds.width.is_none() && justify != Justify::Left)
-            .then(|| buffer_dimensions(buffer).x)
-            .or(bounds.width);
-        buffer.set_size(font_system, width, bounds.height);
-
-        // Recover the spans buffer.
-        spans.clear();
-        self.spans_buffer = spans
-            .into_iter()
-            .map(|_| -> (&str, Attrs) { unreachable!() })
-            .collect();
-        // END
 
         let result = {
             for (span_index, (entity, depth, span, text_font, _color, line_height)) in
