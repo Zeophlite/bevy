@@ -44,9 +44,9 @@ pub use main_transparent_pass_3d_node::*;
 use bevy_app::{App, Plugin, PostUpdate};
 use bevy_asset::UntypedAssetId;
 use bevy_color::LinearRgba;
-use bevy_ecs::{prelude::*, query::QueryItem};
+use bevy_ecs::prelude::*;
 use bevy_extract::{
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    extract_component::ExtractComponentPlugin,
     sync_world::{MainEntity, RenderEntity},
     Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };

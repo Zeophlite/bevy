@@ -1,3 +1,4 @@
+#![expect(missing_docs, reason = "Not all docs are written yet, see #3492.")]
 #![cfg_attr(
     any(docsrs, docsrs_dep),
     expect(
@@ -60,6 +61,8 @@ pub enum RenderSystems {
     /// Queue drawable entities as phase items in render phases ready for
     /// sorting (if necessary)
     Queue,
+    /// Ensures `prepare_assets::<RenderMesh>` is completed.
+    BikeshedPrepareAssetsRenderMesh,
     /// A sub-set within [`Queue`](RenderSystems::Queue) where mesh entity queue systems are executed. Ensures `prepare_assets::<RenderMesh>` is completed.
     QueueMeshes,
     /// A sub-set within [`Queue`](RenderSystems::Queue) where meshes that have
@@ -124,9 +127,9 @@ impl Render {
 
         schedule.configure_sets((ExtractCommands, PrepareAssets, PrepareMeshes, Prepare).chain());
         schedule.configure_sets(
-            (QueueMeshes, QueueSweep).chain().in_set(Queue),
-            // TODO: EXTRACT: fix this prepare_assets::<RenderMesh>
+            // TODO: EXTRACT: originally had this .after() following the in_set(), but this function is not in scope
             // .after(prepare_assets::<RenderMesh>),
+            (QueueMeshes, QueueSweep).chain().in_set(Queue),
         );
         schedule.configure_sets(
             (

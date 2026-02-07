@@ -34,7 +34,6 @@ use bevy_render::{
         allocator::{MeshAllocator, SlabId},
         RenderMesh,
     },
-    prelude::*,
     render_asset::{
         prepare_assets, PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets,
     },

@@ -1,7 +1,7 @@
 use crate::{
     sync_component::{SyncComponent, SyncComponentPlugin},
     sync_world::RenderEntity,
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+    Extract, ExtractSchedule, RenderApp,
 };
 use bevy_app::{App, Plugin};
 use bevy_camera::visibility::ViewVisibility;
@@ -10,7 +10,7 @@ use bevy_ecs::{
     prelude::*,
     query::{QueryFilter, QueryItem, ReadOnlyQueryData},
 };
-use core::{marker::PhantomData, ops::Deref};
+use core::marker::PhantomData;
 
 pub use bevy_extract_macros::ExtractComponent;
 

@@ -51,7 +51,6 @@ use bevy_render::RenderStartup;
 use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingSupport,
     mesh::RenderMesh,
-    prelude::*,
     render_phase::*,
     render_resource::*,
     renderer::RenderDevice,

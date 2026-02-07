@@ -3,16 +3,9 @@ use crate::{
     renderer::{RenderDevice, RenderQueue},
 };
 use bevy_app::{App, Plugin};
-use bevy_camera::visibility::ViewVisibility;
-use bevy_ecs::{
-    component::Component,
-    prelude::*,
-    query::{QueryFilter, QueryItem, ReadOnlyQueryData},
-};
+use bevy_ecs::{component::Component, prelude::*};
 use bevy_extract::{extract_component::DynamicUniformIndex, Render, RenderApp, RenderSystems};
 use core::{marker::PhantomData, ops::Deref};
-
-use bevy_extract_macros::ExtractComponent;
 
 /// This plugin prepares the components of the corresponding type for the GPU
 /// by transforming them into uniforms.
