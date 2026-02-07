@@ -7,6 +7,7 @@ use bevy_ecs::{
     prelude::*,
     system::{lifetimeless::*, SystemParamItem},
 };
+use bevy_extract::sync_world::MainEntity;
 use bevy_math::FloatOrd;
 use bevy_render::{
     camera::ExtractedCamera,
@@ -14,7 +15,6 @@ use bevy_render::{
     render_phase::*,
     render_resource::{CachedRenderPipelineId, RenderPassDescriptor},
     renderer::{RenderContext, ViewQuery},
-    sync_world::MainEntity,
     view::*,
 };
 use tracing::error;

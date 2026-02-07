@@ -12,6 +12,11 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Local, Query, Res, ResMut},
 };
+use bevy_extract::{
+    extract_instances::ExtractInstancesPlugin,
+    sync_world::{MainEntity, MainEntityHashMap, RenderEntity},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::Image;
 use bevy_light::{
     cluster::VisibleClusterableObjects, EnvironmentMapLight, IrradianceVolume, LightProbe,
@@ -19,15 +24,12 @@ use bevy_light::{
 use bevy_math::{Affine3A, FloatOrd, Mat4, Vec3, Vec4};
 use bevy_platform::collections::HashMap;
 use bevy_render::{
-    extract_instances::ExtractInstancesPlugin,
     render_asset::RenderAssets,
     render_resource::{DynamicUniformBuffer, Sampler, ShaderType, TextureView},
     renderer::{RenderAdapter, RenderAdapterInfo, RenderDevice, RenderQueue, WgpuWrapper},
     settings::WgpuFeatures,
-    sync_world::{MainEntity, MainEntityHashMap, RenderEntity},
     texture::{FallbackImage, GpuImage},
     view::ExtractedView,
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 use bevy_shader::load_shader_library;
 use bevy_transform::{components::Transform, prelude::GlobalTransform};

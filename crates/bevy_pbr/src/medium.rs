@@ -6,6 +6,7 @@ use bevy_ecs::{
     resource::Resource,
     system::{Commands, Res, SystemParamItem},
 };
+use bevy_extract::RenderApp;
 use bevy_math::Vec4;
 use bevy_render::{
     render_asset::{PrepareAssetError, RenderAsset, RenderAssetPlugin},
@@ -15,7 +16,7 @@ use bevy_render::{
         TextureViewDescriptor,
     },
     renderer::{RenderDevice, RenderQueue},
-    RenderApp, RenderStartup,
+    RenderStartup,
 };
 use smallvec::SmallVec;
 

@@ -16,6 +16,7 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{sync_world::MainEntity, Render, RenderApp, RenderSystems};
 use bevy_image::BevyDefault as _;
 use bevy_pbr::{MeshPipeline, MeshPipelineKey, SetMeshViewBindGroup, ViewKeyCache};
 use bevy_render::{
@@ -26,9 +27,8 @@ use bevy_render::{
     },
     render_resource::*,
     view::{ExtractedView, ViewTarget},
-    Render, RenderApp, RenderSystems,
+    RenderStartup,
 };
-use bevy_render::{sync_world::MainEntity, RenderStartup};
 use bevy_shader::Shader;
 use bevy_utils::default;
 use tracing::error;

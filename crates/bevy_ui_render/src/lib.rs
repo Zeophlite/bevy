@@ -39,6 +39,10 @@ use bevy_core_pipeline::upscaling::upscaling;
 use bevy_ecs::prelude::*;
 use bevy_ecs::schedule::IntoScheduleConfigs;
 use bevy_ecs::system::SystemParam;
+use bevy_extract::{
+    sync_world::{MainEntity, RenderEntity, TemporaryRenderEntity},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::{prelude::*, TRANSPARENT_IMAGE_HANDLE};
 use bevy_math::{Affine2, FloatOrd, Mat4, Rect, UVec4, Vec2};
 use bevy_render::{
@@ -49,10 +53,9 @@ use bevy_render::{
     },
     render_resource::*,
     renderer::{RenderDevice, RenderQueue},
-    sync_world::{MainEntity, RenderEntity, TemporaryRenderEntity},
     texture::GpuImage,
     view::{ExtractedView, RetainedViewEntity, ViewUniforms},
-    Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_sprite::BorderRect;
 #[cfg(feature = "bevy_ui_debug")]

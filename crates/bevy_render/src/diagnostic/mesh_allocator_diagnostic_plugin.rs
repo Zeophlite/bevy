@@ -1,9 +1,10 @@
 use bevy_app::{Plugin, PreUpdate};
 use bevy_diagnostic::{Diagnostic, DiagnosticPath, Diagnostics, RegisterDiagnostic};
 use bevy_ecs::{resource::Resource, system::Res};
+use bevy_extract::Extract;
 use bevy_platform::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 
-use crate::{mesh::allocator::MeshAllocator, Extract, ExtractSchedule, RenderApp};
+use crate::{mesh::allocator::MeshAllocator, ExtractSchedule, RenderApp};
 
 /// Number of meshes allocated by the allocator
 static MESH_ALLOCATOR_SLABS: DiagnosticPath = DiagnosticPath::const_new("mesh_allocator_slabs");

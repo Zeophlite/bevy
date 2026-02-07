@@ -7,18 +7,22 @@ use bevy_core_pipeline::{
     FullscreenShader,
 };
 use bevy_ecs::{prelude::*, query::QueryItem};
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    sync_component::SyncComponent,
+    Render, RenderApp, RenderSystems,
+};
 use bevy_image::BevyDefault as _;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
-    extract_component::{ExtractComponent, ExtractComponentPlugin, UniformComponentPlugin},
+    extract_component::UniformComponentPlugin,
     render_resource::{
         binding_types::{sampler, texture_2d, uniform_buffer},
         *,
     },
     renderer::RenderDevice,
-    sync_component::SyncComponent,
     view::{ExtractedView, ViewTarget},
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 
 mod node;

@@ -14,12 +14,15 @@ use bevy_ecs::{
     system::{Commands, Query, Res, ResMut},
     world::{FromWorld, World},
 };
+use bevy_extract::{
+    extract_component::ExtractComponent, sync_component::SyncComponentPlugin,
+    sync_world::RenderEntity, Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::ToExtents;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     camera::{ExtractedCamera, TemporalJitter},
     diagnostic::RecordDiagnostics,
-    extract_component::ExtractComponent,
     globals::{GlobalsBuffer, GlobalsUniform},
     render_resource::{
         binding_types::{
@@ -28,11 +31,8 @@ use bevy_render::{
         *,
     },
     renderer::{RenderAdapter, RenderContext, RenderDevice, RenderQueue, ViewQuery},
-    sync_component::SyncComponentPlugin,
-    sync_world::RenderEntity,
     texture::{CachedTexture, TextureCache},
     view::{Msaa, ViewUniform, ViewUniformOffset, ViewUniforms},
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 use bevy_shader::{load_shader_library, Shader, ShaderDefVal};
 use bevy_utils::prelude::default;

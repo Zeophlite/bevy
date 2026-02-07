@@ -1,8 +1,9 @@
 use crate::contrast_adaptive_sharpening::ViewCasPipeline;
 use bevy_ecs::prelude::*;
+use bevy_extract::extract_component::DynamicUniformIndex;
 use bevy_render::{
     diagnostic::RecordDiagnostics,
-    extract_component::{ComponentUniforms, DynamicUniformIndex},
+    extract_component::ComponentUniforms,
     render_resource::{
         BindGroup, BindGroupEntries, BufferId, Operations, PipelineCache,
         RenderPassColorAttachment, RenderPassDescriptor, TextureViewId,

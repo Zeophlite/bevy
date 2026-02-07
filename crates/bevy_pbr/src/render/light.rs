@@ -19,6 +19,10 @@ use bevy_ecs::{
     prelude::*,
     system::{SystemParam, SystemState},
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap, RenderEntity},
+    Extract,
+};
 use bevy_light::cascade::Cascade;
 use bevy_light::cluster::assign::{calculate_cluster_factors, ClusterableObjectType};
 use bevy_light::cluster::GlobalVisibleClusterableObjects;
@@ -44,16 +48,12 @@ use bevy_render::erased_render_asset::ErasedRenderAssets;
 use bevy_render::occlusion_culling::{
     OcclusionCulling, OcclusionCullingSubview, OcclusionCullingSubviewEntities,
 };
-use bevy_render::sync_world::MainEntityHashMap;
 use bevy_render::{
     batching::gpu_preprocessing::{GpuPreprocessingMode, GpuPreprocessingSupport},
     camera::SortedCameras,
     mesh::allocator::MeshAllocator,
-    view::{NoIndirectDrawing, RetainedViewEntity},
-};
-use bevy_render::{
     mesh::allocator::SlabId,
-    sync_world::{MainEntity, RenderEntity},
+    view::{NoIndirectDrawing, RetainedViewEntity},
 };
 use bevy_render::{
     mesh::RenderMesh,
@@ -63,7 +63,6 @@ use bevy_render::{
     renderer::{RenderContext, RenderDevice, RenderQueue, ViewQuery},
     texture::*,
     view::ExtractedView,
-    Extract,
 };
 use bevy_transform::{components::GlobalTransform, prelude::Transform};
 use bevy_utils::default;

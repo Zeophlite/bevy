@@ -4,9 +4,9 @@ use super::compensation_curve::AutoExposureCompensationCurve;
 use bevy_asset::Handle;
 use bevy_camera::Hdr;
 use bevy_ecs::{prelude::Component, reflect::ReflectComponent};
+use bevy_extract::extract_component::ExtractComponent;
 use bevy_image::Image;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
-use bevy_render::extract_component::ExtractComponent;
 use bevy_utils::default;
 
 /// Component that enables auto exposure for an HDR-enabled 2d or 3d camera.

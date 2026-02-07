@@ -20,12 +20,15 @@ use bevy_ecs::{
     system::{Commands, Query, Res, ResMut},
     world::FromWorld,
 };
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    extract_resource::{ExtractResource, ExtractResourcePlugin},
+    Render, RenderApp, RenderSystems,
+};
 use bevy_input::{prelude::KeyCode, ButtonInput};
 use bevy_log::info;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
-    extract_resource::{ExtractResource, ExtractResourcePlugin},
     render_asset::RenderAssets,
     render_resource::{
         binding_types, BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor,
@@ -38,7 +41,6 @@ use bevy_render::{
     renderer::{RenderContext, RenderDevice, RenderQueue, ViewQuery},
     texture::{FallbackImage, GpuImage},
     view::{Msaa, ViewTarget, ViewUniformOffset},
-    Render, RenderApp, RenderSystems,
 };
 use bevy_shader::Shader;
 

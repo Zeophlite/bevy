@@ -21,17 +21,18 @@ use bevy_core_pipeline::{
     tonemapping::{DebandDither, Tonemapping},
 };
 use bevy_ecs::prelude::*;
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    Render, RenderApp, RenderSystems,
+};
 use bevy_image::BevyDefault as _;
 use bevy_light::{EnvironmentMapLight, IrradianceVolume, ShadowFilteringMethod};
 use bevy_render::RenderStartup;
 use bevy_render::{
-    extract_component::{
-        ComponentUniforms, ExtractComponent, ExtractComponentPlugin, UniformComponentPlugin,
-    },
+    extract_component::{ComponentUniforms, UniformComponentPlugin},
     render_resource::{binding_types::uniform_buffer, *},
     renderer::{RenderContext, ViewQuery},
     view::{ExtractedView, ViewTarget, ViewUniformOffset},
-    Render, RenderApp, RenderSystems,
 };
 use bevy_shader::{Shader, ShaderDefVal};
 use bevy_utils::default;

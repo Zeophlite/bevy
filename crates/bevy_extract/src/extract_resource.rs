@@ -2,7 +2,7 @@ use core::marker::PhantomData;
 
 use bevy_app::{App, Plugin};
 use bevy_ecs::prelude::*;
-pub use bevy_render_macros::ExtractResource;
+pub use bevy_extract_macros::ExtractResource;
 use bevy_utils::once;
 
 use crate::{Extract, ExtractSchedule, RenderApp};
@@ -11,7 +11,7 @@ use crate::{Extract, ExtractSchedule, RenderApp};
 ///
 /// Therefore the resource is transferred from the "main world" into the "render world"
 /// in the [`ExtractSchedule`] step.
-pub trait ExtractResource: Resource {
+pub trait ExtractResource<Marker = ()>: Resource {
     type Source: Resource;
 
     /// Defines how the resource is transferred into the "render world".
@@ -22,18 +22,20 @@ pub trait ExtractResource: Resource {
 ///
 /// Therefore it sets up the[`ExtractSchedule`] step
 /// for the specified [`Resource`].
-pub struct ExtractResourcePlugin<R: ExtractResource>(PhantomData<R>);
+pub struct ExtractResourcePlugin<R: ExtractResource<M>, M, G = ()>(PhantomData<(R, M, G)>);
 
-impl<R: ExtractResource> Default for ExtractResourcePlugin<R> {
+impl<R: ExtractResource<M>, M, G> Default for ExtractResourcePlugin<R, M, G> {
     fn default() -> Self {
         Self(PhantomData)
     }
 }
 
-impl<R: ExtractResource> Plugin for ExtractResourcePlugin<R> {
+impl<R: ExtractResource<M>, M: 'static + Sync + Send, G: 'static + Sync + Send> Plugin
+    for ExtractResourcePlugin<R, M, G>
+{
     fn build(&self, app: &mut App) {
         if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
-            render_app.add_systems(ExtractSchedule, extract_resource::<R>);
+            render_app.add_systems(ExtractSchedule, extract_resource::<R, M>);
         } else {
             once!(bevy_log::error!(
                 "Render app did not exist when trying to add `extract_resource` for <{}>.",
@@ -44,7 +46,7 @@ impl<R: ExtractResource> Plugin for ExtractResourcePlugin<R> {
 }
 
 /// This system extracts the resource of the corresponding [`Resource`] type
-pub fn extract_resource<R: ExtractResource>(
+pub fn extract_resource<R: ExtractResource<M>, M>(
     mut commands: Commands,
     main_resource: Extract<Option<Res<R::Source>>>,
     target_resource: Option<ResMut<R>>,

@@ -31,6 +31,11 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs as _,
     system::{Commands, Local, Query, Res, ResMut},
 };
+use bevy_extract::{
+    sync_component::{SyncComponent, SyncComponentPlugin},
+    sync_world::RenderEntity,
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::Image;
 use bevy_light::{ClusteredDecal, DirectionalLightTexture, PointLightTexture, SpotLightTexture};
 use bevy_math::Mat4;
@@ -43,10 +48,7 @@ use bevy_render::{
     },
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
     settings::WgpuFeatures,
-    sync_component::{SyncComponent, SyncComponentPlugin},
-    sync_world::RenderEntity,
     texture::{FallbackImage, GpuImage},
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 use bevy_shader::load_shader_library;
 use bevy_transform::components::GlobalTransform;

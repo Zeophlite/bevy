@@ -10,10 +10,12 @@ use bevy_ecs::{
         *,
     },
 };
+use bevy_extract::{sync_world::MainEntity, Extract, ExtractSchedule, Render, RenderSystems};
 use bevy_image::prelude::*;
 use bevy_math::{Affine2, FloatOrd, Rect, Vec2};
 use bevy_mesh::VertexBufferLayout;
 use bevy_platform::collections::HashMap;
+use bevy_render::RenderStartup;
 use bevy_render::{
     render_asset::RenderAssets,
     render_phase::*,
@@ -21,9 +23,7 @@ use bevy_render::{
     renderer::{RenderDevice, RenderQueue},
     texture::GpuImage,
     view::*,
-    Extract, ExtractSchedule, Render, RenderSystems,
 };
-use bevy_render::{sync_world::MainEntity, RenderStartup};
 use bevy_shader::Shader;
 use bevy_sprite::{SliceScaleMode, SpriteImageMode, TextureSlicer};
 use bevy_sprite_render::SpriteAssetEvents;

@@ -3,11 +3,12 @@ use core::{any::type_name, marker::PhantomData};
 use bevy_app::{Plugin, PreUpdate};
 use bevy_diagnostic::{Diagnostic, DiagnosticPath, Diagnostics, RegisterDiagnostic};
 use bevy_ecs::{resource::Resource, system::Res};
+use bevy_extract::Extract;
 use bevy_platform::sync::atomic::{AtomicUsize, Ordering};
 
 use crate::{
     erased_render_asset::{ErasedRenderAsset, ErasedRenderAssets},
-    Extract, ExtractSchedule, RenderApp,
+    ExtractSchedule, RenderApp,
 };
 
 /// Collects diagnostics for a [`ErasedRenderAsset`].

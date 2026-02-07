@@ -41,10 +41,6 @@ pub mod diagnostic;
 pub mod erased_render_asset;
 pub mod error_handler;
 pub mod extract_component;
-pub mod extract_instances;
-mod extract_param;
-pub mod extract_plugin;
-pub mod extract_resource;
 pub mod globals;
 pub mod gpu_component_array_buffer;
 pub mod gpu_readback;
@@ -58,8 +54,6 @@ pub mod render_resource;
 pub mod renderer;
 pub mod settings;
 pub mod storage;
-pub mod sync_component;
-pub mod sync_world;
 pub mod texture;
 pub mod view;
 
@@ -70,17 +64,12 @@ pub mod prelude {
     #[doc(hidden)]
     pub use crate::{
         camera::NormalizedRenderTargetExt as _, texture::ManualTextureViews, view::Msaa,
-        ExtractSchedule,
     };
 }
-
-pub use extract_param::Extract;
-pub use extract_plugin::{ExtractSchedule, MainWorld};
 
 use crate::{
     camera::CameraPlugin,
     error_handler::{RenderErrorHandler, RenderState},
-    extract_plugin::ExtractPlugin,
     gpu_readback::GpuReadbackPlugin,
     mesh::{MeshRenderAssetPlugin, RenderMesh},
     render_asset::prepare_assets,
@@ -97,6 +86,7 @@ use bevy_app::{App, AppLabel, Plugin};
 use bevy_asset::{AssetApp, AssetServer};
 use bevy_derive::Deref;
 use bevy_ecs::{prelude::*, schedule::ScheduleLabel};
+use bevy_extract::{ExtractPlugin, ExtractSchedule, Render, RenderApp, RenderSystems};
 use bevy_platform::time::Instant;
 use bevy_shader::{load_shader_library, Shader, ShaderLoader};
 use bevy_time::TimeSender;
@@ -142,55 +132,7 @@ bitflags! {
     }
 }
 
-/// The systems sets of the default [`App`] rendering schedule.
-///
-/// These can be useful for ordering, but you almost never want to add your systems to these sets.
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
-pub enum RenderSystems {
-    /// This is used for applying the commands from the [`ExtractSchedule`]
-    ExtractCommands,
-    /// Prepare assets that have been created/modified/removed this frame.
-    PrepareAssets,
-    /// Prepares extracted meshes.
-    PrepareMeshes,
-    /// Create any additional views such as those used for shadow mapping.
-    ManageViews,
-    /// Queue drawable entities as phase items in render phases ready for
-    /// sorting (if necessary)
-    Queue,
-    /// A sub-set within [`Queue`](RenderSystems::Queue) where mesh entity queue systems are executed. Ensures `prepare_assets::<RenderMesh>` is completed.
-    QueueMeshes,
-    /// A sub-set within [`Queue`](RenderSystems::Queue) where meshes that have
-    /// become invisible or changed phases are removed from the bins.
-    QueueSweep,
-    // TODO: This could probably be moved in favor of a system ordering
-    // abstraction in `Render` or `Queue`
-    /// Sort the [`SortedRenderPhase`](render_phase::SortedRenderPhase)s and
-    /// [`BinKey`](render_phase::BinnedPhaseItem::BinKey)s here.
-    PhaseSort,
-    /// Prepare render resources from extracted data for the GPU based on their sorted order.
-    /// Create [`BindGroups`](render_resource::BindGroup) that depend on those data.
-    Prepare,
-    /// A sub-set within [`Prepare`](RenderSystems::Prepare) for initializing buffers, textures and uniforms for use in bind groups.
-    PrepareResources,
-    /// Collect phase buffers after
-    /// [`PrepareResources`](RenderSystems::PrepareResources) has run.
-    PrepareResourcesCollectPhaseBuffers,
-    /// Flush buffers after [`PrepareResources`](RenderSystems::PrepareResources), but before [`PrepareBindGroups`](RenderSystems::PrepareBindGroups).
-    PrepareResourcesFlush,
-    /// A sub-set within [`Prepare`](RenderSystems::Prepare) for constructing bind groups, or other data that relies on render resources prepared in [`PrepareResources`](RenderSystems::PrepareResources).
-    PrepareBindGroups,
-    /// Actual rendering happens here.
-    /// In most cases, only the render backend should insert resources here.
-    Render,
-    /// Cleanup render resources here.
-    Cleanup,
-    /// Final cleanup occurs: any entities with
-    /// [`TemporaryRenderEntity`](sync_world::TemporaryRenderEntity) will be despawned.
-    ///
-    /// Runs after [`Cleanup`](RenderSystems::Cleanup).
-    PostCleanup,
-}
+// TODO: EXTRACT: maybe move these to bevy_extract along with e.g. Render schedule
 
 /// The startup schedule of the [`RenderApp`].
 /// This can potentially run multiple times, and not on a fresh render world.
@@ -204,62 +146,8 @@ pub struct RenderStartup;
 #[derive(ScheduleLabel, Debug, Hash, PartialEq, Eq, Clone)]
 struct RenderRecovery;
 
-/// The main render schedule.
-#[derive(ScheduleLabel, Debug, Hash, PartialEq, Eq, Clone, Default)]
-pub struct Render;
-
-impl Render {
-    /// Sets up the base structure of the rendering [`Schedule`].
-    ///
-    /// The sets defined in this enum are configured to run in order.
-    pub fn base_schedule() -> Schedule {
-        use RenderSystems::*;
-
-        let mut schedule = Schedule::new(Self);
-
-        schedule.configure_sets(
-            (
-                ExtractCommands,
-                PrepareMeshes,
-                ManageViews,
-                Queue,
-                PhaseSort,
-                Prepare,
-                Render,
-                Cleanup,
-                PostCleanup,
-            )
-                .chain(),
-        );
-
-        schedule.configure_sets((ExtractCommands, PrepareAssets, PrepareMeshes, Prepare).chain());
-        schedule.configure_sets(
-            (QueueMeshes, QueueSweep)
-                .chain()
-                .in_set(Queue)
-                .after(prepare_assets::<RenderMesh>),
-        );
-        schedule.configure_sets(
-            (
-                PrepareResources,
-                PrepareResourcesCollectPhaseBuffers,
-                PrepareResourcesFlush,
-                PrepareBindGroups,
-            )
-                .chain()
-                .in_set(Prepare),
-        );
-
-        schedule
-    }
-}
-
 #[derive(Resource, Default, Clone, Deref)]
 pub(crate) struct FutureRenderResources(Arc<Mutex<Option<RenderResources>>>);
-
-/// A label for the rendering sub-app.
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, AppLabel)]
-pub struct RenderApp;
 
 impl Plugin for RenderPlugin {
     /// Initializes the renderer, sets up the [`RenderSystems`] and creates the rendering sub-app.

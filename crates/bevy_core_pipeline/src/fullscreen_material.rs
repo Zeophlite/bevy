@@ -16,12 +16,13 @@ use bevy_ecs::{
     schedule::{IntoScheduleConfigs, ScheduleLabel, SystemSet},
     system::{Commands, Local, Res},
 };
+use bevy_extract::{
+    extract_component::{DynamicUniformIndex, ExtractComponent, ExtractComponentPlugin},
+    RenderApp,
+};
 use bevy_image::BevyDefault;
 use bevy_render::{
-    extract_component::{
-        ComponentUniforms, DynamicUniformIndex, ExtractComponent, ExtractComponentPlugin,
-        UniformComponentPlugin,
-    },
+    extract_component::{ComponentUniforms, UniformComponentPlugin},
     render_resource::{
         binding_types::{sampler, texture_2d, uniform_buffer},
         encase::internal::WriteInto,
@@ -33,7 +34,7 @@ use bevy_render::{
     },
     renderer::{RenderContext, RenderDevice, ViewQuery},
     view::ViewTarget,
-    RenderApp, RenderStartup,
+    RenderStartup,
 };
 use bevy_shader::ShaderRef;
 use bevy_utils::default;

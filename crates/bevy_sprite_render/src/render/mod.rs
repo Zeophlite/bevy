@@ -17,6 +17,7 @@ use bevy_ecs::{
     query::ROQueryItem,
     system::{lifetimeless::*, SystemParamItem},
 };
+use bevy_extract::{sync_world::RenderEntity, Extract};
 use bevy_image::{BevyDefault, Image, TextureAtlasLayout};
 use bevy_math::{Affine3A, FloatOrd, Quat, Rect, Vec2, Vec4};
 use bevy_mesh::VertexBufferLayout;
@@ -33,10 +34,8 @@ use bevy_render::{
         *,
     },
     renderer::{RenderDevice, RenderQueue},
-    sync_world::RenderEntity,
     texture::{FallbackImage, GpuImage},
     view::{ExtractedView, Msaa, ViewTarget, ViewUniform, ViewUniformOffset, ViewUniforms},
-    Extract,
 };
 use bevy_shader::{Shader, ShaderDefVal};
 use bevy_sprite::{Anchor, Sprite, SpriteScalingMode};

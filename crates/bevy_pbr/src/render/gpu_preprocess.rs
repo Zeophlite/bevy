@@ -30,6 +30,7 @@ use bevy_ecs::{
     system::{Commands, Query, Res, ResMut},
     world::{FromWorld, World},
 };
+use bevy_extract::{Render, RenderApp, RenderSystems};
 use bevy_log::warn_once;
 use bevy_render::{
     batching::gpu_preprocessing::{
@@ -53,7 +54,6 @@ use bevy_render::{
     renderer::{RenderContext, RenderDevice, RenderQueue, ViewQuery},
     settings::WgpuFeatures,
     view::{ExtractedView, NoIndirectDrawing, ViewUniform, ViewUniformOffset, ViewUniforms},
-    Render, RenderApp, RenderSystems,
 };
 use bevy_shader::Shader;
 use bevy_utils::{default, TypeIdMap};

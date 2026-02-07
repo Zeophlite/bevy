@@ -6,6 +6,7 @@ use bevy_ecs::{
     query::With,
     system::{Local, Query, ResMut},
 };
+use bevy_extract::{sync_world::MainEntity, Extract};
 use bevy_material::{descriptor::CachedRenderPipelineId, labels::DrawFunctionId};
 use bevy_math::FloatOrd;
 use bevy_platform::collections::HashSet;
@@ -14,9 +15,7 @@ use bevy_render::{
         CachedRenderPipelinePhaseItem, PhaseItem, PhaseItemExtraIndex, SortedPhaseItem,
         ViewSortedRenderPhases,
     },
-    sync_world::MainEntity,
     view::RetainedViewEntity,
-    Extract,
 };
 
 pub struct Transmissive3d {

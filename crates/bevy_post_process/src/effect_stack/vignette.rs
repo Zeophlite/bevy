@@ -6,11 +6,10 @@ use bevy_ecs::{
     reflect::ReflectComponent,
     system::lifetimeless::Read,
 };
+use bevy_extract::{extract_component::ExtractComponent, sync_component::SyncComponent};
 use bevy_math::{Vec2, Vec4};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
-use bevy_render::{
-    extract_component::ExtractComponent, render_resource::ShaderType, sync_component::SyncComponent,
-};
+use bevy_render::render_resource::ShaderType;
 
 /// The default vignette intensity amount.
 const DEFAULT_VIGNETTE_INTENSITY: f32 = 1.0;

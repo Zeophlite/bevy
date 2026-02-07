@@ -15,6 +15,10 @@ use bevy_ecs::{
         *,
     },
 };
+use bevy_extract::{
+    sync_world::{MainEntity, TemporaryRenderEntity},
+    Extract, ExtractSchedule, Render, RenderSystems,
+};
 use bevy_image::prelude::*;
 use bevy_math::{
     ops::{cos, sin},
@@ -26,11 +30,9 @@ use bevy_render::{
     render_phase::*,
     render_resource::{binding_types::uniform_buffer, *},
     renderer::{RenderDevice, RenderQueue},
-    sync_world::TemporaryRenderEntity,
     view::*,
-    Extract, ExtractSchedule, Render, RenderSystems,
+    RenderStartup,
 };
-use bevy_render::{sync_world::MainEntity, RenderStartup};
 use bevy_shader::Shader;
 use bevy_sprite::BorderRect;
 use bevy_ui::{

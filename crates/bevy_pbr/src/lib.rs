@@ -28,11 +28,11 @@ mod atmosphere;
 mod cluster;
 mod components;
 pub mod contact_shadows;
+use bevy_extract::sync_component::SyncComponent;
 use bevy_gltf::{
     extensions::{GltfExtensionHandler, GltfExtensionHandlers},
     GltfAssetLabel,
 };
-use bevy_render::sync_component::SyncComponent;
 pub use contact_shadows::{
     ContactShadows, ContactShadowsBuffer, ContactShadowsPlugin, ContactShadowsUniform,
     ViewContactShadowsUniformOffset,
@@ -106,19 +106,21 @@ use bevy_asset::{AssetApp, AssetPath, Assets, Handle, RenderAssetUsages};
 use bevy_core_pipeline::mip_generation::experimental::depth::early_downsample_depth;
 use bevy_core_pipeline::schedule::{Core3d, Core3dSystems};
 use bevy_ecs::prelude::*;
+use bevy_extract::{
+    extract_resource::ExtractResourcePlugin, sync_component::SyncComponentPlugin, ExtractSchedule,
+    Render, RenderApp, RenderSystems,
+};
 #[cfg(feature = "bluenoise_texture")]
 use bevy_image::{CompressedImageFormats, ImageType};
 use bevy_image::{Image, ImageSampler};
 use bevy_material::AlphaMode;
 use bevy_render::{
     camera::sort_cameras,
-    extract_resource::ExtractResourcePlugin,
     render_resource::{
         Extent3d, TextureDataOrder, TextureDescriptor, TextureDimension, TextureFormat,
         TextureUsages,
     },
-    sync_component::SyncComponentPlugin,
-    ExtractSchedule, Render, RenderApp, RenderDebugFlags, RenderStartup, RenderSystems,
+    RenderDebugFlags, RenderStartup,
 };
 
 use std::path::PathBuf;
@@ -207,7 +209,7 @@ impl Plugin for PbrPlugin {
                 },
                 ScreenSpaceAmbientOcclusionPlugin,
                 FogPlugin,
-                ExtractResourcePlugin::<DefaultOpaqueRendererMethod>::default(),
+                ExtractResourcePlugin::<DefaultOpaqueRendererMethod, ()>::default(),
                 SyncComponentPlugin::<ShadowFilteringMethod, Self>::default(),
                 LightmapPlugin,
                 LightProbePlugin,

@@ -16,6 +16,7 @@ use bevy_ecs::{
     resource::Resource,
     system::{Commands, Local, Query, Res, ResMut},
 };
+use bevy_extract::{sync_world::RenderEntity, Extract};
 use bevy_image::{BevyDefault, Image};
 use bevy_light::{FogVolume, VolumetricFog, VolumetricLight};
 use bevy_math::{vec4, Affine3A, Mat4, Vec3, Vec3A, Vec4};
@@ -36,10 +37,8 @@ use bevy_render::{
         TextureSampleType, TextureUsages, VertexState,
     },
     renderer::{RenderContext, RenderDevice, RenderQueue, ViewQuery},
-    sync_world::RenderEntity,
     texture::GpuImage,
     view::{ExtractedView, Msaa, ViewDepthTexture, ViewTarget, ViewUniformOffset},
-    Extract,
 };
 use bevy_shader::Shader;
 use bevy_transform::components::GlobalTransform;

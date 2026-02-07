@@ -46,9 +46,14 @@ use {
             Commands, SystemParamItem,
         },
     },
+    bevy_extract::{
+        extract_component::DynamicUniformIndex,
+        sync_world::{MainEntity, TemporaryRenderEntity},
+        Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+    },
     bevy_math::{Affine3, Affine3A, Vec4},
     bevy_render::{
-        extract_component::{ComponentUniforms, DynamicUniformIndex, UniformComponentPlugin},
+        extract_component::{ComponentUniforms, UniformComponentPlugin},
         render_asset::{PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets},
         render_phase::{PhaseItem, RenderCommand, RenderCommandResult, TrackedRenderPass},
         render_resource::{
@@ -56,8 +61,7 @@ use {
             Buffer, BufferInitDescriptor, BufferUsages, ShaderStages, ShaderType, VertexFormat,
         },
         renderer::RenderDevice,
-        sync_world::{MainEntity, TemporaryRenderEntity},
-        Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+        RenderStartup,
     },
     bytemuck::cast_slice,
 };

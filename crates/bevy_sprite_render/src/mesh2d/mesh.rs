@@ -20,11 +20,15 @@ use bevy_ecs::{
     query::ROQueryItem,
     system::{lifetimeless::*, SystemParamItem},
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+    RenderSystems::PrepareAssets,
+};
 use bevy_image::BevyDefault;
 use bevy_math::{Affine3, Affine3Ext, Vec4};
 use bevy_mesh::{Mesh, Mesh2d, MeshTag, MeshVertexBufferLayoutRef};
 use bevy_render::prelude::Msaa;
-use bevy_render::RenderSystems::PrepareAssets;
 use bevy_render::{
     batching::{
         gpu_preprocessing::IndirectParametersCpuMetadata,
@@ -43,10 +47,8 @@ use bevy_render::{
     },
     render_resource::{binding_types::uniform_buffer, *},
     renderer::RenderDevice,
-    sync_world::{MainEntity, MainEntityHashMap},
     texture::{FallbackImage, GpuImage},
     view::{ExtractedView, ViewTarget, ViewUniform, ViewUniformOffset, ViewUniforms},
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 use bevy_transform::components::GlobalTransform;
 use bevy_utils::default;

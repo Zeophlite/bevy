@@ -15,6 +15,7 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{sync_world::MainEntity, Render, RenderApp, RenderSystems};
 use bevy_image::BevyDefault as _;
 use bevy_math::FloatOrd;
 use bevy_render::{
@@ -25,9 +26,8 @@ use bevy_render::{
     },
     render_resource::*,
     view::{ExtractedView, Msaa, ViewTarget},
-    Render, RenderApp, RenderSystems,
+    RenderStartup,
 };
-use bevy_render::{sync_world::MainEntity, RenderStartup};
 use bevy_shader::Shader;
 use bevy_sprite_render::{
     init_mesh_2d_pipeline, Mesh2dPipeline, Mesh2dPipelineKey, SetMesh2dViewBindGroup,

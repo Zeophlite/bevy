@@ -1,6 +1,5 @@
 use crate::{
-    render_resource::AsBindGroupError, ExtractSchedule, MainWorld, Render, RenderApp,
-    RenderSystems, Res,
+    render_resource::AsBindGroupError, ExtractSchedule, Render, RenderApp, RenderSystems, Res,
 };
 use bevy_app::{App, Plugin, SubApp};
 use bevy_asset::RenderAssetUsages;
@@ -11,6 +10,7 @@ use bevy_ecs::{
     system::{ScheduleSystem, StaticSystemParam, SystemParam, SystemParamItem, SystemState},
     world::{FromWorld, Mut},
 };
+use bevy_extract::MainWorld;
 use bevy_log::{debug, error};
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_render::render_asset::RenderAssetBytesPerFrameLimiter;

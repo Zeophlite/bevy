@@ -5,6 +5,7 @@ use crate::{
 use bevy_app::prelude::*;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer};
 use bevy_ecs::prelude::*;
+use bevy_extract::{Render, RenderApp, RenderSystems};
 use bevy_image::ToExtents;
 use bevy_render::{
     camera::ExtractedCamera,
@@ -13,7 +14,7 @@ use bevy_render::{
     renderer::RenderDevice,
     texture::{CachedTexture, TextureCache},
     view::ViewTarget,
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 
 use super::DEFERRED_LIGHTING_PASS_ID_DEPTH_FORMAT;

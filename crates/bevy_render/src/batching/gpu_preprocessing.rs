@@ -13,6 +13,7 @@ use bevy_ecs::{
     world::{FromWorld, World},
 };
 use bevy_encase_derive::ShaderType;
+use bevy_extract::sync_world::MainEntity;
 use bevy_log::{error, info};
 use bevy_math::UVec4;
 use bevy_platform::collections::{hash_map::Entry, HashMap, HashSet};
@@ -35,7 +36,6 @@ use crate::{
     },
     render_resource::{Buffer, GpuArrayBufferable, RawBufferVec, UninitBufferVec},
     renderer::{RenderAdapter, RenderAdapterInfo, RenderDevice, RenderQueue, WgpuWrapper},
-    sync_world::MainEntity,
     view::{ExtractedView, NoIndirectDrawing, RetainedViewEntity},
     Render, RenderApp, RenderDebugFlags, RenderSystems,
 };

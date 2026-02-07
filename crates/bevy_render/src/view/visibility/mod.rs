@@ -1,10 +1,9 @@
 use core::any::TypeId;
 
 use bevy_ecs::{component::Component, entity::Entity, prelude::ReflectComponent};
+use bevy_extract::sync_world::MainEntity;
 use bevy_reflect::{prelude::ReflectDefault, Reflect};
 use bevy_utils::TypeIdMap;
-
-use crate::sync_world::MainEntity;
 
 mod range;
 use bevy_camera::visibility::*;

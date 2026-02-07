@@ -2,6 +2,10 @@ use core::num::NonZero;
 
 use bevy_camera::Camera;
 use bevy_ecs::{entity::EntityHashMap, prelude::*};
+use bevy_extract::{
+    sync_world::{MainEntity, RenderEntity},
+    Extract,
+};
 use bevy_light::{
     cluster::{ClusterableObjectCounts, Clusters, GlobalClusterSettings},
     ClusteredDecal, EnvironmentMapLight, IrradianceVolume, LightProbe, PointLight, SpotLight,
@@ -12,8 +16,6 @@ use bevy_render::{
         BindingResource, BufferBindingType, ShaderSize, ShaderType, StorageBuffer, UniformBuffer,
     },
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
-    sync_world::{MainEntity, RenderEntity},
-    Extract,
 };
 use tracing::{error, trace, warn};
 

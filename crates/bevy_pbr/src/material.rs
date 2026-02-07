@@ -23,6 +23,10 @@ use bevy_ecs::{
         SystemParamItem, SystemState,
     },
 };
+use bevy_extract::{
+    extract_resource::ExtractResource, sync_world::MainEntity, sync_world::MainEntityHashMap,
+    Extract,
+};
 use bevy_material::{
     key::{ErasedMaterialKey, ErasedMaterialPipelineKey, ErasedMeshPipelineKey},
     labels::{DrawFunctionLabel, InternedShaderLabel, ShaderLabel},
@@ -40,22 +44,19 @@ use bevy_render::camera::extract_cameras;
 use bevy_render::erased_render_asset::{
     ErasedRenderAsset, ErasedRenderAssetPlugin, ErasedRenderAssets, PrepareAssetError,
 };
+use bevy_render::mesh::allocator::MeshAllocator;
 use bevy_render::render_asset::{prepare_assets, RenderAssets};
 use bevy_render::renderer::RenderQueue;
 use bevy_render::RenderStartup;
 use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingSupport,
-    extract_resource::ExtractResource,
     mesh::RenderMesh,
     prelude::*,
     render_phase::*,
     render_resource::*,
     renderer::RenderDevice,
-    sync_world::MainEntity,
     view::{ExtractedView, Msaa, RenderVisibilityRanges, RetainedViewEntity},
-    Extract,
 };
-use bevy_render::{mesh::allocator::MeshAllocator, sync_world::MainEntityHashMap};
 use bevy_render::{texture::FallbackImage, view::RenderVisibleEntities};
 use bevy_shader::ShaderDefVal;
 use bevy_utils::Parallel;

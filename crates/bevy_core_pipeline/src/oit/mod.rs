@@ -3,19 +3,22 @@
 use bevy_app::prelude::*;
 use bevy_camera::Camera3d;
 use bevy_ecs::{component::*, prelude::*};
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    Render, RenderApp, RenderSystems,
+};
 use bevy_math::UVec2;
 use bevy_platform::time::Instant;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     camera::ExtractedCamera,
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_resource::{
         BufferUsages, DynamicUniformBuffer, ShaderType, TextureUsages, UniformBuffer,
         UninitBufferVec,
     },
     renderer::{RenderDevice, RenderQueue},
     view::Msaa,
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::load_shader_library;
 use resolve::OitResolvePlugin;

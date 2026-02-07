@@ -25,6 +25,11 @@ use bevy_ecs::{
     relationship::RelationshipSourceCollection,
     system::{lifetimeless::*, SystemParamItem, SystemState},
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap, MainEntityHashSet},
+    Extract,
+    RenderSystems::PrepareAssets,
+};
 use bevy_image::{BevyDefault, ImageSampler, TextureFormatPixelInfo};
 use bevy_light::{
     EnvironmentMapLight, IrradianceVolume, NotShadowCaster, NotShadowReceiver,
@@ -53,13 +58,11 @@ use bevy_render::{
     },
     render_resource::*,
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
-    sync_world::MainEntityHashSet,
     texture::{DefaultImageSampler, GpuImage},
     view::{
         self, NoIndirectDrawing, RenderVisibilityRanges, RetainedViewEntity, ViewTarget,
         ViewUniformOffset,
     },
-    Extract,
 };
 use bevy_shader::{load_shader_library, Shader, ShaderDefVal, ShaderSettings};
 use bevy_transform::components::GlobalTransform;
@@ -87,9 +90,7 @@ use bevy_ecs::change_detection::Tick;
 use bevy_ecs::system::SystemChangeTick;
 use bevy_render::camera::TemporalJitter;
 use bevy_render::prelude::Msaa;
-use bevy_render::sync_world::{MainEntity, MainEntityHashMap};
 use bevy_render::view::ExtractedView;
-use bevy_render::RenderSystems::PrepareAssets;
 use bevy_tasks::ComputeTaskPool;
 
 use bytemuck::{Pod, Zeroable};

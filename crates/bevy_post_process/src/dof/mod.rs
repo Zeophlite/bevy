@@ -27,11 +27,17 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs as _,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    extract_component::DynamicUniformIndex,
+    sync_component::{SyncComponent, SyncComponentPlugin},
+    sync_world::RenderEntity,
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::BevyDefault as _;
 use bevy_math::ops;
 use bevy_reflect::{prelude::ReflectDefault, Reflect};
 use bevy_render::{
-    extract_component::{ComponentUniforms, DynamicUniformIndex, UniformComponentPlugin},
+    extract_component::{ComponentUniforms, UniformComponentPlugin},
     render_resource::{
         binding_types::{
             sampler, texture_2d, texture_depth_2d, texture_depth_2d_multisampled, uniform_buffer,
@@ -44,14 +50,12 @@ use bevy_render::{
         TextureDescriptor, TextureDimension, TextureFormat, TextureSampleType, TextureUsages,
     },
     renderer::{RenderContext, RenderDevice, ViewQuery},
-    sync_component::{SyncComponent, SyncComponentPlugin},
-    sync_world::RenderEntity,
     texture::{CachedTexture, TextureCache},
     view::{
         prepare_view_targets, ExtractedView, Msaa, ViewDepthTexture, ViewTarget, ViewUniform,
         ViewUniformOffset, ViewUniforms,
     },
-    Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::Shader;
 use bevy_utils::{default, once};

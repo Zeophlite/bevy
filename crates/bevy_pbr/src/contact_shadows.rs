@@ -11,14 +11,16 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    sync_component::SyncComponent,
+    Render, RenderApp, RenderSystems,
+};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_resource::{DynamicUniformBuffer, ShaderType},
     renderer::{RenderDevice, RenderQueue},
-    sync_component::SyncComponent,
     view::ExtractedView,
-    Render, RenderApp, RenderSystems,
 };
 use bevy_utils::default;
 

@@ -37,12 +37,14 @@ use bevy_app::prelude::*;
 use bevy_asset::{embedded_asset, AssetEventSystems};
 use bevy_core_pipeline::core_2d::{AlphaMask2d, Opaque2d, Transparent2d};
 use bevy_ecs::prelude::*;
+use bevy_extract::{
+    sync_world::SyncToRenderWorld, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::{prelude::*, TextureAtlasPlugin};
 use bevy_mesh::Mesh2d;
 use bevy_render::{
     batching::sort_binned_render_phase, render_phase::AddRenderCommand,
-    render_resource::SpecializedRenderPipelines, sync_world::SyncToRenderWorld, ExtractSchedule,
-    Render, RenderApp, RenderStartup, RenderSystems,
+    render_resource::SpecializedRenderPipelines, RenderStartup,
 };
 use bevy_sprite::Sprite;
 

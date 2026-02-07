@@ -29,6 +29,7 @@ use bevy_ecs::{
     system::{Res, ResMut},
     world::{FromWorld, World},
 };
+use bevy_extract::{Render, RenderApp, RenderSystems};
 use bevy_image::Image;
 use bevy_log::error;
 use bevy_math::{vec2, Vec2};
@@ -51,7 +52,6 @@ use bevy_render::{
     texture::GpuImage,
     RenderStartup,
 };
-use bevy_render::{Render, RenderApp, RenderSystems};
 use bevy_shader::{Shader, ShaderDefVal};
 use bevy_utils::default;
 

@@ -20,6 +20,10 @@ use bevy_ecs::{
     prelude::*,
     system::{lifetimeless::SRes, SystemParamItem},
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_math::FloatOrd;
 use bevy_mesh::MeshVertexBufferLayoutRef;
 use bevy_platform::collections::HashMap;
@@ -42,9 +46,8 @@ use bevy_render::{
         SpecializedMeshPipelineError, SpecializedMeshPipelines,
     },
     renderer::RenderDevice,
-    sync_world::{MainEntity, MainEntityHashMap},
     view::{ExtractedView, RenderVisibleEntities},
-    Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::{Shader, ShaderDefVal, ShaderRef};
 use bevy_utils::Parallel;

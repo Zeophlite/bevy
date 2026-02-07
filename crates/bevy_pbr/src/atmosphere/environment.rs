@@ -13,11 +13,12 @@ use bevy_ecs::{
     resource::Resource,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::extract_component::{DynamicUniformIndex, ExtractComponent};
 use bevy_image::Image;
 use bevy_light::{AtmosphereEnvironmentMapLight, GeneratedEnvironmentMapLight};
 use bevy_math::{Quat, UVec2};
 use bevy_render::{
-    extract_component::{ComponentUniforms, DynamicUniformIndex, ExtractComponent},
+    extract_component::ComponentUniforms,
     render_asset::RenderAssets,
     render_resource::{binding_types::*, *},
     renderer::{RenderContext, RenderDevice, ViewQuery},

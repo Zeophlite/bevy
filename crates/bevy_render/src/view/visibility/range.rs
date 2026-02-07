@@ -11,6 +11,10 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs as _,
     system::{Query, Res, ResMut},
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_math::{vec4, Vec4};
 use bevy_platform::collections::HashMap;
 use bevy_utils::prelude::default;
@@ -20,8 +24,6 @@ use wgpu::{BufferBindingType, BufferUsages};
 use crate::{
     render_resource::BufferVec,
     renderer::{RenderDevice, RenderQueue},
-    sync_world::{MainEntity, MainEntityHashMap},
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 
 /// We need at least 4 storage buffer bindings available to enable the

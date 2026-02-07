@@ -5,9 +5,9 @@ use bevy_ecs::{
     query::{QueryItem, With},
     reflect::ReflectComponent,
 };
+use bevy_extract::{extract_component::ExtractComponent, sync_component::SyncComponent};
 use bevy_math::{AspectRatio, URect, UVec4, Vec2, Vec4};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
-use bevy_render::{extract_component::ExtractComponent, sync_component::SyncComponent};
 
 /// Applies a bloom effect to an HDR-enabled 2d or 3d camera.
 ///

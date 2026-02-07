@@ -1,13 +1,12 @@
 use bevy_app::{App, Plugin};
 use bevy_color::{ColorToComponents, LinearRgba};
 use bevy_ecs::prelude::*;
+use bevy_extract::{extract_component::ExtractComponentPlugin, Render, RenderApp, RenderSystems};
 use bevy_math::{Vec3, Vec4};
 use bevy_render::{
-    extract_component::ExtractComponentPlugin,
     render_resource::{DynamicUniformBuffer, ShaderType},
     renderer::{RenderDevice, RenderQueue},
     view::ExtractedView,
-    Render, RenderApp, RenderSystems,
 };
 use bevy_shader::load_shader_library;
 

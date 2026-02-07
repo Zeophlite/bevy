@@ -7,11 +7,10 @@ use bevy_ecs::{
     resource::Resource,
     system::lifetimeless::Read,
 };
+use bevy_extract::{extract_component::ExtractComponent, sync_component::SyncComponent};
 use bevy_image::Image;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
-use bevy_render::{
-    extract_component::ExtractComponent, render_resource::ShaderType, sync_component::SyncComponent,
-};
+use bevy_render::render_resource::ShaderType;
 
 /// The raw RGBA data for the default chromatic aberration gradient.
 ///

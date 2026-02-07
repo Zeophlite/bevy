@@ -30,6 +30,7 @@ use bevy_camera::{Camera, Camera3d, Camera3dDepthLoadOp};
 use bevy_diagnostic::FrameCount;
 use bevy_render::{
     batching::gpu_preprocessing::{GpuPreprocessingMode, GpuPreprocessingSupport},
+    camera::CameraPlugin,
     camera::CameraRenderGraph,
     mesh::allocator::SlabId,
     occlusion_culling::OcclusionCulling,
@@ -43,13 +44,17 @@ pub use main_transparent_pass_3d_node::*;
 use bevy_app::{App, Plugin, PostUpdate};
 use bevy_asset::UntypedAssetId;
 use bevy_color::LinearRgba;
-use bevy_ecs::prelude::*;
+use bevy_ecs::{prelude::*, query::QueryItem};
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    sync_world::{MainEntity, RenderEntity},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::ToExtents;
 use bevy_math::FloatOrd;
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_render::{
     camera::ExtractedCamera,
-    extract_component::ExtractComponentPlugin,
     prelude::Msaa,
     render_phase::{
         sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId,
@@ -60,10 +65,8 @@ use bevy_render::{
         CachedRenderPipelineId, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages,
     },
     renderer::RenderDevice,
-    sync_world::{MainEntity, RenderEntity},
     texture::{ColorAttachment, TextureCache},
     view::{ExtractedView, ViewDepthTexture},
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 use nonmax::NonMaxU32;
 use tracing::warn;
@@ -90,6 +93,17 @@ use crate::{
     Core3dSystems,
 };
 
+// impl ExtractComponent<CameraPlugin> for Camera3d {
+//     type QueryData = ();
+//     type QueryFilter = ();
+
+//     fn extract_component(
+//         item: QueryItem<'_, '_, Self::QueryData>,
+//     ) -> Option<Self::Out> {
+//         Some(*item)
+//     }
+// }
+
 pub struct Core3dPlugin;
 
 impl Plugin for Core3dPlugin {
@@ -99,7 +113,10 @@ impl Plugin for Core3dPlugin {
                 CameraRenderGraph::new(Core3d)
             })
             .register_required_components::<Camera3d, Tonemapping>()
-            .add_plugins((SkyboxPlugin, ExtractComponentPlugin::<Camera3d>::default()))
+            .add_plugins((
+                SkyboxPlugin,
+                ExtractComponentPlugin::<Camera3d, CameraPlugin>::default(),
+            ))
             .add_systems(PostUpdate, check_msaa);
 
         let Some(render_app) = app.get_sub_app_mut(RenderApp) else {

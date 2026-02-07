@@ -1,5 +1,4 @@
 use crate::{
-    extract_component::ExtractComponentPlugin,
     render_asset::RenderAssets,
     render_resource::{
         Buffer, BufferUsages, CommandEncoder, Extent3d, TexelCopyBufferLayout, Texture,
@@ -7,9 +6,8 @@ use crate::{
     },
     renderer::RenderDevice,
     storage::{GpuShaderBuffer, ShaderBuffer},
-    sync_world::MainEntity,
     texture::GpuImage,
-    ExtractSchedule, MainWorld, Render, RenderApp, RenderSystems,
+    ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 use async_channel::{Receiver, Sender};
 use bevy_app::{App, Plugin};
@@ -23,11 +21,12 @@ use bevy_ecs::{
     prelude::{Component, Resource, World},
     system::{Query, Res},
 };
+use bevy_extract::{extract_component::ExtractComponentPlugin, sync_world::MainEntity, MainWorld};
+use bevy_extract_macros::ExtractComponent;
 use bevy_image::{Image, TextureFormatPixelInfo};
 use bevy_log::warn;
 use bevy_platform::collections::HashMap;
 use bevy_reflect::Reflect;
-use bevy_render_macros::ExtractComponent;
 use encase::internal::ReadFrom;
 use encase::private::Reader;
 use encase::ShaderType;

@@ -9,6 +9,7 @@ use bevy_ecs::{
     entity::{EntityHashMap, EntityHashSet},
     prelude::*,
 };
+use bevy_extract::{Render, RenderApp, RenderSystems};
 use bevy_image::BevyDefault as _;
 use bevy_render::{
     render_resource::{
@@ -22,7 +23,6 @@ use bevy_render::{
     },
     renderer::{RenderAdapter, RenderDevice},
     view::{ExtractedView, ViewTarget, ViewUniform, ViewUniforms},
-    Render, RenderApp, RenderSystems,
 };
 use bevy_shader::ShaderDefVal;
 use bevy_utils::default;

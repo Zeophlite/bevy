@@ -50,21 +50,21 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{lifetimeless::Read, Commands, Local, Query},
 };
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    sync_component::SyncComponent,
+    sync_world::RenderEntity,
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_light::{atmosphere::ScatteringMedium, Atmosphere};
 use bevy_math::{UVec2, UVec3, Vec3};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     extract_component::UniformComponentPlugin,
     render_resource::{DownlevelFlags, ShaderType, SpecializedRenderPipelines},
-    sync_component::SyncComponent,
-    sync_world::RenderEntity,
-    Extract, ExtractSchedule, RenderStartup,
-};
-use bevy_render::{
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_resource::{TextureFormat, TextureUsages},
     renderer::RenderAdapter,
-    Render, RenderApp, RenderSystems,
+    RenderStartup,
 };
 
 use bevy_shader::load_shader_library;

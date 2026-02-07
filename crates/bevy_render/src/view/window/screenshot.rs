@@ -9,7 +9,7 @@ use crate::{
     renderer::RenderDevice,
     texture::{GpuImage, ManualTextureViews, OutputColorAttachment},
     view::{prepare_view_attachments, prepare_view_targets, ViewTargetAttachments, WindowSurfaces},
-    ExtractSchedule, MainWorld, Render, RenderApp, RenderStartup, RenderSystems,
+    ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
 };
 use alloc::{borrow::Cow, sync::Arc};
 use bevy_app::{First, Plugin, Update};
@@ -19,6 +19,7 @@ use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
     entity::EntityHashMap, message::message_update_system, prelude::*, system::SystemState,
 };
+use bevy_extract::MainWorld;
 use bevy_image::{Image, TextureFormatPixelInfo, ToExtents};
 use bevy_log::{error, info, warn};
 use bevy_material::{

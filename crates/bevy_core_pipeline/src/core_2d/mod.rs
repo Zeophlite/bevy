@@ -9,7 +9,7 @@ use bevy_image::ToExtents;
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingMode,
-    camera::CameraRenderGraph,
+    camera::{CameraPlugin, CameraRenderGraph},
     render_phase::PhaseItemBatchSetKey,
     view::{ExtractedView, RetainedViewEntity},
 };
@@ -22,10 +22,13 @@ use crate::upscaling::upscaling;
 use crate::Core2dSystems;
 use bevy_app::{App, Plugin};
 use bevy_ecs::prelude::*;
+use bevy_extract::{
+    extract_component::ExtractComponentPlugin, sync_world::MainEntity, Extract, ExtractSchedule,
+    Render, RenderApp, RenderSystems,
+};
 use bevy_math::FloatOrd;
 use bevy_render::{
     camera::ExtractedCamera,
-    extract_component::ExtractComponentPlugin,
     render_phase::{
         sort_phase_system, BinnedPhaseItem, CachedRenderPipelinePhaseItem, DrawFunctionId,
         DrawFunctions, PhaseItem, PhaseItemExtraIndex, SortedPhaseItem, ViewBinnedRenderPhases,
@@ -36,10 +39,8 @@ use bevy_render::{
         TextureUsages,
     },
     renderer::RenderDevice,
-    sync_world::MainEntity,
     texture::TextureCache,
     view::{Msaa, ViewDepthTexture},
-    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
 };
 
 pub const CORE_2D_DEPTH_FORMAT: TextureFormat = TextureFormat::Depth32Float;
@@ -53,7 +54,7 @@ impl Plugin for Core2dPlugin {
                 CameraRenderGraph::new(Core2d)
             })
             .register_required_components_with::<Camera2d, Tonemapping>(|| Tonemapping::None)
-            .add_plugins(ExtractComponentPlugin::<Camera2d>::default());
+            .add_plugins(ExtractComponentPlugin::<Camera2d, CameraPlugin>::default());
 
         let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
             return;

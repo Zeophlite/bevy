@@ -9,20 +9,22 @@ use bevy_ecs::{
         *,
     },
 };
+use bevy_extract::{
+    sync_world::{MainEntity, TemporaryRenderEntity},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::BevyDefault as _;
 use bevy_math::{Affine2, FloatOrd, Rect, Vec2};
 use bevy_mesh::VertexBufferLayout;
+use bevy_render::RenderStartup;
 use bevy_render::{
     globals::{GlobalsBuffer, GlobalsUniform},
     render_asset::{PrepareAssetError, RenderAsset, RenderAssetPlugin, RenderAssets},
     render_phase::*,
     render_resource::{binding_types::uniform_buffer, *},
     renderer::{RenderDevice, RenderQueue},
-    sync_world::{MainEntity, TemporaryRenderEntity},
     view::*,
-    Extract, ExtractSchedule, Render, RenderSystems,
 };
-use bevy_render::{RenderApp, RenderStartup};
 use bevy_shader::{load_shader_library, Shader, ShaderRef};
 use bevy_sprite::BorderRect;
 use bevy_utils::default;

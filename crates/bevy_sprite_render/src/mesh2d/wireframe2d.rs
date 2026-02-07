@@ -16,6 +16,11 @@ use bevy_ecs::{
     prelude::*,
     system::{lifetimeless::SRes, SystemChangeTick, SystemParamItem},
 };
+use bevy_extract::{
+    extract_resource::ExtractResource,
+    sync_world::{MainEntity, MainEntityHashMap},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_mesh::{Mesh2d, MeshVertexBufferLayoutRef};
 use bevy_platform::{
     collections::{HashMap, HashSet},
@@ -25,7 +30,6 @@ use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     batching::gpu_preprocessing::GpuPreprocessingMode,
     camera::ExtractedCamera,
-    extract_resource::ExtractResource,
     mesh::{
         allocator::{MeshAllocator, SlabId},
         RenderMesh,
@@ -42,11 +46,10 @@ use bevy_render::{
     },
     render_resource::*,
     renderer::{RenderContext, ViewQuery},
-    sync_world::{MainEntity, MainEntityHashMap},
     view::{
         ExtractedView, RenderVisibleEntities, RetainedViewEntity, ViewDepthTexture, ViewTarget,
     },
-    Extract, Render, RenderApp, RenderDebugFlags, RenderStartup, RenderSystems,
+    RenderDebugFlags, RenderStartup,
 };
 use bevy_shader::Shader;
 use core::{hash::Hash, ops::Range};

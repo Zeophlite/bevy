@@ -29,10 +29,10 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs as _,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{extract_component::ExtractComponentPlugin, Render, RenderApp, RenderSystems};
 use bevy_image::{BevyDefault, Image};
 use bevy_render::{
     diagnostic::RecordDiagnostics,
-    extract_component::ExtractComponentPlugin,
     render_asset::RenderAssets,
     render_resource::{
         binding_types::{sampler, texture_2d, uniform_buffer},
@@ -46,7 +46,7 @@ use bevy_render::{
     renderer::{RenderContext, RenderDevice, RenderQueue, ViewQuery},
     texture::GpuImage,
     view::{ExtractedView, ViewTarget},
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::{load_shader_library, Shader};
 use bevy_utils::prelude::default;

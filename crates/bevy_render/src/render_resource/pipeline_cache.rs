@@ -6,7 +6,6 @@ use bevy_material::descriptor::{
 use crate::{
     render_resource::*,
     renderer::{RenderAdapter, RenderDevice, WgpuWrapper},
-    Extract,
 };
 use alloc::{borrow::Cow, sync::Arc};
 use bevy_asset::{AssetEvent, AssetId, Assets, Handle};
@@ -15,6 +14,7 @@ use bevy_ecs::{
     resource::Resource,
     system::{Res, ResMut},
 };
+use bevy_extract::Extract;
 use bevy_log::error;
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_shader::{

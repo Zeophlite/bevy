@@ -20,21 +20,23 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::Res,
 };
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    sync_component::SyncComponent,
+    Render, RenderApp, RenderSystems,
+};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     diagnostic::RecordDiagnostics,
-    extract_component::{
-        ComponentUniforms, ExtractComponent, ExtractComponentPlugin, UniformComponentPlugin,
-    },
+    extract_component::{ComponentUniforms, UniformComponentPlugin},
     globals::GlobalsBuffer,
     render_resource::{
         BindGroupEntries, Operations, PipelineCache, RenderPassColorAttachment,
         RenderPassDescriptor, ShaderType, SpecializedRenderPipelines,
     },
     renderer::{RenderContext, ViewQuery},
-    sync_component::SyncComponent,
     view::{Msaa, ViewTarget},
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 
 pub mod pipeline;

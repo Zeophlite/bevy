@@ -36,17 +36,17 @@ use bevy_core_pipeline::{
     schedule::{Core3d, Core3dSystems},
 };
 use bevy_ecs::{resource::Resource, schedule::IntoScheduleConfigs as _};
+use bevy_extract::{
+    sync_component::{SyncComponent, SyncComponentPlugin},
+    ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_light::FogVolume;
 use bevy_math::{
     primitives::{Cuboid, Plane3d},
     Vec2, Vec3,
 };
 use bevy_mesh::{Mesh, Meshable};
-use bevy_render::{
-    render_resource::SpecializedRenderPipelines,
-    sync_component::{SyncComponent, SyncComponentPlugin},
-    ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
-};
+use bevy_render::{render_resource::SpecializedRenderPipelines, RenderStartup};
 use render::{volumetric_fog, VolumetricFogPipeline, VolumetricFogUniformBuffer};
 
 use crate::volumetric_fog::render::init_volumetric_fog_pipeline;

@@ -47,13 +47,16 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs as _,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    Render, RenderApp, RenderSystems,
+};
 use bevy_image::{BevyDefault, Image, ToExtents};
 use bevy_math::{vec4, Vec4};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     camera::ExtractedCamera,
     diagnostic::RecordDiagnostics,
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_asset::RenderAssets,
     render_resource::{
         binding_types::{sampler, texture_2d, uniform_buffer},
@@ -70,7 +73,7 @@ use bevy_render::{
     renderer::{RenderContext, RenderDevice, RenderQueue, ViewQuery},
     texture::{CachedTexture, GpuImage, TextureCache},
     view::{ExtractedView, ViewTarget},
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::{Shader, ShaderDefVal};
 use bevy_utils::prelude::default;

@@ -15,6 +15,11 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    sync_component::{SyncComponent, SyncComponentPlugin},
+    sync_world::RenderEntity,
+    ExtractSchedule, MainWorld, Render, RenderApp, RenderSystems,
+};
 use bevy_image::{BevyDefault as _, ToExtents};
 use bevy_math::vec2;
 use bevy_post_process::{bloom::bloom, motion_blur::motion_blur};
@@ -32,11 +37,9 @@ use bevy_render::{
         TextureFormat, TextureSampleType, TextureUsages, Variants,
     },
     renderer::{RenderContext, RenderDevice, ViewQuery},
-    sync_component::{SyncComponent, SyncComponentPlugin},
-    sync_world::RenderEntity,
     texture::{CachedTexture, TextureCache},
     view::{ExtractedView, Msaa, ViewTarget},
-    ExtractSchedule, MainWorld, Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_utils::default;
 use tracing::warn;

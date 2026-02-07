@@ -45,6 +45,10 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap},
+    Extract, ExtractSchedule, RenderApp,
+};
 use bevy_image::Image;
 use bevy_math::{uvec2, vec4, Rect, UVec2};
 use bevy_platform::collections::HashSet;
@@ -52,12 +56,10 @@ use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     render_asset::RenderAssets,
     render_resource::{Sampler, TextureView, WgpuSampler, WgpuTextureView},
-    renderer::RenderAdapter,
-    sync_world::MainEntity,
+    renderer::{RenderAdapter, RenderDevice},
     texture::{FallbackImage, GpuImage},
-    Extract, ExtractSchedule, RenderApp, RenderStartup,
+    RenderStartup,
 };
-use bevy_render::{renderer::RenderDevice, sync_world::MainEntityHashMap};
 use bevy_shader::load_shader_library;
 use bevy_utils::default;
 use fixedbitset::FixedBitSet;

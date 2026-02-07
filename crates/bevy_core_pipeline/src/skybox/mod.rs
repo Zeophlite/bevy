@@ -8,21 +8,24 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Local, Query, Res, ResMut},
 };
+use bevy_extract::{
+    extract_component::DynamicUniformIndex, sync_world::RenderEntity, Extract, ExtractSchedule,
+    Render, RenderApp, RenderSystems,
+};
 use bevy_image::BevyDefault;
 use bevy_light::Skybox;
 use bevy_math::Mat4;
 use bevy_render::{
-    extract_component::{ComponentUniforms, DynamicUniformIndex, UniformComponentPlugin},
+    extract_component::{ComponentUniforms, UniformComponentPlugin},
     render_asset::RenderAssets,
     render_resource::{
         binding_types::{sampler, texture_cube, uniform_buffer},
         *,
     },
     renderer::RenderDevice,
-    sync_world::RenderEntity,
     texture::GpuImage,
     view::{ExtractedView, Msaa, ViewTarget, ViewUniform, ViewUniforms},
-    Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::Shader;
 use bevy_transform::components::Transform;

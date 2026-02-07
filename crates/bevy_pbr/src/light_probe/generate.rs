@@ -22,6 +22,11 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    sync_component::{SyncComponent, SyncComponentPlugin},
+    sync_world::RenderEntity,
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+};
 use bevy_image::Image;
 use bevy_math::{Quat, UVec2, Vec2};
 use bevy_render::{
@@ -38,10 +43,8 @@ use bevy_render::{
     },
     renderer::{RenderAdapter, RenderContext, RenderDevice, RenderQueue},
     settings::WgpuFeatures,
-    sync_component::{SyncComponent, SyncComponentPlugin},
-    sync_world::RenderEntity,
     texture::{CachedTexture, GpuImage, TextureCache},
-    Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 
 // Implementation: generate diffuse and specular cubemaps required by PBR

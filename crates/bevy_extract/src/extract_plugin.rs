@@ -2,7 +2,7 @@ use crate::{
     sync_world::{despawn_temporary_render_entities, entity_sync_system, SyncWorldPlugin},
     Render, RenderApp, RenderSystems,
 };
-use bevy_app::{App, Plugin, SubApp};
+use bevy_app::prelude::{App, Plugin, SubApp};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
     resource::Resource,

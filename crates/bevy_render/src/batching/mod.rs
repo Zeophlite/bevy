@@ -7,6 +7,7 @@ use bytemuck::Pod;
 use gpu_preprocessing::UntypedPhaseIndirectParametersBuffers;
 use nonmax::NonMaxU32;
 
+use bevy_extract::sync_world::MainEntity;
 use bevy_material::{descriptor::CachedRenderPipelineId, labels::DrawFunctionId};
 
 use crate::{
@@ -15,7 +16,6 @@ use crate::{
         SortedRenderPhase, ViewBinnedRenderPhases,
     },
     render_resource::GpuArrayBufferable,
-    sync_world::MainEntity,
 };
 
 pub mod gpu_preprocessing;

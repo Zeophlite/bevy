@@ -5,6 +5,7 @@ mod texture_attachment;
 mod texture_cache;
 
 pub use crate::render_resource::DefaultImageSampler;
+use bevy_extract::extract_resource::ExtractResourcePlugin;
 use bevy_image::{CompressedImageFormatSupport, CompressedImageFormats, ImageLoader, ImagePlugin};
 pub use fallback_image::*;
 pub use gpu_image::*;
@@ -13,8 +14,7 @@ pub use texture_attachment::*;
 pub use texture_cache::*;
 
 use crate::{
-    extract_resource::ExtractResourcePlugin, render_asset::RenderAssetPlugin,
-    renderer::RenderDevice, Render, RenderApp, RenderSystems,
+    render_asset::RenderAssetPlugin, renderer::RenderDevice, Render, RenderApp, RenderSystems,
 };
 use bevy_app::{App, Plugin};
 use bevy_asset::AssetApp;
@@ -28,7 +28,7 @@ impl Plugin for TexturePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             RenderAssetPlugin::<GpuImage>::default(),
-            ExtractResourcePlugin::<ManualTextureViews>::default(),
+            ExtractResourcePlugin::<ManualTextureViews, ()>::default(),
         ))
         .init_resource::<ManualTextureViews>();
         if let Some(render_app) = app.get_sub_app_mut(RenderApp) {

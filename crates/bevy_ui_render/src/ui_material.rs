@@ -2,11 +2,9 @@ use crate::Node;
 use bevy_asset::{Asset, AssetId, Handle};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{component::Component, reflect::ReflectComponent};
+use bevy_extract::extract_component::ExtractComponent;
 use bevy_reflect::{prelude::ReflectDefault, Reflect};
-use bevy_render::{
-    extract_component::ExtractComponent,
-    render_resource::{AsBindGroup, RenderPipelineDescriptor},
-};
+use bevy_render::render_resource::{AsBindGroup, RenderPipelineDescriptor};
 use bevy_shader::ShaderRef;
 use derive_more::derive::From;
 

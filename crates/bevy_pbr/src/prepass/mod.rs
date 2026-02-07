@@ -22,6 +22,11 @@ use bevy_ecs::{
         SystemParam, SystemParamItem, SystemState,
     },
 };
+use bevy_extract::{
+    sync_world::{MainEntity, MainEntityHashMap, RenderEntity},
+    Extract, ExtractSchedule, Render, RenderApp, RenderSystems,
+    RenderSystems::{PrepareAssets, PrepareResources},
+};
 use bevy_material::{
     key::{ErasedMaterialPipelineKey, ErasedMeshPipelineKey},
     AlphaMode, MaterialProperties, OpaqueRendererMethod, RenderPhaseType,
@@ -36,12 +41,11 @@ use bevy_render::{
     render_phase::*,
     render_resource::{binding_types::uniform_buffer, *},
     renderer::{RenderAdapter, RenderDevice, RenderQueue},
-    sync_world::RenderEntity,
     view::{
         ExtractedView, Msaa, RenderVisibilityRanges, RetainedViewEntity, ViewUniform,
         ViewUniformOffset, ViewUniforms, VISIBILITY_RANGES_STORAGE_BUFFER_COUNT,
     },
-    Extract, ExtractSchedule, Render, RenderApp, RenderDebugFlags, RenderStartup, RenderSystems,
+    RenderDebugFlags, RenderStartup,
 };
 use bevy_shader::{load_shader_library, Shader, ShaderDefVal};
 use bevy_transform::prelude::GlobalTransform;
@@ -60,12 +64,7 @@ use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{change_detection::Tick, system::SystemChangeTick};
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_platform::hash::FixedHasher;
-use bevy_render::{
-    erased_render_asset::ErasedRenderAssets,
-    sync_world::{MainEntity, MainEntityHashMap},
-    view::RenderVisibleEntities,
-    RenderSystems::{PrepareAssets, PrepareResources},
-};
+use bevy_render::{erased_render_asset::ErasedRenderAssets, view::RenderVisibleEntities};
 use bevy_utils::default;
 
 /// Sets up everything required to use the prepass pipeline.

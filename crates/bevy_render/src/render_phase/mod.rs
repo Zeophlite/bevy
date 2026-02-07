@@ -48,9 +48,9 @@ use crate::batching::gpu_preprocessing::{
     PhaseIndirectParametersBuffers,
 };
 use crate::renderer::RenderDevice;
-use crate::sync_world::{MainEntity, MainEntityHashMap};
 use crate::view::RetainedViewEntity;
 use crate::RenderDebugFlags;
+use bevy_extract::sync_world::{MainEntity, MainEntityHashMap};
 use bevy_material::descriptor::CachedRenderPipelineId;
 
 use crate::{

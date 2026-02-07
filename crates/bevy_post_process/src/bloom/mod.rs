@@ -17,18 +17,20 @@ use bevy_core_pipeline::{
     tonemapping::tonemapping,
 };
 use bevy_ecs::prelude::*;
+use bevy_extract::{
+    extract_component::{DynamicUniformIndex, ExtractComponentPlugin},
+    Render, RenderApp, RenderSystems,
+};
 use bevy_math::{ops, UVec2};
 use bevy_render::{
     camera::ExtractedCamera,
     diagnostic::RecordDiagnostics,
-    extract_component::{
-        ComponentUniforms, DynamicUniformIndex, ExtractComponentPlugin, UniformComponentPlugin,
-    },
+    extract_component::{ComponentUniforms, UniformComponentPlugin},
     render_resource::*,
     renderer::{RenderContext, RenderDevice, ViewQuery},
     texture::{CachedTexture, TextureCache},
     view::ViewTarget,
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use downsampling_pipeline::{
     prepare_downsampling_pipeline, BloomDownsamplingPipeline, BloomDownsamplingPipelineIds,

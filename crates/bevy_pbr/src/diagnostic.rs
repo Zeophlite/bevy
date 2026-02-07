@@ -6,8 +6,8 @@ use core::{
 use bevy_app::{Plugin, PreUpdate};
 use bevy_diagnostic::{Diagnostic, DiagnosticPath, Diagnostics, RegisterDiagnostic};
 use bevy_ecs::{resource::Resource, system::Res};
+use bevy_extract::{Extract, ExtractSchedule, RenderApp};
 use bevy_platform::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
-use bevy_render::{Extract, ExtractSchedule, RenderApp};
 
 use crate::{Material, MaterialBindGroupAllocators};
 

@@ -1,9 +1,9 @@
 use bevy_camera::{MainPassResolutionOverride, Viewport};
 use bevy_ecs::system::Res;
+use bevy_extract::extract_component::DynamicUniformIndex;
 use bevy_math::{UVec2, Vec3Swizzles};
 use bevy_render::{
     camera::ExtractedCamera,
-    extract_component::DynamicUniformIndex,
     render_resource::{ComputePass, ComputePassDescriptor, PipelineCache, RenderPassDescriptor},
     renderer::{RenderContext, ViewQuery},
     view::{ViewTarget, ViewUniformOffset},

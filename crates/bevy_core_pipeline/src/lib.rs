@@ -33,8 +33,8 @@ use crate::{
 };
 use bevy_app::{App, Plugin};
 use bevy_asset::embedded_asset;
+use bevy_extract::RenderApp;
 use bevy_render::renderer::RenderGraph;
-use bevy_render::RenderApp;
 use oit::OrderIndependentTransparencyPlugin;
 
 #[derive(Default)]

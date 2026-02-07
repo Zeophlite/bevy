@@ -4,11 +4,14 @@ use bevy_asset::{
 };
 use bevy_camera::Camera;
 use bevy_ecs::prelude::*;
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    extract_resource::{ExtractResource, ExtractResourcePlugin},
+    Render, RenderApp, RenderSystems,
+};
 use bevy_image::{CompressedImageFormats, Image, ImageSampler, ImageType};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
-    extract_resource::{ExtractResource, ExtractResourcePlugin},
     render_asset::RenderAssets,
     render_resource::{
         binding_types::{sampler, texture_2d, texture_3d, uniform_buffer},
@@ -17,7 +20,7 @@ use bevy_render::{
     renderer::RenderDevice,
     texture::{FallbackImage, GpuImage},
     view::{ExtractedView, ViewTarget, ViewUniform},
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::{load_shader_library, Shader, ShaderDefVal};
 use bitflags::bitflags;
@@ -82,7 +85,7 @@ impl Plugin for TonemappingPlugin {
             app.insert_resource(tonemapping_luts);
         }
 
-        app.add_plugins(ExtractResourcePlugin::<TonemappingLuts>::default());
+        app.add_plugins(ExtractResourcePlugin::<TonemappingLuts, ()>::default());
 
         app.add_plugins((
             ExtractComponentPlugin::<Tonemapping>::default(),

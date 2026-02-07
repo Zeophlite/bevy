@@ -20,12 +20,16 @@ use bevy_ecs::{
     schedule::IntoScheduleConfigs as _,
     system::{lifetimeless::Read, Commands, Query, Res, ResMut},
 };
+use bevy_extract::{
+    extract_component::{ExtractComponent, ExtractComponentPlugin},
+    sync_component::SyncComponent,
+    Render, RenderApp, RenderSystems,
+};
 use bevy_image::BevyDefault as _;
 use bevy_light::EnvironmentMapLight;
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_render::{
     diagnostic::RecordDiagnostics,
-    extract_component::{ExtractComponent, ExtractComponentPlugin},
     render_asset::RenderAssets,
     render_resource::{
         binding_types, AddressMode, BindGroupEntries, BindGroupLayoutDescriptor,
@@ -37,10 +41,9 @@ use bevy_render::{
         TextureViewDimension,
     },
     renderer::{RenderAdapter, RenderContext, RenderDevice, RenderQueue, ViewQuery},
-    sync_component::SyncComponent,
     texture::GpuImage,
     view::{ExtractedView, Msaa, ViewTarget, ViewUniformOffset},
-    Render, RenderApp, RenderStartup, RenderSystems,
+    RenderStartup,
 };
 use bevy_shader::{load_shader_library, Shader};
 use bevy_utils::{once, prelude::default};
