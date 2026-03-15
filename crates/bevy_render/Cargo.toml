@@ -9,6 +9,8 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 
 [features]
+default = []
+
 # Bevy users should _never_ turn this feature on.
 #
 # Bevy/wgpu developers can turn this feature on to test a newer version of wgpu without needing to also update naga_oil.
@@ -126,6 +128,9 @@ tracy-client = { version = "0.18.3", optional = true }
 indexmap = { version = "2" }
 bitflags = "2"
 itertools = "0.14"
+
+[dev-dependencies]
+# crossbeam-channel = "0.5.0"
 
 [target.'cfg(all(target_arch = "wasm32", target_feature = "atomics"))'.dependencies]
 send_wrapper = { version = "0.6.0" }

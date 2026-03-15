@@ -58,6 +58,31 @@ pub mod storage;
 pub mod texture;
 pub mod view;
 
+pub mod extract_base_component;
+pub mod extract_base_resource;
+pub mod extract_instances;
+mod extract_param;
+pub mod extract_plugin;
+pub mod sync_component;
+pub mod sync_world;
+
+pub use extract_param::Extract;
+pub use extract_plugin::*;
+pub use extract_plugin::{ExtractSchedule, MainWorld};
+pub use sync_world::*;
+
+// Required to make proc macros work in bevy itself.
+extern crate self as bevy_extract;
+
+/// The extract prelude.
+///
+/// This includes the most common types in this crate, re-exported for your convenience.
+pub mod prelude {
+    #[doc(hidden)]
+    pub use crate::{ExtractPlugin, ExtractSchedule};
+}
+
+
 /// The render prelude.
 ///
 /// This includes the most common types in this crate, re-exported for your convenience.
