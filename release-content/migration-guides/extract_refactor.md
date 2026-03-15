@@ -40,8 +40,6 @@ impl ExtractComponent for MyComponent {
 }
 ```
 
-All above has moved to new crate `bevy_extract`.
-
 `ExtractPlugin` is now generic on `AppLabel`
 
 Currently a component can only be extracted to a single world.

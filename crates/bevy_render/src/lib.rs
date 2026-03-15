@@ -72,7 +72,7 @@ pub use extract_plugin::{ExtractSchedule, MainWorld};
 pub use sync_world::*;
 
 // Required to make proc macros work in bevy itself.
-extern crate self as bevy_extract;
+extern crate self as bevy_render;
 
 /// The extract prelude.
 ///
@@ -95,35 +95,35 @@ pub mod prelude {
 
 // Re-exports
 pub mod extract_base_component {
-    pub use bevy_extract::extract_base_component::{ExtractBaseComponent, ExtractComponent};
+    pub use bevy_render::extract_base_component::{ExtractBaseComponent, ExtractComponent};
 }
 pub mod extract_base_resource {
-    pub use bevy_extract::extract_base_resource::{ExtractBaseResource, ExtractResource};
+    pub use bevy_render::extract_base_resource::{ExtractBaseResource, ExtractResource};
 }
 pub mod extract_instances {
-    pub use bevy_extract::extract_instances::ExtractInstance;
+    pub use bevy_render::extract_instances::ExtractInstance;
 
     pub type ExtractInstancesPlugin<EI> =
-        bevy_extract::extract_instances::ExtractInstancesPlugin<crate::RenderApp, EI>;
+        bevy_render::extract_instances::ExtractInstancesPlugin<crate::RenderApp, EI>;
 }
 pub mod sync_component {
-    pub use bevy_extract::sync_component::SyncComponent;
+    pub use bevy_render::sync_component::SyncComponent;
 
     pub type SyncComponentPlugin<C, F = ()> =
-        bevy_extract::sync_component::SyncComponentPlugin<crate::RenderApp, C, F>;
+        bevy_render::sync_component::SyncComponentPlugin<crate::RenderApp, C, F>;
 }
 pub mod sync_world {
-    pub use bevy_extract::sync_world::{
+    pub use bevy_render::sync_world::{
         MainEntity, MainEntityHashMap, MainEntityHashSet, TemporarySubEntity,
     };
 
-    pub type RenderEntity = bevy_extract::sync_world::SubEntity<crate::RenderApp>;
+    pub type RenderEntity = bevy_render::sync_world::SubEntity<crate::RenderApp>;
     pub type TemporaryRenderEntity = TemporarySubEntity<crate::RenderApp>;
-    pub type SyncToRenderWorld = bevy_extract::sync_world::SyncToSubWorld<crate::RenderApp>;
+    pub type SyncToRenderWorld = bevy_render::sync_world::SyncToSubWorld<crate::RenderApp>;
 
-    pub type SyncWorldPlugin = bevy_extract::sync_world::SyncWorldPlugin<crate::RenderApp>;
+    pub type SyncWorldPlugin = bevy_render::sync_world::SyncWorldPlugin<crate::RenderApp>;
 }
-pub use bevy_extract::{Extract, ExtractSchedule, MainWorld};
+pub use bevy_render::{Extract, ExtractSchedule, MainWorld};
 
 use crate::{
     camera::CameraPlugin,
@@ -144,7 +144,7 @@ use bevy_app::{App, AppLabel, Plugin};
 use bevy_asset::{AssetApp, AssetServer};
 use bevy_derive::Deref;
 use bevy_ecs::{prelude::*, schedule::ScheduleLabel};
-use bevy_extract::ExtractPlugin;
+use bevy_render::ExtractPlugin;
 use bevy_platform::time::Instant;
 use bevy_shader::{load_shader_library, Shader, ShaderLoader};
 use bevy_time::TimeSender;

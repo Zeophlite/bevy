@@ -60,7 +60,7 @@ use {
             Buffer, BufferInitDescriptor, BufferUsages, ShaderStages, ShaderType, VertexFormat,
         },
         renderer::RenderDevice,
-        sync_world::MainEntity,
+        sync_world::{MainEntity, TemporaryRenderEntity},
         Extract, ExtractSchedule, Render, RenderApp, RenderStartup, RenderSystems,
     },
     bytemuck::cast_slice,
@@ -69,7 +69,6 @@ use {
 use bevy_render::{
     extract_resource::{ExtractResource, ExtractResourcePlugin},
     render_resource::{BindGroupLayoutDescriptor, PipelineCache, VertexAttribute, VertexStepMode},
-    sync_world::TemporaryRenderEntity,
 };
 
 use bevy_gizmos::{

@@ -41,7 +41,7 @@ use bevy_ecs::{
     system::{Commands, Query, Res, ResMut},
     world::DeferredWorld,
 };
-use bevy_extract::{
+use bevy_render::{
     extract_base_component::ExtractComponent, extract_base_resource::ExtractResource,
 };
 use bevy_image::Image;

@@ -36,8 +36,8 @@ use core::ops::{Deref, DerefMut};
 /// ```
 /// use bevy_app::AppLabel;
 /// use bevy_ecs::prelude::*;
-/// use bevy_extract::Extract;
-/// use bevy_extract::sync_world::SubEntity;
+/// use bevy_render::Extract;
+/// use bevy_render::sync_world::SubEntity;
 /// # #[derive(Debug, Default, Clone, Copy, Hash, PartialEq, Eq, AppLabel)]
 /// # struct ExtractApp;
 /// # #[derive(Component)]

@@ -7,11 +7,11 @@ use bevy_app::{App, Plugin};
 use bevy_ecs::{component::Component, prelude::*};
 use core::{marker::PhantomData, ops::Deref};
 
-use bevy_extract::extract_base_component::ExtractBaseComponentPlugin;
+use bevy_render::extract_base_component::ExtractBaseComponentPlugin;
 pub use bevy_render_macros::ExtractComponent;
 
-pub use bevy_extract::extract_base_component::ExtractBaseComponent;
-pub use bevy_extract::extract_base_component::ExtractComponent;
+pub use bevy_render::extract_base_component::ExtractBaseComponent;
+pub use bevy_render::extract_base_component::ExtractComponent;
 
 // pub trait ExtractComponent<F : 'static + Send + Sync = ()> = ExtractBaseComponent<RenderApp, F>;
 

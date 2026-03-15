@@ -11,7 +11,7 @@ use bevy_ecs::{
 };
 use core::marker::PhantomData;
 
-pub use bevy_extract_macros::ExtractBaseComponent;
+pub use bevy_render_macros::ExtractBaseComponent;
 
 /// Describes how a component gets extracted for sub world.
 ///

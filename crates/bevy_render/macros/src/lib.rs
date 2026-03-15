@@ -47,7 +47,7 @@ pub fn derive_extract_resource(input: TokenStream) -> TokenStream {
 ///
 /// ```no_compile
 /// use bevy_ecs::component::Component;
-/// use bevy_extract_macros::ExtractBaseComponent;
+/// use bevy_render_macros::ExtractBaseComponent;
 ///
 /// #[derive(Component, Clone, ExtractBaseComponent)]
 /// #[extract_component_filter(With<Camera>)]
