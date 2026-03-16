@@ -1,6 +1,6 @@
 use crate::{
     sync_component::{SyncBaseComponentPlugin, SyncComponent},
-    sync_world::RenderEntity,
+    sync_world::SubEntity,
     Extract, ExtractSchedule, RenderApp,
 };
 use bevy_app::{App, AppLabel, Plugin};
@@ -91,7 +91,7 @@ impl<L: AppLabel, C: ExtractComponent<L, F>, F: 'static + Send + Sync> Plugin
 fn extract_components<L: AppLabel, C: ExtractComponent<L, F>, F>(
     mut commands: Commands,
     mut previous_len: Local<usize>,
-    query: Extract<Query<(RenderEntity, C::QueryData), C::QueryFilter>>,
+    query: Extract<Query<(SubEntity<L>, C::QueryData), C::QueryFilter>>,
 ) {
     let mut values = Vec::with_capacity(*previous_len);
     for (entity, query_item) in &query {
@@ -109,7 +109,7 @@ fn extract_components<L: AppLabel, C: ExtractComponent<L, F>, F>(
 fn extract_visible_components<L: AppLabel, C: ExtractComponent<L, F>, F>(
     mut commands: Commands,
     mut previous_len: Local<usize>,
-    query: Extract<Query<(RenderEntity, &ViewVisibility, C::QueryData), C::QueryFilter>>,
+    query: Extract<Query<(SubEntity<L>, &ViewVisibility, C::QueryData), C::QueryFilter>>,
 ) {
     let mut values = Vec::with_capacity(*previous_len);
     for (entity, view_visibility, query_item) in &query {

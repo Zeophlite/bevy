@@ -6,7 +6,7 @@
 
 use core::marker::PhantomData;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{App, AppLabel, Plugin};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -17,7 +17,7 @@ use bevy_ecs::{
 };
 
 use crate::sync_world::MainEntityHashMap;
-use crate::{Extract, ExtractSchedule, RenderApp};
+use crate::{Extract, ExtractSchedule};
 
 /// Describes how to extract data needed for rendering from a component or
 /// components.
@@ -28,7 +28,7 @@ use crate::{Extract, ExtractSchedule, RenderApp};
 /// This is essentially the same as
 /// [`ExtractComponent`](crate::extract_component::ExtractComponent), but
 /// higher-performance because it avoids the ECS overhead.
-pub trait ExtractInstance: Send + Sync + Sized + 'static {
+pub trait ExtractInstance<L: AppLabel>: Send + Sync + Sized + 'static {
     /// ECS [`ReadOnlyQueryData`] to fetch the components to extract.
     type QueryData: ReadOnlyQueryData;
     /// Filters the entities with additional constraints.
@@ -44,32 +44,36 @@ pub trait ExtractInstance: Send + Sync + Sized + 'static {
 /// Therefore it sets up the [`ExtractSchedule`] step for the specified
 /// [`ExtractedInstances`].
 #[derive(Default)]
-pub struct ExtractInstancesPlugin<EI>
+pub struct ExtractInstancesPlugin<L, EI>
 where
-    EI: ExtractInstance,
+    L: AppLabel,
+    EI: ExtractInstance<L>,
 {
     only_extract_visible: bool,
-    marker: PhantomData<fn() -> EI>,
+    marker: PhantomData<fn() -> (L, EI)>,
 }
 
 /// Stores all extract instances of a type in the render world.
 #[derive(Resource, Deref, DerefMut)]
-pub struct ExtractedInstances<EI>(MainEntityHashMap<EI>)
+pub struct ExtractedInstances<L, EI>(#[deref] MainEntityHashMap<EI>, PhantomData<L>)
 where
-    EI: ExtractInstance;
+    L: AppLabel,
+    EI: ExtractInstance<L>;
 
-impl<EI> Default for ExtractedInstances<EI>
+impl<L, EI> Default for ExtractedInstances<L, EI>
 where
-    EI: ExtractInstance,
+    L: AppLabel,
+    EI: ExtractInstance<L>,
 {
     fn default() -> Self {
-        Self(Default::default())
+        Self(Default::default(), PhantomData)
     }
 }
 
-impl<EI> ExtractInstancesPlugin<EI>
+impl<L, EI> ExtractInstancesPlugin<L, EI>
 where
-    EI: ExtractInstance,
+    L: AppLabel,
+    EI: ExtractInstance<L>,
 {
     /// Creates a new [`ExtractInstancesPlugin`] that unconditionally extracts to
     /// the render world, whether the entity is visible or not.
@@ -90,27 +94,29 @@ where
     }
 }
 
-impl<EI> Plugin for ExtractInstancesPlugin<EI>
+impl<L, EI> Plugin for ExtractInstancesPlugin<L, EI>
 where
-    EI: ExtractInstance,
+    L: AppLabel,
+    EI: ExtractInstance<L>,
 {
     fn build(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
-            render_app.init_resource::<ExtractedInstances<EI>>();
+        if let Some(render_app) = app.get_sub_app_mut(L::default()) {
+            render_app.init_resource::<ExtractedInstances<L, EI>>();
             if self.only_extract_visible {
-                render_app.add_systems(ExtractSchedule, extract_visible::<EI>);
+                render_app.add_systems(ExtractSchedule, extract_visible::<L, EI>);
             } else {
-                render_app.add_systems(ExtractSchedule, extract_all::<EI>);
+                render_app.add_systems(ExtractSchedule, extract_all::<L, EI>);
             }
         }
     }
 }
 
-fn extract_all<EI>(
-    mut extracted_instances: ResMut<ExtractedInstances<EI>>,
+fn extract_all<L, EI>(
+    mut extracted_instances: ResMut<ExtractedInstances<L, EI>>,
     query: Extract<Query<(Entity, EI::QueryData), EI::QueryFilter>>,
 ) where
-    EI: ExtractInstance,
+    L: AppLabel,
+    EI: ExtractInstance<L>,
 {
     extracted_instances.clear();
     for (entity, other) in &query {
@@ -120,11 +126,12 @@ fn extract_all<EI>(
     }
 }
 
-fn extract_visible<EI>(
-    mut extracted_instances: ResMut<ExtractedInstances<EI>>,
+fn extract_visible<L, EI>(
+    mut extracted_instances: ResMut<ExtractedInstances<L, EI>>,
     query: Extract<Query<(Entity, &ViewVisibility, EI::QueryData), EI::QueryFilter>>,
 ) where
-    EI: ExtractInstance,
+    L: AppLabel,
+    EI: ExtractInstance<L>,
 {
     extracted_instances.clear();
     for (entity, view_visibility, other) in &query {

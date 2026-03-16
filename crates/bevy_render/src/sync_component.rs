@@ -7,7 +7,7 @@ use bevy_ecs::{
 };
 
 use crate::{
-    sync_world::{EntityRecord, PendingSyncEntity, SyncToRenderWorld},
+    sync_world::{EntityRecord, PendingSyncEntity, SyncToSubWorld},
     RenderApp,
 };
 
@@ -64,12 +64,12 @@ impl<L: AppLabel, C: SyncComponent<L, F>, F: Send + Sync + 'static> Plugin
     for SyncBaseComponentPlugin<L, C, F>
 {
     fn build(&self, app: &mut App) {
-        app.register_required_components::<C, SyncToRenderWorld>();
+        app.register_required_components::<C, SyncToSubWorld<L>>();
 
         app.world_mut()
             .register_component_hooks::<C>()
             .on_remove(|mut world, context| {
-                let mut pending = world.resource_mut::<PendingSyncEntity>();
+                let mut pending = world.resource_mut::<PendingSyncEntity<L>>();
                 pending.push(EntityRecord::ComponentRemoved(
                     context.entity,
                     |mut entity| {

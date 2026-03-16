@@ -1,36 +1,57 @@
-use crate::{
-    sync_world::{despawn_temporary_render_entities, entity_sync_system, SyncWorldPlugin},
-    Render, RenderApp, RenderSystems,
-};
-use bevy_app::{App, Plugin, SubApp};
+use std::marker::PhantomData;
+
+use crate::sync_world::{despawn_temporary_render_entities, entity_sync_system, SyncWorldPlugin};
+use bevy_app::{App, AppLabel, Plugin, SubApp};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
     resource::Resource,
-    schedule::{IntoScheduleConfigs, Schedule, ScheduleBuildSettings, ScheduleLabel, Schedules},
+    schedule::{
+        InternedScheduleLabel, InternedSystemSet, IntoScheduleConfigs, Schedule,
+        ScheduleBuildSettings, ScheduleLabel, Schedules,
+    },
     world::{Mut, World},
 };
 use bevy_utils::default;
 
 /// Plugin that sets up the [`RenderApp`] and handles extracting data from the
 /// main world to the render world.
-pub struct ExtractPlugin {
+pub struct ExtractPlugin<L: AppLabel> {
     /// Function that gets run at the beginning of each extraction.
     ///
     /// Gets the main world and render world as arguments (in that order).
     pub pre_extract: fn(&mut World, &mut World),
+
+    marker: PhantomData<L>,
+
+    pub base_schedule: fn() -> Schedule,
+    pub schedule_label: InternedScheduleLabel,
+
+    pub extract_set: InternedSystemSet,
+    pub despawn_set: InternedSystemSet,
 }
 
-impl Default for ExtractPlugin {
-    fn default() -> Self {
+impl<L: AppLabel> ExtractPlugin<L> {
+    pub fn new(
+        pre_extract: fn(&mut World, &mut World),
+        base_schedule: fn() -> Schedule,
+        schedule_label: InternedScheduleLabel,
+        extract_set: InternedSystemSet,
+        despawn_set: InternedSystemSet,
+    ) -> Self {
         Self {
-            pre_extract: |_, _| {},
+            pre_extract,
+            marker: PhantomData,
+            base_schedule,
+            schedule_label,
+            extract_set,
+            despawn_set,
         }
     }
 }
 
-impl Plugin for ExtractPlugin {
+impl<L: AppLabel> Plugin for ExtractPlugin<L> {
     fn build(&self, app: &mut App) {
-        app.add_plugins(SyncWorldPlugin);
+        app.add_plugins(SyncWorldPlugin::<L>::default());
         app.init_resource::<ScratchMainWorld>();
 
         let mut render_app = SubApp::new();
@@ -45,17 +66,16 @@ impl Plugin for ExtractPlugin {
         extract_schedule.set_apply_final_deferred(false);
 
         render_app
-            .add_schedule(Render::base_schedule())
+            .add_schedule((self.base_schedule)())
             .add_schedule(extract_schedule)
             .allow_ambiguous_resource::<MainWorld>()
             .add_systems(
-                Render,
+                self.schedule_label,
                 (
                     // This set applies the commands from the extract schedule while the render schedule
                     // is running in parallel with the main app.
-                    apply_extract_commands.in_set(RenderSystems::ExtractCommands),
-                    despawn_temporary_render_entities::<RenderApp>
-                        .in_set(RenderSystems::PostCleanup),
+                    apply_extract_commands.in_set(self.extract_set),
+                    despawn_temporary_render_entities::<L>.in_set(self.despawn_set),
                 ),
             );
 
@@ -66,14 +86,14 @@ impl Plugin for ExtractPlugin {
             {
                 #[cfg(feature = "trace")]
                 let _stage_span = bevy_log::info_span!("entity_sync").entered();
-                entity_sync_system(main_world, render_world);
+                entity_sync_system::<L>(main_world, render_world);
             }
 
             // run extract schedule
             extract(main_world, render_world);
         });
 
-        app.insert_sub_app(RenderApp, render_app);
+        app.insert_sub_app(L::default(), render_app);
     }
 }
 
@@ -128,7 +148,7 @@ pub fn extract(main_world: &mut World, render_world: &mut World) {
 
 #[cfg(test)]
 mod test {
-    use bevy_app::{App, Startup};
+    use bevy_app::{App, AppLabel, AppLabelBase, Startup};
     use bevy_ecs::{prelude::*, schedule::ScheduleLabel};
 
     use crate::{
@@ -138,6 +158,30 @@ mod test {
         sync_world::MainEntity,
         Render, RenderApp,
     };
+
+    #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+    pub enum MyScheduleSystems {
+        ExtractCommands,
+        PostCleanup,
+    }
+
+    #[derive(ScheduleLabel, Debug, Hash, PartialEq, Eq, Clone, Default)]
+    pub struct MySchedule;
+
+    impl MySchedule {
+        /// Sets up the base structure of the rendering [`Schedule`].
+        ///
+        /// The sets defined in this enum are configured to run in order.
+        pub fn base_schedule() -> Schedule {
+            use MyScheduleSystems::*;
+
+            let mut schedule = Schedule::new(Self);
+
+            schedule.configure_sets((ExtractCommands, PostCleanup).chain());
+
+            schedule
+        }
+    }
 
     #[derive(Component, Clone, Debug)]
     struct RenderComponent;
@@ -171,7 +215,13 @@ mod test {
     fn extraction_works() {
         let mut app = App::new();
 
-        app.add_plugins(ExtractPlugin::default());
+        app.add_plugins(ExtractPlugin::<RenderApp>::new(
+            |_, _| {},
+            MySchedule::base_schedule,
+            MySchedule.intern(),
+            MyScheduleSystems::ExtractCommands.intern(),
+            MyScheduleSystems::PostCleanup.intern(),
+        ));
         app.add_plugins(ExtractComponentPlugin::<RenderComponent>::default());
         app.add_plugins(ExtractComponentPlugin::<RenderComponentSeparate>::default());
         app.add_systems(Startup, |mut commands: Commands| {

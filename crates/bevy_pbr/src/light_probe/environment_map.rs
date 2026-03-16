@@ -62,6 +62,7 @@ use bevy_render::{
     },
     renderer::{RenderAdapter, RenderDevice},
     texture::{FallbackImage, GpuImage},
+    RenderApp,
 };
 
 use core::{num::NonZero, ops::Deref};
@@ -138,7 +139,7 @@ pub struct EnvironmentMapViewLightProbeInfo {
     pub(crate) affects_lightmapped_mesh_diffuse: bool,
 }
 
-impl ExtractInstance for EnvironmentMapIds {
+impl ExtractInstance<RenderApp> for EnvironmentMapIds {
     type QueryData = Read<EnvironmentMapLight>;
 
     type QueryFilter = ();
