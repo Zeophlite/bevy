@@ -372,11 +372,11 @@ impl From<AtmosphereSettings> for GpuAtmosphereSettings {
     }
 }
 
-impl SyncComponent for GpuAtmosphereSettings {
+impl SyncComponent<RenderApp> for GpuAtmosphereSettings {
     type Out = Self;
 }
 
-impl ExtractComponent for GpuAtmosphereSettings {
+impl ExtractComponent<RenderApp> for GpuAtmosphereSettings {
     type QueryData = Read<AtmosphereSettings>;
     type QueryFilter = (With<Camera3d>, With<Atmosphere>);
 

@@ -1,9 +1,9 @@
 use crate::{
-    sync_component::{SyncComponent, SyncComponentPlugin},
+    sync_component::{SyncBaseComponentPlugin, SyncComponent},
     sync_world::RenderEntity,
     Extract, ExtractSchedule, RenderApp,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{App, AppLabel, Plugin};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_ecs::{
     prelude::*,
@@ -26,7 +26,7 @@ pub use bevy_render_macros::ExtractComponent;
 /// The marker type `F` is only used as a way to bypass the orphan rules. To
 /// implement the trait for a foreign type you can use a local type as the
 /// marker, e.g. the type of the plugin that calls [`ExtractComponentPlugin`].
-pub trait ExtractComponent<F = ()>: SyncComponent<F> {
+pub trait ExtractComponent<L: AppLabel, F = ()>: SyncComponent<L, F> {
     /// ECS [`ReadOnlyQueryData`] to fetch the components to extract.
     type QueryData: ReadOnlyQueryData;
     /// Filters the entities with additional constraints.
@@ -46,12 +46,14 @@ pub trait ExtractComponent<F = ()>: SyncComponent<F> {
 /// The marker type `F` is only used as a way to bypass the orphan rules. To
 /// implement the trait for a foreign type you can use a local type as the
 /// marker, e.g. the type of the plugin that calls [`ExtractComponentPlugin`].
-pub struct ExtractComponentPlugin<C, F = ()> {
+pub struct ExtractBaseComponentPlugin<L: AppLabel, C, F = ()> {
     only_extract_visible: bool,
-    marker: PhantomData<fn() -> (C, F)>,
+    marker: PhantomData<fn() -> (L, C, F)>,
 }
 
-impl<C, F> Default for ExtractComponentPlugin<C, F> {
+pub type ExtractComponentPlugin<C, F = ()> = ExtractBaseComponentPlugin<RenderApp, C, F>;
+
+impl<L: AppLabel, C, F> Default for ExtractBaseComponentPlugin<L, C, F> {
     fn default() -> Self {
         Self {
             only_extract_visible: false,
@@ -60,7 +62,7 @@ impl<C, F> Default for ExtractComponentPlugin<C, F> {
     }
 }
 
-impl<C, F> ExtractComponentPlugin<C, F> {
+impl<L: AppLabel, C, F> ExtractBaseComponentPlugin<L, C, F> {
     pub fn extract_visible() -> Self {
         Self {
             only_extract_visible: true,
@@ -69,22 +71,24 @@ impl<C, F> ExtractComponentPlugin<C, F> {
     }
 }
 
-impl<C: ExtractComponent<F>, F: 'static + Send + Sync> Plugin for ExtractComponentPlugin<C, F> {
+impl<L: AppLabel, C: ExtractComponent<L, F>, F: 'static + Send + Sync> Plugin
+    for ExtractBaseComponentPlugin<L, C, F>
+{
     fn build(&self, app: &mut App) {
-        app.add_plugins(SyncComponentPlugin::<C, F>::default());
+        app.add_plugins(SyncBaseComponentPlugin::<L, C, F>::default());
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_sub_app_mut(L::default()) {
             if self.only_extract_visible {
-                render_app.add_systems(ExtractSchedule, extract_visible_components::<C, F>);
+                render_app.add_systems(ExtractSchedule, extract_visible_components::<L, C, F>);
             } else {
-                render_app.add_systems(ExtractSchedule, extract_components::<C, F>);
+                render_app.add_systems(ExtractSchedule, extract_components::<L, C, F>);
             }
         }
     }
 }
 
 /// This system extracts all components of the corresponding [`ExtractComponent`], for entities that are synced via [`crate::sync_world::SyncToRenderWorld`].
-fn extract_components<C: ExtractComponent<F>, F>(
+fn extract_components<L: AppLabel, C: ExtractComponent<L, F>, F>(
     mut commands: Commands,
     mut previous_len: Local<usize>,
     query: Extract<Query<(RenderEntity, C::QueryData), C::QueryFilter>>,
@@ -102,7 +106,7 @@ fn extract_components<C: ExtractComponent<F>, F>(
 }
 
 /// This system extracts all components of the corresponding [`ExtractComponent`], for entities that are visible and synced via [`crate::sync_world::SyncToRenderWorld`].
-fn extract_visible_components<C: ExtractComponent<F>, F>(
+fn extract_visible_components<L: AppLabel, C: ExtractComponent<L, F>, F>(
     mut commands: Commands,
     mut previous_len: Local<usize>,
     query: Extract<Query<(RenderEntity, &ViewVisibility, C::QueryData), C::QueryFilter>>,

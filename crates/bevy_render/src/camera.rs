@@ -116,7 +116,7 @@ fn warn_on_no_render_graph(world: DeferredWorld, HookContext { entity, caller, .
     }
 }
 
-impl ExtractResource for ClearColor {
+impl ExtractResource<RenderApp> for ClearColor {
     type Source = Self;
 
     fn extract_resource(source: &Self::Source) -> Self {
@@ -124,11 +124,11 @@ impl ExtractResource for ClearColor {
     }
 }
 
-impl SyncComponent for CameraMainTextureUsages {
+impl SyncComponent<RenderApp> for CameraMainTextureUsages {
     type Out = Self;
 }
 
-impl ExtractComponent for CameraMainTextureUsages {
+impl ExtractComponent<RenderApp> for CameraMainTextureUsages {
     type QueryData = &'static Self;
     type QueryFilter = ();
 
@@ -137,11 +137,11 @@ impl ExtractComponent for CameraMainTextureUsages {
     }
 }
 
-impl SyncComponent for Camera2d {
+impl SyncComponent<RenderApp> for Camera2d {
     type Out = Self;
 }
 
-impl ExtractComponent for Camera2d {
+impl ExtractComponent<RenderApp> for Camera2d {
     type QueryData = &'static Self;
     type QueryFilter = With<Camera>;
 
@@ -150,11 +150,11 @@ impl ExtractComponent for Camera2d {
     }
 }
 
-impl SyncComponent for Camera3d {
+impl SyncComponent<RenderApp> for Camera3d {
     type Out = Self;
 }
 
-impl ExtractComponent for Camera3d {
+impl ExtractComponent<RenderApp> for Camera3d {
     type QueryData = &'static Self;
     type QueryFilter = With<Camera>;
 

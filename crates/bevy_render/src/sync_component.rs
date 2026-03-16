@@ -1,12 +1,15 @@
 use core::marker::PhantomData;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{App, AppLabel, Plugin};
 use bevy_ecs::{
     bundle::{Bundle, NoBundleEffect},
     component::Component,
 };
 
-use crate::sync_world::{EntityRecord, PendingSyncEntity, SyncToRenderWorld};
+use crate::{
+    sync_world::{EntityRecord, PendingSyncEntity, SyncToRenderWorld},
+    RenderApp,
+};
 
 /// Plugin that registers a component for automatic sync to the render world. See [`SyncWorldPlugin`] for more information.
 ///
@@ -23,9 +26,11 @@ use crate::sync_world::{EntityRecord, PendingSyncEntity, SyncToRenderWorld};
 ///
 /// [`ExtractComponentPlugin`]: crate::extract_component::ExtractComponentPlugin
 /// [`SyncWorldPlugin`]: crate::sync_world::SyncWorldPlugin
-pub struct SyncComponentPlugin<C, F = ()>(PhantomData<(C, F)>);
+pub struct SyncBaseComponentPlugin<L: AppLabel, C, F = ()>(PhantomData<(L, C, F)>);
 
-impl<C: SyncComponent<F>, F> Default for SyncComponentPlugin<C, F> {
+pub type SyncComponentPlugin<C, F = ()> = SyncBaseComponentPlugin<RenderApp, C, F>;
+
+impl<L: AppLabel, C: SyncComponent<L, F>, F> Default for SyncBaseComponentPlugin<L, C, F> {
     fn default() -> Self {
         Self(PhantomData)
     }
@@ -42,7 +47,7 @@ impl<C: SyncComponent<F>, F> Default for SyncComponentPlugin<C, F> {
 /// marker, e.g. the type of the plugin that calls [`SyncComponentPlugin`].
 ///
 /// [`ExtractComponent`]: crate::extract_component::ExtractComponent
-pub trait SyncComponent<F = ()>: Component {
+pub trait SyncComponent<L: AppLabel, F = ()>: Component {
     /// Describes what components should be removed from the render world if the
     /// implementing component is removed.
     ///
@@ -55,7 +60,9 @@ pub trait SyncComponent<F = ()>: Component {
     // type Out: Component = Self;
 }
 
-impl<C: SyncComponent<F>, F: Send + Sync + 'static> Plugin for SyncComponentPlugin<C, F> {
+impl<L: AppLabel, C: SyncComponent<L, F>, F: Send + Sync + 'static> Plugin
+    for SyncBaseComponentPlugin<L, C, F>
+{
     fn build(&self, app: &mut App) {
         app.register_required_components::<C, SyncToRenderWorld>();
 
