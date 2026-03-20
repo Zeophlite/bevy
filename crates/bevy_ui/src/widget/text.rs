@@ -16,17 +16,16 @@ use bevy_ecs::{
 };
 use bevy_image::prelude::*;
 use bevy_log::warn_once;
-use bevy_math::Vec2;
+use bevy_math::{Rect, Vec2};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 use bevy_text::{
-    ComputedTextBlock, Font, FontAtlasSet, FontCx, FontHinting, LayoutCx, LetterSpacing, LineBreak,
-    LineHeight, RemSize, ScaleCx, TextBounds, TextColor, TextError, TextFont, TextLayout,
-    TextLayoutInfo, TextMeasureInfo, TextPipeline, TextReader, TextRoot, TextSpanAccess,
-    TextWriter,
+    ComputedTextBlock, EditableText, Font, FontAtlasSet, FontCx, FontHinting, LayoutCx, LetterSpacing, LineBreak, LineHeight, RemSize, ScaleCx, TextBounds, TextBrush, TextColor, TextError, TextFont, TextLayout, TextLayoutInfo, TextMeasureInfo, TextPipeline, TextReader, TextRoot, TextSpanAccess, TextWriter, resolve_font_source
 };
 
 use taffy::style::AvailableSpace;
 use tracing::error;
+use parley::{BoundingBox, FontFamily, FontStack};
+
 
 /// UI text system flags.
 ///
@@ -404,5 +403,165 @@ pub fn text_system(
                 }
             }
         }
+    }
+}
+
+
+/// Updates [`EditableText::editor`] to match e.g. [`TextFont`]
+/// Writes layout to [`TextLayoutInfo`] for rendering
+/// Adds required glyphs to the texture atlas
+// TODO: add change detection logic here to improve performance
+pub fn editable_text_system(
+    fonts: Res<Assets<Font>>,
+    mut font_cx: ResMut<FontCx>,
+    mut layout_cx: ResMut<LayoutCx>,
+    mut scale_cx: ResMut<ScaleCx>,
+    mut font_atlas_set: ResMut<FontAtlasSet>,
+    mut textures: ResMut<Assets<Image>>,
+    mut input_field_query: Query<(
+        &TextFont,
+        &LineHeight,
+        &FontHinting,
+        Ref<ComputedUiRenderTargetInfo>,
+        &mut EditableText,
+        &mut TextLayoutInfo,
+        Ref<ComputedNode>,
+        &TextLayout,
+        &mut TextNodeFlags,
+        &mut ComputedTextBlock,
+    )>,
+    rem_size: Res<RemSize>,
+    mut text_pipeline: ResMut<TextPipeline>,
+) {
+    for (
+        text_font,
+        line_height,
+        hinting,
+        target,
+        mut editable_text,
+        mut info,
+        computed_node,
+        block,
+        mut text_flags,
+        mut computed,
+    ) in
+        input_field_query.iter_mut()
+    {
+
+        let Ok(font_family) = resolve_font_source(&text_font.font, fonts.as_ref()) else {
+            continue;
+        };
+
+        let family = match font_family {
+            FontFamily::Named(name) => FontFamily::Named(name.into_owned().into()),
+            FontFamily::Generic(generic) => FontFamily::Generic(generic),
+        };
+        let style_set = editable_text.editor.edit_styles();
+        style_set.insert(parley::StyleProperty::LineHeight(line_height.eval()));
+        style_set.insert(parley::StyleProperty::FontStack(FontStack::Single(family)));
+
+        let logical_viewport_size = target.logical_size();
+        let font_size = text_font.font_size.eval(logical_viewport_size, rem_size.0);
+        style_set.insert(parley::StyleProperty::FontSize(font_size));
+        style_set.insert(parley::StyleProperty::Brush(TextBrush::new(
+            0,
+            text_font.font_smoothing,
+        )));
+
+        if target.is_changed() {
+            editable_text.editor.set_scale(target.scale_factor());
+        }
+
+        if computed_node.is_changed() {
+            editable_text.editor.set_width(Some(computed_node.size().x));
+        }
+
+        let mut driver = editable_text
+            .editor
+            .driver(&mut font_cx.0, &mut layout_cx.0);
+
+        driver.refresh_layout();
+
+        let layout = driver.layout();
+
+        info.scale_factor = layout.scale();
+        info.size = (
+            layout.width() / layout.scale(),
+            layout.height() / layout.scale(),
+        )
+            .into();
+
+        info.glyphs.clear();
+        info.run_geometry.clear();
+
+        let physical_node_size = if block.linebreak == LineBreak::NoWrap {
+            // With `NoWrap` set, no constraints are placed on the width of the text.
+            TextBounds::UNBOUNDED
+        } else {
+            // `scale_factor` is already multiplied by `UiScale`
+            TextBounds::new(info.size.x, info.size.y)
+        };
+
+        match text_pipeline.update_text_layout_info(
+            &mut info,
+            &mut font_atlas_set,
+            &mut textures,
+            &mut computed,
+            &mut scale_cx,
+            physical_node_size,
+            block.justify,
+            *hinting,
+        ) {
+            Err(
+                TextError::NoSuchFont
+                | TextError::NoSuchFontFamily(_)
+                | TextError::DegenerateScaleFactor,
+            ) => {
+                // There was an error processing the text layout, try again next frame
+                text_flags.needs_recompute = true;
+            }
+            Err(e @ TextError::FailedToGetGlyphImage(_)) => {
+                warn_once!("{e}.");
+                text_flags.needs_recompute = false;
+                info.clear();
+            }
+            Err(
+                e @ (TextError::FailedToAddGlyph(_)
+                | TextError::MissingAtlasLayout
+                | TextError::MissingAtlasTexture
+                | TextError::InconsistentAtlasState),
+            ) => {
+                panic!("Fatal error when processing text: {e}.");
+            }
+            Ok(()) => {
+                text_flags.needs_recompute = false;
+
+                let geom = editable_text
+                    .editor
+                    .cursor_geometry(editable_text.cursor_width * font_size);
+
+                info.cursor = geom.map(bounding_box_to_rect);
+
+                info.selection_rects = editable_text
+                    .editor
+                    .selection_geometry()
+                    .iter()
+                    .map(|&b| bounding_box_to_rect(b.0))
+                    .collect();
+            }
+        }
+    }
+}
+
+fn bounding_box_to_rect(geom: BoundingBox) -> Rect {
+    Rect {
+        min: Vec2 {
+            x: geom.x0 as f32,
+            y: geom.y0 as f32,
+        },
+        max: Vec2 {
+            x: geom.x1 as f32,
+            y: geom.y1 as f32,
+        },
     }
 }
