@@ -1008,6 +1008,7 @@ impl ScheduleGraph {
 
     fn remove_systems_by_keys(&mut self, keys: &IndexSet<SystemKey, FixedHasher>) {
         for &key in keys {
+            println!("remove_systems_by_keys {:?}", key);
             self.systems.remove(key);
 
             self.hierarchy.remove_node(key.into());

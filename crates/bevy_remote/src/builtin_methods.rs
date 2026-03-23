@@ -1588,60 +1588,72 @@ pub fn export_registry_types(In(params): In<Option<Value>>, world: &World) -> Br
 pub fn schedule_graph(In(params): In<Option<Value>>, world: &mut World) -> BrpResult {
     let BrpScheduleGraphParams { schedule_label } = parse_some(params)?;
 
-    let schedules = world.resource::<Schedules>();
+    world.resource_scope(|world, mut schedules: Mut<Schedules>| {
+        let ignored_ambiguities = schedules.ignored_scheduling_ambiguities.clone();
 
-    let matching_schedule = schedules
-        .iter()
-        .find(|(label, _schedule)| format!("{:?}", label) == schedule_label);
+        let matching_schedule = schedules
+            .iter_mut()
+            .find(|(label, _schedule)| format!("{:?}", label) == schedule_label);
 
-    if matching_schedule.is_none() {
-        return Err(BrpError::resource_error(format!(
-            "Schedule with label={:} not found",
-            schedule_label
-        )));
-    }
+        if matching_schedule.is_none() {
+            return Err(BrpError::resource_error(format!(
+                "Schedule with label={:} not found",
+                schedule_label
+            )));
+        }
 
-    let mut response: BrpScheduleGraphResponse = BrpScheduleGraphResponse::default();
+        let (_label, mut schedule) = matching_schedule.unwrap();
 
-    let (_label, schedule) = matching_schedule.unwrap();
+        schedule.graph_mut().initialize(world);
 
-    let _ignored_ambiguities = schedules.ignored_scheduling_ambiguities.clone();
+        let _ = schedule
+            .graph_mut()
+            .build_schedule(world, &ignored_ambiguities);
 
-    let g = schedule.graph();
-    for (systemkey, method, _b) in g.systems.iter() {
-        response.systems.push(BrpSystem {
-            key: format!("{:?}", systemkey),
-            method: format!("{:?}", method),
-        });
-    }
-    for (systemsetkey, method, _b) in g.system_sets.iter() {
-        response.systemsets.push(BrpSystemSet {
-            key: format!("{:?}", systemsetkey),
-            method: format!("{:?}", method),
-        });
-    }
+        let mut response: BrpScheduleGraphResponse = BrpScheduleGraphResponse::default();
 
-    let hie = g.hierarchy();
-    for node in hie.nodes() {
-        response.hierarchy_nodes.push(format!("{:?}", node));
-    }
-    for (n1, n2) in hie.all_edges() {
-        response
-            .hierarchy_edges
-            .push((format!("{:?}", n1), format!("{:?}", n2)));
-    }
+        let g = schedule.graph();
+        println!(
+            "g.systems.len = {:} {:}",
+            g.systems.len(),
+            g.systems.is_initialized()
+        );
 
-    let dep = g.dependency();
-    for node in dep.nodes() {
-        response.dependency_nodes.push(format!("{:?}", node));
-    }
-    for (n1, n2) in dep.all_edges() {
-        response
-            .dependency_edges
-            .push((format!("{:?}", n1), format!("{:?}", n2)));
-    }
+        for (systemkey, method, _b) in g.systems.iter() {
+            response.systems.push(BrpSystem {
+                key: format!("{:?}", systemkey),
+                method: format!("{:?}", method),
+            });
+        }
+        for (systemsetkey, method, _b) in g.system_sets.iter() {
+            response.systemsets.push(BrpSystemSet {
+                key: format!("{:?}", systemsetkey),
+                method: format!("{:?}", method),
+            });
+        }
 
-    serde_json::to_value(response).map_err(BrpError::internal)
+        let hie = g.hierarchy();
+        for node in hie.nodes() {
+            response.hierarchy_nodes.push(format!("{:?}", node));
+        }
+        for (n1, n2) in hie.all_edges() {
+            response
+                .hierarchy_edges
+                .push((format!("{:?}", n1), format!("{:?}", n2)));
+        }
+
+        let dep = g.dependency();
+        for node in dep.nodes() {
+            response.dependency_nodes.push(format!("{:?}", node));
+        }
+        for (n1, n2) in dep.all_edges() {
+            response
+                .dependency_edges
+                .push((format!("{:?}", n1), format!("{:?}", n2)));
+        }
+
+        serde_json::to_value(response).map_err(BrpError::internal)
+    })
 }
 
 /// Immutably retrieves an entity from the [`World`], returning an error if the
