@@ -4,11 +4,29 @@
 //! allocator manages each bind group, assigning slots to materials as
 //! appropriate.
 
+use bevy_app::{App, Plugin};
+use bevy_asset::{Asset, AssetId, UntypedAssetId};
+use bevy_derive::{Deref, DerefMut};
+use bevy_ecs::{
+    resource::Resource,
+    schedule::IntoScheduleConfigs as _,
+    system::{Commands, Res, ResMut, SystemParamItem},
+};
+use bevy_platform::collections::{hash_map::Entry, HashMap, HashSet};
+use bevy_reflect::{prelude::ReflectDefault, Reflect};
+use bevy_utils::{default, TypeIdMap};
+use bytemuck::{Pod, Zeroable};
+use core::hash::Hash;
+use core::{cmp::Ordering, iter, mem, ops::Range};
+use std::any::TypeId;
+use tracing::{error, trace};
+
 use crate::{
     erased_render_asset::PrepareAssetError,
     render_resource::{AsBindGroup, AsBindGroupError, BindlessSlabResourceLimit, PipelineCache},
     GpuResourceAppExt as _, Render, RenderApp, RenderStartup, RenderSystems,
 };
+
 use crate::{
     render_resource::{
         BindGroup, BindGroupEntry, BindGroupLayoutDescriptor, BindingNumber, BindingResource,
@@ -23,23 +41,12 @@ use crate::{
     settings::WgpuFeatures,
     texture::FallbackImage,
 };
-use bevy_app::{App, Plugin};
-use bevy_asset::{Asset, AssetId, UntypedAssetId};
-use bevy_derive::{Deref, DerefMut};
-use bevy_ecs::{
-    resource::Resource,
-    schedule::IntoScheduleConfigs,
-    system::{Commands, Res, ResMut, SystemParamItem},
-};
-use bevy_platform::collections::{hash_map::Entry, HashMap, HashSet};
-use bevy_reflect::{prelude::ReflectDefault, Reflect};
-use bevy_utils::{default, TypeIdMap};
-use bytemuck::{Pod, Zeroable};
-use core::hash::Hash;
-use core::{cmp::Ordering, iter, mem, ops::Range};
-use std::any::TypeId;
-use tracing::{error, trace};
 
+/// A [`Plugin`] that provides the material bind group allocator.
+///
+/// The material bind group allocator is infrastructure for bindless resources.
+/// It packs multiple materials into a small number of bind groups, allowing
+/// Bevy to render large parts of the scene with a small number of drawcalls.
 pub struct MaterialBindGroupPlugin;
 
 #[derive(Resource, Deref, DerefMut, Default)]
@@ -2160,7 +2167,7 @@ pub fn write_material_bind_group_buffers(
 }
 
 impl MaterialBindGroupAllocators {
-    // Adds a new [`MaterialBindGroupAllocator`] to this resource to manage
+    /// Adds a new [`MaterialBindGroupAllocator`] to this resource to manage
     /// materials of the given type.
     pub fn add<M>(&mut self, render_device: &RenderDevice)
     where
@@ -2169,12 +2176,12 @@ impl MaterialBindGroupAllocators {
         self.insert(
             TypeId::of::<M>(),
             MaterialBindGroupAllocator::new(
-                &render_device,
+                render_device,
                 M::label(),
-                material_uses_bindless_resources::<M>(&render_device)
+                material_uses_bindless_resources::<M>(render_device)
                     .then(|| M::bindless_descriptor())
                     .flatten(),
-                M::bind_group_layout_descriptor(&render_device),
+                M::bind_group_layout_descriptor(render_device),
                 M::bindless_slot_count(),
             ),
         );
@@ -2199,7 +2206,7 @@ impl RenderMaterialBindings {
     where
         M: AsBindGroup + Asset + Clone,
     {
-        let actual_material_layout = pipeline_cache.get_bind_group_layout(&material_layout);
+        let actual_material_layout = pipeline_cache.get_bind_group_layout(material_layout);
 
         match material.unprepared_bind_group(
             &actual_material_layout,
@@ -2219,21 +2226,21 @@ impl RenderMaterialBindings {
                         // group.
                         bind_group_allocator.free(*occupied_entry.get());
                         let new_binding =
-                            bind_group_allocator.allocate_unprepared(unprepared, &material_layout);
+                            bind_group_allocator.allocate_unprepared(unprepared, material_layout);
                         *occupied_entry.get_mut() = new_binding;
                         Ok(new_binding)
                     }
                     Entry::Vacant(vacant_entry) => Ok(*vacant_entry.insert(
-                        bind_group_allocator.allocate_unprepared(unprepared, &material_layout),
+                        bind_group_allocator.allocate_unprepared(unprepared, material_layout),
                     )),
                 }
             }
             Err(AsBindGroupError::RetryNextUpdate) => {
-                return Err(PrepareAssetError::RetryNextUpdate((*material).clone()))
+                Err(PrepareAssetError::RetryNextUpdate((*material).clone()))
             }
             Err(AsBindGroupError::CreateBindGroupDirectly) => {
                 match material.as_bind_group(
-                    &material_layout,
+                    material_layout,
                     render_device,
                     pipeline_cache,
                     material_param,
@@ -2248,15 +2255,16 @@ impl RenderMaterialBindings {
                         Ok(material_binding_id)
                     }
                     Err(AsBindGroupError::RetryNextUpdate) => {
-                        return Err(PrepareAssetError::RetryNextUpdate((*material).clone()))
+                        Err(PrepareAssetError::RetryNextUpdate((*material).clone()))
                     }
-                    Err(other) => return Err(PrepareAssetError::AsBindGroupError(other)),
+                    Err(other) => Err(PrepareAssetError::AsBindGroupError(other)),
                 }
             }
-            Err(other) => return Err(PrepareAssetError::AsBindGroupError(other)),
+            Err(other) => Err(PrepareAssetError::AsBindGroupError(other)),
         }
     }
 
+    /// Removes a material asset from the render world.
     pub fn unload_material<M>(
         &mut self,
         source_asset: AssetId<M>,
@@ -2264,10 +2272,9 @@ impl RenderMaterialBindings {
     ) where
         M: Asset + AsBindGroup + Clone,
     {
-        let Some(material_binding_id) = self.remove(&source_asset.untyped()) else {
-            return;
-        };
-        let bind_group_allocator = bind_group_allocators.get_mut(&TypeId::of::<M>()).unwrap();
-        bind_group_allocator.free(material_binding_id);
+        if let Some(material_binding_id) = self.remove(&source_asset.untyped()) {
+            let bind_group_allocator = bind_group_allocators.get_mut(&TypeId::of::<M>()).unwrap();
+            bind_group_allocator.free(material_binding_id);
+        }
     }
 }
