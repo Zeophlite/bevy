@@ -119,7 +119,7 @@ use std::sync::Mutex;
 
 /// Contains the default Bevy rendering backend based on wgpu.
 ///
-/// Rendering is done in a [`SubApp`], which exchanges data with the main app
+/// Rendering is done in a [`App`], which exchanges data with the main app
 /// between main schedule iterations.
 ///
 /// Rendering can be executed between iterations of the main schedule,
@@ -454,8 +454,8 @@ impl Plugin for RenderPlugin {
         if let Some(future_render_resources) =
             app.world_mut().remove_resource::<FutureRenderResources>()
         {
-            let bevy_app::Apps { main, apps: sub_apps } = app.apps_mut();
-            let render = sub_apps.get_mut(&RenderApp.intern()).unwrap();
+            let bevy_app::Apps { main, apps } = app.apps_mut();
+            let render = apps.get_mut(&RenderApp.intern()).unwrap();
             let render_resources = future_render_resources.0.lock().unwrap().take().unwrap();
 
             render_resources.unpack_into(

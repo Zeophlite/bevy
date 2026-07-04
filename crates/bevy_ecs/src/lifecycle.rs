@@ -487,8 +487,8 @@ impl RemovedComponentMessages {
 /// and will need to be manually flushed using [`World::clear_trackers`](World::clear_trackers).
 ///
 /// For users of `bevy` and `bevy_app`, [`World::clear_trackers`](World::clear_trackers) is
-/// automatically called by `bevy_app::App::update` and `bevy_app::SubApp::update`.
-/// For the main world, this is delayed until after all `SubApp`s have run.
+/// automatically called by `bevy_app::App::update` and `bevy_app::App::update`.
+/// For the main world, this is delayed until after all `App`s have run.
 ///
 /// # Examples
 ///

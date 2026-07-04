@@ -1679,7 +1679,7 @@ impl World {
     /// of detection to be recorded.
     ///
     /// When using `bevy_ecs` as part of the full Bevy engine, this method is called automatically
-    /// by `bevy_app::App::update` and `bevy_app::SubApp::update`, so you don't need to call it manually.
+    /// by `bevy_app::App::update` and `bevy_app::App::update`, so you don't need to call it manually.
     /// When using `bevy_ecs` as a separate standalone crate however, you do need to call this manually.
     ///
     /// ```

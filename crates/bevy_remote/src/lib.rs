@@ -572,7 +572,7 @@ const CHANNEL_SIZE: usize = 16;
 pub struct RemotePlugin {
     /// The verbs that the server will recognize and respond to for the main app.
     methods: RwLock<Vec<(String, RemoteMethodHandler)>>,
-    /// The verbs that the server will recognize and respond to for the render subapp.
+    /// The verbs that the server will recognize and respond to for the render app.
     render_methods: RwLock<Vec<(String, RemoteMethodHandler)>>,
 }
 

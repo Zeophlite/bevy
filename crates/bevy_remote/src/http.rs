@@ -3,7 +3,7 @@
 //! Adding the [`RemoteHttpPlugin`] to your [`App`] causes Bevy to accept
 //! connections over HTTP (by default, on port 15702) while your app is running.
 //!
-//! When `bevy_render` is enabled, a second port is available to query the render subapp.
+//! When `bevy_render` is enabled, a second port is available to query the render app.
 //!
 //! Clients are expected to `POST` JSON requests to the root URL; see the `client`
 //! example for a trivial example of use.
@@ -51,9 +51,9 @@ use std::{
 /// This value was chosen randomly.
 pub const DEFAULT_PORT: u16 = 15702;
 
-/// The default port that Bevy will listen on for the render subapp.
+/// The default port that Bevy will listen on for the render app.
 ///
-/// The render subapp is available for requests if the `bevy_render` feature is enabled.
+/// The render app is available for requests if the `bevy_render` feature is enabled.
 pub const DEFAULT_RENDER_PORT: u16 = 15703;
 
 /// The default host address that Bevy will use for its server.
@@ -115,7 +115,7 @@ pub struct RemoteHttpPlugin {
     address: IpAddr,
     /// The port that Bevy will listen on.
     port: u16,
-    /// The port that Bevy will listen on for render subapp.
+    /// The port that Bevy will listen on for render app.
     render_port: u16,
     /// The headers that Bevy will include in its HTTP responses
     headers: Headers,

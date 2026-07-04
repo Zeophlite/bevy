@@ -140,7 +140,7 @@ impl Plugin for DlssPlugin {
     fn finish(&self, app: &mut App) {
         let (super_resolution_supported, ray_reconstruction_supported) = {
             let features = app
-                .sub_app_mut(RenderApp)
+                .app_mut(RenderApp)
                 .world()
                 .resource::<AdditionalVulkanFeatures>();
             (
@@ -153,7 +153,7 @@ impl Plugin for DlssPlugin {
         }
 
         let wgpu_device = {
-            let render_world = app.sub_app(RenderApp).world();
+            let render_world = app.app(RenderApp).world();
             let render_device = render_world.resource::<RenderDevice>().wgpu_device();
             render_device.clone()
         };
@@ -170,7 +170,7 @@ impl Plugin for DlssPlugin {
             app.insert_resource(DlssRayReconstructionSupported);
         }
 
-        app.sub_app_mut(RenderApp)
+        app.app_mut(RenderApp)
             .insert_resource(DlssSdk(dlss_sdk.unwrap()))
             .add_systems(
                 ExtractSchedule,
@@ -189,7 +189,7 @@ impl Plugin for DlssPlugin {
                     .before(prepare_view_targets),
             );
 
-        app.sub_app_mut(RenderApp).add_systems(
+        app.app_mut(RenderApp).add_systems(
             Core3d,
             (node::dlss_super_resolution, node::dlss_ray_reconstruction)
                 .chain()

@@ -24,7 +24,7 @@ extern crate alloc;
 // Required to make proc macros work in bevy itself.
 extern crate self as bevy_app;
 
-mod app;
+mod bevy;
 mod hierarchy;
 mod main_schedule;
 mod panic_handler;
@@ -32,7 +32,7 @@ mod plugin;
 mod plugin_group;
 mod propagate;
 mod schedule_runner;
-mod sub_app;
+mod app;
 mod task_pool_plugin;
 #[cfg(all(any(all(unix, not(target_os = "horizon")), windows), feature = "std"))]
 mod terminal_ctrl_c_handler;
@@ -40,7 +40,7 @@ mod terminal_ctrl_c_handler;
 #[cfg(feature = "hotpatching")]
 pub mod hotpatch;
 
-pub use app::*;
+pub use bevy::*;
 pub use hierarchy::*;
 pub use main_schedule::*;
 pub use panic_handler::*;
@@ -48,7 +48,7 @@ pub use plugin::*;
 pub use plugin_group::*;
 pub use propagate::*;
 pub use schedule_runner::*;
-pub use sub_app::*;
+pub use app::*;
 pub use task_pool_plugin::*;
 #[cfg(all(any(all(unix, not(target_os = "horizon")), windows), feature = "std"))]
 pub use terminal_ctrl_c_handler::*;
@@ -59,13 +59,13 @@ pub use terminal_ctrl_c_handler::*;
 pub mod prelude {
     #[doc(hidden)]
     pub use crate::{
-        app::{Bevy, AppExit},
+        bevy::{Bevy, AppExit},
         main_schedule::{
             First, FixedFirst, FixedLast, FixedPostUpdate, FixedPreUpdate, FixedUpdate, Last, Main,
             PostStartup, PostUpdate, PreStartup, PreUpdate, RunFixedMainLoop,
             RunFixedMainLoopSystems, SpawnScene, Startup, Update,
         },
-        sub_app::App,
+        app::App,
         Plugin, PluginGroup, TaskPoolOptions, TaskPoolPlugin,
     };
 }

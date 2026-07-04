@@ -32,8 +32,8 @@ fn main() {
     let main_app = app.main_mut();
     configure_ambiguity_detection(main_app);
 
-    let sub_app = app.app_mut(bevy_render::RenderApp);
-    configure_ambiguity_detection(sub_app);
+    let app = app.app_mut(bevy_render::RenderApp);
+    configure_ambiguity_detection(app);
 
     // Make sure all the system stuff is added.
     app.finish();
@@ -67,8 +67,8 @@ impl AmbiguitiesCount {
     }
 }
 
-fn configure_ambiguity_detection(sub_app: &mut App) {
-    let mut schedules = sub_app.world_mut().resource_mut::<Schedules>();
+fn configure_ambiguity_detection(app: &mut App) {
+    let mut schedules = app.world_mut().resource_mut::<Schedules>();
     for (_, schedule) in schedules.iter_mut() {
         schedule.set_build_settings(ScheduleBuildSettings {
             // NOTE: you can change this to `LogLevel::Ignore` to easily see the current number of ambiguities.
@@ -88,8 +88,8 @@ fn configure_ambiguity_detection(sub_app: &mut App) {
 }
 
 /// Returns the number of conflicting systems per schedule.
-fn count_ambiguities(sub_app: &mut App) -> AmbiguitiesCount {
-    let schedule_labels = sub_app
+fn count_ambiguities(app: &mut App) -> AmbiguitiesCount {
+    let schedule_labels = app
         .world()
         .resource::<Schedules>()
         .iter()
@@ -98,7 +98,7 @@ fn count_ambiguities(sub_app: &mut App) -> AmbiguitiesCount {
     let mut ambiguities = <HashMap<_, _>>::default();
     for label in schedule_labels {
         let ambiguities_in_schedule =
-            sub_app
+            app
                 .world_mut()
                 .schedule_scope(label, |world, schedule| {
                     schedule.initialize(world).unwrap().unwrap();

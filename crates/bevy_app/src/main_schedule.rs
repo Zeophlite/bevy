@@ -40,7 +40,7 @@ use bevy_ecs::{
 /// # Rendering
 ///
 /// Note rendering is not executed in the main schedule by default.
-/// Instead, rendering is performed in a separate [`SubApp`]
+/// Instead, rendering is performed in a separate [`App`]
 /// which exchanges data with the main app in between the main schedule runs.
 ///
 /// See [`RenderPlugin`] and [`PipelinedRenderingPlugin`] for more details.
@@ -52,7 +52,7 @@ use bevy_ecs::{
 /// [`OnEnter(MyComputedState)`]: https://docs.rs/bevy/latest/bevy/prelude/struct.OnEnter.html
 /// [`RenderPlugin`]: https://docs.rs/bevy/latest/bevy/render/struct.RenderPlugin.html
 /// [`PipelinedRenderingPlugin`]: https://docs.rs/bevy/latest/bevy/render/pipelined_rendering/struct.PipelinedRenderingPlugin.html
-/// [`SubApp`]: crate::SubApp
+/// [`App`]: crate::App
 #[derive(ScheduleLabel, Clone, Debug, PartialEq, Eq, Hash, Default)]
 pub struct Main;
 

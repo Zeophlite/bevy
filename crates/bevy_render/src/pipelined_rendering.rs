@@ -109,16 +109,17 @@ impl Drop for RenderAppChannels {
 pub struct PipelinedRenderingPlugin;
 
 impl Plugin for PipelinedRenderingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         // Don't add RenderExtractApp if RenderApp isn't initialized.
-        if app.get_app(RenderApp).is_none() {
+        if bevy.get_app(RenderApp).is_none() {
             return;
         }
+        let app = bevy.main_mut();
         app.insert_resource(MainThreadExecutor::new());
 
-        let mut sub_app = App::new();
-        sub_app.set_extract(renderer_extract);
-        app.insert_app(RenderExtractApp, sub_app);
+        let mut pipeline_app = App::new();
+        pipeline_app.set_extract(renderer_extract);
+        bevy.insert_app(RenderExtractApp, pipeline_app);
     }
 
     // Sets up the render thread and inserts resources into the main app used for controlling the render thread.
@@ -164,7 +165,7 @@ impl Plugin for PipelinedRenderingPlugin {
 
                 {
                     #[cfg(feature = "trace")]
-                    let _sub_app_span =
+                    let _app_span =
                         bevy_log::info_span!("sub app", name = ?RenderApp).entered();
                     render_app.update();
                 }

@@ -51,7 +51,7 @@ extern crate alloc;
 extern crate self as bevy_state;
 
 #[cfg(feature = "bevy_app")]
-/// Provides [`App`](bevy_app::App) and [`SubApp`](bevy_app::SubApp) with state installation methods
+/// Provides [`App`](bevy_app::App) and [`App`](bevy_app::App) with state installation methods
 pub mod app;
 /// Provides extension methods for [`Commands`](bevy_ecs::prelude::Commands).
 pub mod commands;
@@ -63,7 +63,7 @@ pub mod state;
 /// Provides tools for managing the lifetime of entities based on state transitions.
 pub mod state_scoped;
 #[cfg(feature = "bevy_app")]
-/// Provides [`App`](bevy_app::App) and [`SubApp`](bevy_app::SubApp) with methods for registering
+/// Provides [`App`](bevy_app::App) and [`App`](bevy_app::App) with methods for registering
 /// state-scoped events.
 pub mod state_scoped_events;
 

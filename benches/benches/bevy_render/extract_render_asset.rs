@@ -72,8 +72,8 @@ fn extract_render_asset_bench(c: &mut Criterion) {
                             .write_message(AssetEvent::Modified { id: handle.id() });
                     }
 
-                    let bevy_app::Apps { main, apps: sub_apps } = app.apps_mut();
-                    let render_app = sub_apps
+                    let bevy_app::Apps { main, apps: apps } = app.apps_mut();
+                    let render_app = apps
                         .get_mut(&RenderApp.intern())
                         .expect("RenderApp should exist");
                     let render_world = render_app.world_mut();

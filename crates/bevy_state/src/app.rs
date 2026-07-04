@@ -20,7 +20,7 @@ use crate::{
 #[cfg(feature = "bevy_reflect")]
 use bevy_reflect::{FromReflect, GetTypeRegistration, Typed};
 
-/// State installation methods for [`App`] and [`SubApp`].
+/// State installation methods for [`App`] and [`App`].
 pub trait AppExtStates {
     /// Initializes a [`State`] with standard starting values.
     ///

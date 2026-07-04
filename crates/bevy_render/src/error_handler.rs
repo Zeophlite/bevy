@@ -181,7 +181,7 @@ impl DeviceErrorHandler {
 ///
 /// Runs [`crate::RenderStartup`] after every time a [`RenderDevice`] is acquired.
 ///
-/// We need both the main and render world to properly handle errors, so we wedge ourselves into [extract](bevy_app::SubApp::set_extract).
+/// We need both the main and render world to properly handle errors, so we wedge ourselves into [extract](bevy_app::App::set_extract).
 pub(crate) fn update_state(main_world: &mut World, render_world: &mut World) {
     if let Some(error) = render_world.resource::<DeviceErrorHandler>().poll() {
         render_world.insert_resource(RenderState::Errored(error));
