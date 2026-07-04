@@ -11,7 +11,7 @@ use bevy::{
 use std::path::Path;
 
 fn main() {
-    App::new()
+    Bevy::new()
         // Add an extra asset source with the name "example_files" to
         // AssetSourceBuilders.
         //

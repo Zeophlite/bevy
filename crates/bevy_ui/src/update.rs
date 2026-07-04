@@ -163,7 +163,7 @@ mod tests {
     use crate::Node;
     use crate::UiScale;
     use crate::UiTargetCamera;
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_app::HierarchyPropagatePlugin;
     use bevy_app::PostUpdate;
     use bevy_app::PropagateSet;
@@ -175,8 +175,8 @@ mod tests {
     use bevy_math::UVec2;
     use bevy_utils::default;
 
-    fn setup_test_app() -> App {
-        let mut app = App::new();
+    fn setup_test_app() -> Bevy {
+        let mut app = Bevy::new();
 
         app.init_resource::<UiScale>();
 

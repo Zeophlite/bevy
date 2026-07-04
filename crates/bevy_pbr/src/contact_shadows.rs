@@ -1,6 +1,6 @@
 //! Contact shadows implemented via screenspace raymarching.
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
     component::Component,
@@ -98,11 +98,11 @@ impl ExtractComponent for ContactShadows {
 pub struct ContactShadowsBuffer(pub DynamicUniformBuffer<ContactShadowsUniform>);
 
 impl Plugin for ContactShadowsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.register_type::<ContactShadows>()
             .add_plugins(ExtractComponentPlugin::<ContactShadows>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

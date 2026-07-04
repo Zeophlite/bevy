@@ -58,7 +58,7 @@ pub struct FrustumGizmoPlugin;
 pub struct FrustumGizmoSystems;
 
 impl Plugin for FrustumGizmoPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.init_gizmo_group::<FrustumGizmoConfigGroup>()
             .add_systems(
                 PostUpdate,

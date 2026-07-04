@@ -27,7 +27,7 @@ const ATTRIBUTE_BARYCENTRIC: MeshVertexAttribute =
     MeshVertexAttribute::new("Barycentric", 2137464976, VertexFormat::Float32x3);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 2000.,
@@ -67,7 +67,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 struct GltfToMesh2dPlugin;
 
 impl Plugin for GltfToMesh2dPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         #[cfg(target_family = "wasm")]
         bevy::tasks::block_on(async {
             app.world_mut()

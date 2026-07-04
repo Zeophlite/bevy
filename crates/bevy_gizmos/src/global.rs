@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use bevy_app::{App, Last, Plugin};
+use bevy_app::{Bevy, Last, Plugin};
 use bevy_ecs::schedule::IntoScheduleConfigs;
 
 use crate::{
@@ -16,7 +16,7 @@ static GLOBAL_GIZMO: Mutex<GizmoBuffer<DefaultGizmoConfigGroup, ()>> =
 pub struct GlobalGizmosPlugin;
 
 impl Plugin for GlobalGizmosPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Last, flush_global_gizmos.before(GizmoMeshSystems));
     }
 }

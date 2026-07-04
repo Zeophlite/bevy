@@ -31,7 +31,7 @@
 //! [`StandardMaterial`]: crate::StandardMaterial
 //! [`bevy-baked-gi`]: https://github.com/pcwalton/bevy-baked-gi
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{AssetId, Handle};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_derive::{Deref, DerefMut};
@@ -184,10 +184,10 @@ pub struct LightmapSlabIndex(pub(crate) NonMaxU32);
 pub struct LightmapSlotIndex(pub(crate) NonMaxU16);
 
 impl Plugin for LightmapPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "lightmap.wgsl");
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

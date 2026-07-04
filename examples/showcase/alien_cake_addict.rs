@@ -18,7 +18,7 @@ enum GameState {
 struct BonusSpawnTimer(Timer);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<Game>()
         .insert_resource(BonusSpawnTimer(Timer::from_seconds(

@@ -55,7 +55,7 @@ fn main() {
         }
     );
 
-    App::new()
+    Bevy::new()
         .add_plugins((
             LogDiagnosticsPlugin::default(),
             FrameTimeDiagnosticsPlugin::default(),

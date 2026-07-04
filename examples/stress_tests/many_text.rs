@@ -39,7 +39,7 @@ struct Args {
 }
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app.add_plugins((
         DefaultPlugins.set(WindowPlugin {

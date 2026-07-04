@@ -75,7 +75,7 @@ fn main() {
     };
 
     // setup frame capture
-    App::new()
+    Bevy::new()
         .insert_resource(SceneController::new(
             config.width,
             config.height,
@@ -202,12 +202,12 @@ fn setup(
 /// Plugin for Render world part of work
 pub struct ImageCopyPlugin;
 impl Plugin for ImageCopyPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let (s, r) = crossbeam_channel::unbounded();
 
         let render_app = app
             .insert_resource(MainWorldReceiver(r))
-            .sub_app_mut(RenderApp);
+            .app_mut(RenderApp);
 
         render_app
             .insert_resource(RenderWorldSender(s))
@@ -265,7 +265,7 @@ fn setup_render_target(
 /// Setups image saver
 pub struct CaptureFramePlugin;
 impl Plugin for CaptureFramePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         info!("Adding CaptureFramePlugin");
         app.add_systems(PostUpdate, update);
     }

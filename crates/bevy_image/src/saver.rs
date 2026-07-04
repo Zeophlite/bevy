@@ -155,7 +155,7 @@ pub enum SaveImageError {
 mod tests {
     use std::path::Path;
 
-    use bevy_app::{App, TaskPoolPlugin};
+    use bevy_app::{Bevy, TaskPoolPlugin};
     use bevy_asset::{
         io::{
             memory::{Dir, MemoryAssetReader, MemoryAssetWriter},
@@ -175,8 +175,8 @@ mod tests {
         TextureFormatPixelInfo,
     };
 
-    fn create_app() -> (App, Dir) {
-        let mut app = App::new();
+    fn create_app() -> (Bevy, Dir) {
+        let mut app = Bevy::new();
         let dir = Dir::default();
         let dir_clone_1 = dir.clone();
         let dir_clone_2 = dir.clone();
@@ -207,7 +207,7 @@ mod tests {
         (app, dir)
     }
 
-    fn run_app_until(app: &mut App, mut predicate: impl FnMut(&mut World) -> Option<()>) {
+    fn run_app_until(app: &mut Bevy, mut predicate: impl FnMut(&mut World) -> Option<()>) {
         const LARGE_ITERATION_COUNT: usize = 10000;
         for _ in 0..LARGE_ITERATION_COUNT {
             app.update();

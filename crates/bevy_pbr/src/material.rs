@@ -360,9 +360,9 @@ pub struct MaterialsPlugin {
 }
 
 impl Plugin for MaterialsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins((PrepassPipelinePlugin, PrepassPlugin::new(self.debug_flags)));
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<SpecializedMaterialPipelineCache>()
                 .init_gpu_resource::<SpecializedMeshPipelines<MaterialPipelineSpecializer>>()
@@ -445,7 +445,7 @@ impl<M: Material> Plugin for MaterialPlugin<M>
 where
     M::Data: PartialEq + Eq + Hash + Clone,
 {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<M>()
             .register_type::<MeshMaterial3d<M>>()
             .init_resource::<EntitiesNeedingSpecialization<M>>()
@@ -459,7 +459,7 @@ where
                     .after(mark_3d_meshes_as_changed_if_their_assets_changed),
             );
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             let shaders = initialize_material_shaders::<M>(render_app.world());
             render_app
                 .insert_resource(MaterialShaders::<M>::with_shader_cache(shaders))

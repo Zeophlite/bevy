@@ -2,7 +2,7 @@ use core::ops::RangeInclusive;
 
 use accesskit::{Orientation, Role};
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::event::EntityEvent;
 use bevy_ecs::hierarchy::Children;
 use bevy_ecs::lifecycle::Insert;
@@ -724,7 +724,7 @@ pub fn slider_self_update(value_change: On<ValueChange<f32>>, mut commands: Comm
 pub struct SliderPlugin;
 
 impl Plugin for SliderPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(slider_on_pointer_down)
             .add_observer(slider_on_pointer_up)
             .add_observer(slider_on_pointer_cancel)

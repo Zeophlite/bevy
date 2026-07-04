@@ -7,7 +7,7 @@ use std::io;
 #[derive(Resource)]
 struct Input(String);
 
-fn my_runner(mut app: App) -> AppExit {
+fn my_runner(mut app: Bevy) -> AppExit {
     // Finalize plugin building, including running any necessary clean-up.
     // This is normally completed by the default runner.
     app.finish();
@@ -41,7 +41,7 @@ fn exit_system(input: Res<Input>, mut app_exit_writer: MessageWriter<AppExit>) {
 
 // AppExit implements `Termination` so we can return it from main.
 fn main() -> AppExit {
-    App::new()
+    Bevy::new()
         .insert_resource(Input(String::new()))
         .set_runner(my_runner)
         .add_systems(Update, (print_system, exit_system))

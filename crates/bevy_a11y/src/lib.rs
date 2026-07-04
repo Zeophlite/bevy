@@ -275,7 +275,7 @@ pub enum AccessibilitySystems {
 pub struct AccessibilityPlugin;
 
 impl Plugin for AccessibilityPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.init_resource::<AccessibilityRequested>()
             .init_resource::<ManageAccessibilityUpdates>()
             .allow_ambiguous_component::<AccessibilityNode>();

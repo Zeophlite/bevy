@@ -3,7 +3,7 @@
 //! Uses [`StandardMaterial`] with `unlit: true` and a dedicated overlay camera
 //! on a separate [`RenderLayers`] to render gizmo meshes always-on-top.
 
-use bevy_app::{App, Plugin, PostUpdate, Startup};
+use bevy_app::{Bevy, Plugin, PostUpdate, Startup};
 use bevy_asset::{Assets, Handle};
 use bevy_camera::{
     visibility::{RenderLayers, Visibility},
@@ -80,7 +80,7 @@ impl TransformGizmoMaterials {
 pub struct TransformGizmoRenderPlugin;
 
 impl Plugin for TransformGizmoRenderPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(
             Startup,
             spawn_gizmo_meshes.run_if(

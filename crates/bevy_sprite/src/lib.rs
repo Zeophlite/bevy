@@ -67,7 +67,7 @@ use bevy_math::Vec2;
 pub struct SpritePlugin;
 
 impl Plugin for SpritePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         if !app.is_plugin_added::<TextureAtlasPlugin>() {
             app.add_plugins(TextureAtlasPlugin);
         }
@@ -281,7 +281,7 @@ mod test {
     #[test]
     fn calculate_bounds_2d_create_aabb_for_image_sprite_entity() {
         // Setup app
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         // Add resources and get handle to image
         let mut image_assets = Assets::<Image>::default();
@@ -319,7 +319,7 @@ mod test {
     #[test]
     fn calculate_bounds_2d_update_aabb_when_sprite_custom_size_changes_to_some() {
         // Setup app
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         // Add resources and get handle to image
         let mut image_assets = Assets::<Image>::default();
@@ -382,7 +382,7 @@ mod test {
     #[test]
     fn calculate_bounds_2d_correct_aabb_for_sprite_with_custom_rect() {
         // Setup app
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         // Add resources and get handle to image
         let mut image_assets = Assets::<Image>::default();

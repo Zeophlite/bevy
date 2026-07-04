@@ -51,7 +51,7 @@ enum PccmEnableStatus {
 
 /// The example entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {

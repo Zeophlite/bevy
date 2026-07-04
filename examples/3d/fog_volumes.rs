@@ -14,7 +14,7 @@ use bevy::{
 
 /// Entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy Fog Volumes Example".into(),

@@ -15,7 +15,7 @@ const ASSET_URL: &str =
     "https://github.com/bevyengine/bevy_asset_files/raw/6dccaef517bde74d1969734703709aead7211dbc/meshlet/bunny.meshlet_mesh";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(DirectionalLightShadowMap { size: 4096 })
         .add_plugins((
             DefaultPlugins,

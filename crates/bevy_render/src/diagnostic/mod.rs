@@ -18,7 +18,7 @@ use bevy_ecs::{
 use core::marker::PhantomData;
 use wgpu::{BufferSlice, CommandEncoder};
 
-use bevy_app::{App, Plugin, PreUpdate};
+use bevy_app::{Bevy, Plugin, PreUpdate};
 
 use crate::{
     renderer::{PendingCommandBuffers, RenderGraph, RenderGraphSystems},
@@ -64,18 +64,18 @@ use crate::renderer::RenderDevice;
 pub struct RenderDiagnosticsPlugin;
 
 impl Plugin for RenderDiagnosticsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let render_diagnostics_mutex = RenderDiagnosticsMutex::default();
         app.insert_resource(render_diagnostics_mutex.clone())
             .add_systems(PreUpdate, sync_diagnostics);
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.insert_resource(render_diagnostics_mutex);
         }
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

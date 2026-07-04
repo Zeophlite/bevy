@@ -10,7 +10,7 @@ const PALETTE: [&str; 4] = ["27496D", "466B7A", "669DB3", "ADCBE3"];
 const HIDDEN_COLOR: Color = Color::srgb(1.0, 0.7, 0.7);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(

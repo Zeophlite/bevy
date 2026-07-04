@@ -1,4 +1,4 @@
-use crate::{App, Plugin};
+use crate::{Bevy, Plugin};
 
 use alloc::string::ToString;
 use bevy_platform::sync::Arc;
@@ -30,7 +30,7 @@ pub struct TaskPoolPlugin {
 }
 
 impl Plugin for TaskPoolPlugin {
-    fn build(&self, _app: &mut App) {
+    fn build(&self, _app: &mut Bevy) {
         // Setup the default bevy task pools
         self.task_pool_options.create_default_pools();
 
@@ -264,7 +264,7 @@ mod tests {
 
     #[test]
     fn runs_spawn_local_tasks() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(TaskPoolPlugin::default());
 
         let (async_tx, async_rx) = crossbeam_channel::unbounded();

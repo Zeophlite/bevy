@@ -18,7 +18,7 @@ use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-use bevy_app::{App, TaskPoolPlugin};
+use bevy_app::{Bevy, TaskPoolPlugin};
 use bevy_ecs::error::BevyError;
 use bevy_tasks::BoxedFuture;
 
@@ -176,7 +176,7 @@ struct ProcessingDirs {
 }
 
 struct AppWithProcessor {
-    app: App,
+    app: Bevy,
     source_gate: Arc<RwLock<()>>,
     default_source_dirs: ProcessingDirs,
     extra_sources_dirs: HashMap<String, ProcessingDirs>,
@@ -224,7 +224,7 @@ impl<R: AssetReader> AssetReader for LockGatedReader<R> {
 }
 
 /// Sets the transaction log for the app to a fake one to prevent touching the filesystem.
-fn set_fake_transaction_log(app: &mut App) {
+fn set_fake_transaction_log(app: &mut Bevy) {
     /// A dummy transaction log factory that just creates [`FakeTransactionLog`].
     struct FakeTransactionLogFactory;
 
@@ -273,7 +273,7 @@ fn set_fake_transaction_log(app: &mut App) {
 }
 
 fn create_app_with_asset_processor(extra_sources: &[String]) -> AppWithProcessor {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     let source_gate = Arc::new(RwLock::new(()));
 
     struct UnfinishedProcessingDirs {
@@ -297,7 +297,7 @@ fn create_app_with_asset_processor(extra_sources: &[String]) -> AppWithProcessor
     }
 
     fn create_source(
-        app: &mut App,
+        app: &mut Bevy,
         source_id: AssetSourceId<'static>,
         source_gate: Arc<RwLock<()>>,
     ) -> UnfinishedProcessingDirs {
@@ -386,7 +386,7 @@ fn create_app_with_asset_processor(extra_sources: &[String]) -> AppWithProcessor
     }
 }
 
-fn run_app_until_finished_processing(app: &mut App, guard: RwLockWriteGuard<'_, ()>) {
+fn run_app_until_finished_processing(app: &mut Bevy, guard: RwLockWriteGuard<'_, ()>) {
     let processor = app.world().resource::<AssetProcessor>().clone();
     // We can't just wait for the processor state to be finished since we could have already
     // finished before, but now that something has changed, we may not have restarted processing
@@ -1602,7 +1602,7 @@ fn only_reprocesses_wrong_hash_on_startup() {
     );
 
     // Hand-make the app, since we need to pass in our already existing Dirs from the last app.
-    let mut app = App::new();
+    let mut app = Bevy::new();
     let source_gate = Arc::new(RwLock::new(()));
 
     let source_memory_reader = LockGatedReader::new(

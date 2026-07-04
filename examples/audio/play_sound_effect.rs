@@ -19,7 +19,7 @@ impl FromWorld for SoundEffect {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<SoundEffect>()
         .add_systems(Startup, setup)

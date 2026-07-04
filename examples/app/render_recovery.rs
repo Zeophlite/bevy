@@ -18,7 +18,7 @@ use bevy::{
 };
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins((
         DefaultPlugins,
         ExtractResourcePlugin::<RenderError>::default(),
@@ -26,7 +26,7 @@ fn main() {
     .add_systems(Startup, setup)
     .add_systems(Update, (update_camera, input))
     .init_resource::<RenderError>()
-    .sub_app_mut(RenderApp)
+    .app_mut(RenderApp)
     .add_systems(Render, cause_error);
     app.run();
 }

@@ -14,7 +14,7 @@ mnopqrstuvw\n\
 xyz{|}~";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup_camera)
         .add_systems(Update, draw_all_glyphs)

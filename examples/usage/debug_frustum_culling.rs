@@ -41,7 +41,7 @@ use bevy::{
 use std::f32::consts::PI;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {

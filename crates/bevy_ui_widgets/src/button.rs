@@ -1,6 +1,6 @@
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::query::Has;
 use bevy_ecs::{
     component::Component,
@@ -140,7 +140,7 @@ fn button_on_pointer_cancel(
 pub struct ButtonPlugin;
 
 impl Plugin for ButtonPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(button_on_key_event)
             .add_observer(button_on_pointer_down)
             .add_observer(button_on_pointer_up)

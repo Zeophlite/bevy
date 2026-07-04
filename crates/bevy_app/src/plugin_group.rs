@@ -1,4 +1,4 @@
-use crate::{App, AppError, Plugin};
+use crate::{Bevy, AppError, Plugin};
 use alloc::{
     boxed::Box,
     string::{String, ToString},
@@ -564,7 +564,7 @@ impl PluginGroupBuilder {
     ///
     /// Panics if one of the plugin in the group was already added to the application.
     #[track_caller]
-    pub fn finish(mut self, app: &mut App) {
+    pub fn finish(mut self, app: &mut Bevy) {
         for ty in &self.order {
             if let Some(entry) = self.plugins.shift_remove(ty)
                 && entry.enabled
@@ -608,33 +608,33 @@ mod tests {
     use core::{any::TypeId, fmt::Debug};
 
     use super::PluginGroupBuilder;
-    use crate::{App, NoopPluginGroup, Plugin, PluginGroup};
+    use crate::{Bevy, NoopPluginGroup, Plugin, PluginGroup};
 
     #[derive(Default)]
     struct PluginA;
     impl Plugin for PluginA {
-        fn build(&self, _: &mut App) {}
+        fn build(&self, _: &mut Bevy) {}
     }
 
     #[derive(Default)]
     struct PluginB;
     impl Plugin for PluginB {
-        fn build(&self, _: &mut App) {}
+        fn build(&self, _: &mut Bevy) {}
     }
 
     #[derive(Default)]
     struct PluginC;
     impl Plugin for PluginC {
-        fn build(&self, _: &mut App) {}
+        fn build(&self, _: &mut Bevy) {}
     }
 
-    fn plugin_d(_: &mut App) {}
-    fn plugin_e(_: &mut App) {}
+    fn plugin_d(_: &mut Bevy) {}
+    fn plugin_e(_: &mut Bevy) {}
 
     #[derive(PartialEq, Debug)]
     struct PluginWithData(u32);
     impl Plugin for PluginWithData {
-        fn build(&self, _: &mut App) {}
+        fn build(&self, _: &mut Bevy) {}
     }
 
     fn get_plugin<T: Debug + 'static>(group: &PluginGroupBuilder, id: TypeId) -> &T {

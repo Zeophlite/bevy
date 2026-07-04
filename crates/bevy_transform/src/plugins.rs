@@ -5,7 +5,7 @@ use crate::{
         StaticTransformOptimizations,
     },
 };
-use bevy_app::{App, Plugin, PostStartup, PostUpdate, ValidateParentHasComponentPlugin};
+use bevy_app::{Bevy, Plugin, PostStartup, PostUpdate, ValidateParentHasComponentPlugin};
 use bevy_ecs::schedule::{IntoScheduleConfigs, SystemSet};
 
 /// Set enum for the systems relating to transform propagation
@@ -20,7 +20,7 @@ pub enum TransformSystems {
 pub struct TransformPlugin;
 
 impl Plugin for TransformPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(ValidateParentHasComponentPlugin::<GlobalTransform>::default())
             .init_resource::<StaticTransformOptimizations>()
             // add transform systems to startup so the first update is "correct"

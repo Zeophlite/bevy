@@ -7,7 +7,7 @@ use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .init_resource::<State>()
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(DefaultPlugins)

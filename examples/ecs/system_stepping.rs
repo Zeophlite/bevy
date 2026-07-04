@@ -5,7 +5,7 @@
 use bevy::{ecs::schedule::Stepping, log::LogPlugin, prelude::*};
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app
         // to display log messages from Stepping resource

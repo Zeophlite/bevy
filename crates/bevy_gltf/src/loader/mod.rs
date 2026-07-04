@@ -2121,7 +2121,7 @@ mod test {
     use std::path::Path;
 
     use crate::{Gltf, GltfAssetLabel, GltfMaterial, GltfNode, GltfSkin};
-    use bevy_app::{App, TaskPoolPlugin};
+    use bevy_app::{Bevy, TaskPoolPlugin};
     use bevy_asset::{
         io::{
             memory::{Dir, MemoryAssetReader},
@@ -2137,8 +2137,8 @@ mod test {
     use bevy_reflect::TypePath;
     use bevy_world_serialization::WorldSerializationPlugin;
 
-    fn test_app(dir: Dir) -> App {
-        let mut app = App::new();
+    fn test_app(dir: Dir) -> Bevy {
+        let mut app = Bevy::new();
         let reader = MemoryAssetReader { root: dir };
         app.register_asset_source(
             AssetSourceId::Default,
@@ -2161,7 +2161,7 @@ mod test {
 
     const LARGE_ITERATION_COUNT: usize = 10000;
 
-    fn run_app_until(app: &mut App, mut predicate: impl FnMut(&mut World) -> Option<()>) {
+    fn run_app_until(app: &mut Bevy, mut predicate: impl FnMut(&mut World) -> Option<()>) {
         for _ in 0..LARGE_ITERATION_COUNT {
             app.update();
             if predicate(app.world_mut()).is_some() {
@@ -2172,7 +2172,7 @@ mod test {
         panic!("Ran out of loops to return `Some` from `predicate`");
     }
 
-    fn load_gltf_into_app(gltf_path: &str, gltf: &str) -> App {
+    fn load_gltf_into_app(gltf_path: &str, gltf: &str) -> Bevy {
         #[expect(
             dead_code,
             reason = "This struct is used to keep the handle alive. As such, we have no need to handle the handle directly."
@@ -2553,10 +2553,10 @@ mod test {
         assert_eq!(skinned_node.skin.as_ref(), Some(&gltf_root.skins[0]));
     }
 
-    fn test_app_custom_asset_source() -> (App, Dir) {
+    fn test_app_custom_asset_source() -> (Bevy, Dir) {
         let dir = Dir::default();
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         let custom_reader = MemoryAssetReader { root: dir.clone() };
         // Create a default asset source so we definitely don't try to read from disk.
         app.register_asset_source(

@@ -6,7 +6,7 @@
 //! For more fine-tuned control over panic behavior, disable the [`PanicHandlerPlugin`] or
 //! `DefaultPlugins` during app initialization.
 
-use crate::{App, Plugin};
+use crate::{Bevy, Plugin};
 
 /// Adds sensible panic handlers to Apps. This plugin is part of the `DefaultPlugins`. Adding
 /// this plugin will setup a panic hook appropriate to your target platform:
@@ -38,7 +38,7 @@ use crate::{App, Plugin};
 pub struct PanicHandlerPlugin;
 
 impl Plugin for PanicHandlerPlugin {
-    fn build(&self, _app: &mut App) {
+    fn build(&self, _app: &mut Bevy) {
         #[cfg(feature = "std")]
         {
             static SET_HOOK: std::sync::Once = std::sync::Once::new();

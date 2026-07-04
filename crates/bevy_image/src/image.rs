@@ -6,7 +6,7 @@ use super::basis::*;
 use super::dds::*;
 #[cfg(feature = "ktx2")]
 use super::ktx2::*;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 #[cfg(not(feature = "bevy_reflect"))]
 use bevy_reflect::TypePath;
 #[cfg(feature = "bevy_reflect")]
@@ -205,7 +205,7 @@ impl ImagePlugin {
 }
 
 impl Plugin for ImagePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         #[cfg(feature = "exr")]
         app.init_asset_loader::<crate::ExrTextureLoader>();
 

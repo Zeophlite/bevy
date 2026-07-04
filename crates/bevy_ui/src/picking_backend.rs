@@ -75,7 +75,7 @@ impl Default for UiPickingSettings {
 #[derive(Clone)]
 pub struct UiPickingPlugin;
 impl Plugin for UiPickingPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<UiPickingSettings>()
             .add_systems(PreUpdate, ui_picking.in_set(PickingSystems::Backend));
     }

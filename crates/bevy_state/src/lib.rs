@@ -101,7 +101,7 @@ pub mod prelude {
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::{App, PreStartup};
+    use bevy_app::{Bevy, PreStartup};
     use bevy_ecs::{
         resource::Resource,
         system::{Commands, ResMut},
@@ -119,7 +119,7 @@ mod tests {
         // PreStartup), but this is the current policy and it is useful to ensure we are following
         // it if we ever change how we initialize stuff.
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
 
         #[derive(States, Default, PartialEq, Eq, Hash, Debug, Clone)]

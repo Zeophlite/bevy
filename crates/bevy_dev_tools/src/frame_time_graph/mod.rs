@@ -25,7 +25,7 @@ const FRAME_TIME_GRAPH_SHADER_HANDLE: Handle<Shader> =
 pub struct FrameTimeGraphPlugin;
 
 impl Plugin for FrameTimeGraphPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         load_internal_asset!(
             app,
             FRAME_TIME_GRAPH_SHADER_HANDLE,

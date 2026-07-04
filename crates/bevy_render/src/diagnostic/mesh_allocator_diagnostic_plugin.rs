@@ -34,7 +34,7 @@ impl MeshAllocatorDiagnosticPlugin {
 }
 
 impl Plugin for MeshAllocatorDiagnosticPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.register_diagnostic(
             Diagnostic::new(MESH_ALLOCATOR_SLABS.clone()).with_suffix(" slabs"),
         )
@@ -47,7 +47,7 @@ impl Plugin for MeshAllocatorDiagnosticPlugin {
         .init_resource::<MeshAllocatorMeasurements>()
         .add_systems(PreUpdate, add_mesh_allocator_measurement);
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.add_systems(ExtractSchedule, measure_allocator);
         }
     }

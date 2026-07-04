@@ -9,7 +9,7 @@ use crate::bloom::{
     downsampling_pipeline::init_bloom_downsampling_pipeline,
     upsampling_pipeline::init_bloom_upscaling_pipeline,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::embedded_asset;
 use bevy_color::{Gray, LinearRgba};
 use bevy_core_pipeline::{
@@ -44,7 +44,7 @@ const BLOOM_TEXTURE_FORMAT: TextureFormat = TextureFormat::Rg11b10Ufloat;
 pub struct BloomPlugin;
 
 impl Plugin for BloomPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "bloom.wgsl");
 
         app.add_plugins((
@@ -52,7 +52,7 @@ impl Plugin for BloomPlugin {
             UniformComponentPlugin::<BloomUniforms>::default(),
         ));
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

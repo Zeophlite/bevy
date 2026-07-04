@@ -43,10 +43,10 @@ use bytemuck::{Pod, Zeroable};
 pub struct GradientPlugin;
 
 impl Plugin for GradientPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "gradient.wgsl");
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .add_render_command::<TransparentUi, DrawGradientFns>()
                 .init_resource::<ExtractedGradients>()

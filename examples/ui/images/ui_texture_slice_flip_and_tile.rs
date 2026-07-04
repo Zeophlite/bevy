@@ -7,7 +7,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(UiScale(2.))
         .add_systems(Startup, setup)

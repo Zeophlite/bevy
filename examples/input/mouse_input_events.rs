@@ -9,7 +9,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Update, print_mouse_events_system)
         .run();

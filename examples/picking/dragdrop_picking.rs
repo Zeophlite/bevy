@@ -20,7 +20,7 @@ const BUTTON_HEIGHT: f32 = 50.0;
 const ELEMENT_SIZE: f32 = 25.0;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, MeshPickingPlugin))
         .add_systems(Startup, setup)
         .run();

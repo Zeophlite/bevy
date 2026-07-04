@@ -98,7 +98,7 @@ impl Default for LogDiagnosticsPlugin {
 }
 
 impl Plugin for LogDiagnosticsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.insert_resource(LogDiagnosticsState {
             timer: Timer::new(self.wait_duration, TimerMode::Repeating),
             filter: self.filter.clone(),

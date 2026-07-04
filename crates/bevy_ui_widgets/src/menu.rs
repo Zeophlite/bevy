@@ -30,7 +30,7 @@
 
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin, Update};
+use bevy_app::{Bevy, Plugin, Update};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
@@ -470,7 +470,7 @@ fn menubutton_on_key_event(
 pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Update, (menu_acquire_focus, menu_on_lose_focus).chain())
             .add_observer(menu_on_key_event)
             .add_observer(menu_item_on_pointer_down)

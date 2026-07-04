@@ -319,7 +319,7 @@ mod tests {
     use std::println;
 
     use crate::{AssetApp, Assets};
-    use bevy_app::{App, AppExit, PostUpdate, Startup, Update};
+    use bevy_app::{Bevy, AppExit, PostUpdate, Startup, Update};
     use bevy_ecs::schedule::IntoScheduleConfigs;
     use bevy_ecs::{
         component::Component,
@@ -436,7 +436,7 @@ mod tests {
     }
 
     #[track_caller]
-    fn assert_counter(app: &App, assert: Counter) {
+    fn assert_counter(app: &Bevy, assert: Counter) {
         assert_eq!(&assert, app.world().resource::<Counter>());
     }
 

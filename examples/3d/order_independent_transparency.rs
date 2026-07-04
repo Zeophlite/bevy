@@ -82,7 +82,7 @@ struct SceneResources<'w> {
 struct AppEvent(AppSetting);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(MaterialPlugin::<NoisyOpacityMaterial>::default())
         .add_plugins(MaterialPlugin::<

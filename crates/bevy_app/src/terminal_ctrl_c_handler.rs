@@ -2,7 +2,7 @@ use core::sync::atomic::{AtomicU8, Ordering};
 
 use bevy_ecs::message::MessageWriter;
 
-use crate::{App, AppExit, Plugin, Update};
+use crate::{Bevy, AppExit, Plugin, Update};
 
 pub use ctrlc;
 
@@ -64,7 +64,7 @@ impl TerminalCtrlCHandlerPlugin {
 }
 
 impl Plugin for TerminalCtrlCHandlerPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let result = ctrlc::try_set_handler(move || {
             Self::gracefully_exit();
         });

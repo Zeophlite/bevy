@@ -17,7 +17,7 @@ use bevy::prelude::*;
 use bevy::text::{EditableText, TextCursorStyle};
 
 fn main() {
-    App::new()
+    Bevy::new()
         // `EditableTextInputPlugin` is part of `DefaultPlugins`
         .add_plugins((DefaultPlugins, TabNavigationPlugin))
         .add_systems(Startup, setup)

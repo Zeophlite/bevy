@@ -493,7 +493,7 @@ pub enum VisibilitySystems {
 pub struct VisibilityPlugin;
 
 impl Plugin for VisibilityPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         use VisibilitySystems::*;
 
         app.add_plugins(ValidateParentHasComponentPlugin::<InheritedVisibility>::default())
@@ -948,7 +948,7 @@ mod test {
 
     #[test]
     fn visibility_propagation() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_systems(Update, visibility_propagate_system);
 
         let root1 = app.world_mut().spawn(Visibility::Hidden).id();
@@ -1038,7 +1038,7 @@ mod test {
     #[test]
     fn test_visibility_propagation_on_parent_change() {
         // Setup the world and schedule
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_systems(Update, visibility_propagate_system);
 
@@ -1090,7 +1090,7 @@ mod test {
     #[test]
     fn test_visibility_propagation_on_parent_removed() {
         // Setup the world and schedule
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_systems(Update, visibility_propagate_system);
 
@@ -1104,7 +1104,7 @@ mod test {
         // Run the system initially to set up visibility
         app.update();
 
-        let is_visible = |app: &App, e: Entity| {
+        let is_visible = |app: &Bevy, e: Entity| {
             app.world()
                 .entity(e)
                 .get::<InheritedVisibility>()
@@ -1132,7 +1132,7 @@ mod test {
     fn visibility_propagation_unconditional_visible() {
         use Visibility::{Hidden, Inherited, Visible};
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_systems(Update, visibility_propagate_system);
 
         let root1 = app.world_mut().spawn(Visible).id();
@@ -1312,7 +1312,7 @@ mod test {
 
     #[test]
     fn view_visibility_lifecycle() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins((
             TaskPoolPlugin::default(),
             bevy_asset::AssetPlugin::default(),

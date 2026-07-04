@@ -1,4 +1,4 @@
-use crate::App;
+use crate::Bevy;
 use core::any::Any;
 use downcast_rs::{impl_downcast, Downcast};
 
@@ -56,25 +56,25 @@ use downcast_rs::{impl_downcast, Downcast};
 /// ```
 pub trait Plugin: Downcast + Any + Send + Sync {
     /// Configures the [`App`] to which this plugin is added.
-    fn build(&self, app: &mut App);
+    fn build(&self, app: &mut Bevy);
 
     /// Has the plugin finished its setup? This can be useful for plugins that need something
     /// asynchronous to happen before they can finish their setup, like the initialization of a renderer.
     /// Once the plugin is ready, [`finish`](Plugin::finish) should be called.
-    fn ready(&self, _app: &App) -> bool {
+    fn ready(&self, _app: &Bevy) -> bool {
         true
     }
 
     /// Finish adding this plugin to the [`App`], once all plugins registered are ready. This can
     /// be useful for plugins that depends on another plugin asynchronous setup, like the renderer.
-    fn finish(&self, _app: &mut App) {
+    fn finish(&self, _app: &mut Bevy) {
         // do nothing
     }
 
     /// Runs after all plugins are built and finished, but before the app schedule is executed.
     /// This can be useful if you have some resource that other plugins need during their build step,
     /// but after build you want to remove it and send it to another thread.
-    fn cleanup(&self, _app: &mut App) {
+    fn cleanup(&self, _app: &mut Bevy) {
         // do nothing
     }
 
@@ -93,8 +93,8 @@ pub trait Plugin: Downcast + Any + Send + Sync {
 
 impl_downcast!(Plugin);
 
-impl<T: Fn(&mut App) + Send + Sync + 'static> Plugin for T {
-    fn build(&self, app: &mut App) {
+impl<T: Fn(&mut Bevy) + Send + Sync + 'static> Plugin for T {
+    fn build(&self, app: &mut Bevy) {
         self(app);
     }
 }
@@ -116,7 +116,7 @@ pub enum PluginsState {
 pub(crate) struct PlaceholderPlugin;
 
 impl Plugin for PlaceholderPlugin {
-    fn build(&self, _app: &mut App) {}
+    fn build(&self, _app: &mut Bevy) {}
 }
 
 /// Types that represent a set of [`Plugin`]s.
@@ -131,10 +131,10 @@ mod sealed {
     use alloc::boxed::Box;
     use variadics_please::all_tuples;
 
-    use crate::{App, AppError, Plugin, PluginGroup};
+    use crate::{Bevy, AppError, Plugin, PluginGroup};
 
     pub trait Plugins<Marker> {
-        fn add_to_app(self, app: &mut App);
+        fn add_to_bevy(self, app: &mut Bevy);
     }
 
     pub struct PluginMarker;
@@ -143,7 +143,7 @@ mod sealed {
 
     impl<P: Plugin> Plugins<PluginMarker> for P {
         #[track_caller]
-        fn add_to_app(self, app: &mut App) {
+        fn add_to_bevy(self, app: &mut Bevy) {
             if let Err(AppError::DuplicatePlugin { plugin_name }) =
                 app.add_boxed_plugin(Box::new(self))
             {
@@ -156,7 +156,7 @@ mod sealed {
 
     impl<P: PluginGroup> Plugins<PluginGroupMarker> for P {
         #[track_caller]
-        fn add_to_app(self, app: &mut App) {
+        fn add_to_bevy(self, app: &mut Bevy) {
             self.build().finish(app);
         }
     }
@@ -175,9 +175,9 @@ mod sealed {
                 #[allow(non_snake_case, reason = "`all_tuples!()` generates non-snake-case variable names.")]
                 #[allow(unused_variables, reason = "`app` is unused when implemented for the unit type `()`.")]
                 #[track_caller]
-                fn add_to_app(self, app: &mut App) {
+                fn add_to_bevy(self, bevy: &mut Bevy) {
                     let ($($plugins,)*) = self;
-                    $($plugins.add_to_app(app);)*
+                    $($plugins.add_to_bevy(bevy);)*
                 }
             }
         }

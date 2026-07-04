@@ -28,7 +28,7 @@ use bevy::{
 const SHADER_ASSET_PATH: &str = "shaders/post_processing.wgsl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, PostProcessPlugin))
         .add_systems(Startup, setup)
         .add_systems(Update, (rotate, update_settings))
@@ -39,7 +39,7 @@ fn main() {
 struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins((
             // The settings will be a component that lives in the main world but will
             // be extracted to the render world every frame.
@@ -55,7 +55,7 @@ impl Plugin for PostProcessPlugin {
         ));
 
         // We need to get the render app from the main app
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

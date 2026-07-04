@@ -1,6 +1,6 @@
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
@@ -303,7 +303,7 @@ fn listbox_focus_lost(
 pub struct ListBoxPlugin;
 
 impl Plugin for ListBoxPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(listbox_on_key_input)
             .add_observer(listbox_on_row_click)
             .add_observer(listbox_focus_gained)

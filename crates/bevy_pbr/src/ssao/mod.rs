@@ -1,4 +1,4 @@
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, Handle};
 use bevy_camera::{Camera, Camera3d};
 use bevy_core_pipeline::{
@@ -43,7 +43,7 @@ use tracing::{error, warn};
 pub struct ScreenSpaceAmbientOcclusionPlugin;
 
 impl Plugin for ScreenSpaceAmbientOcclusionPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "ssao_utils.wgsl");
 
         embedded_asset!(app, "preprocess_depth.wgsl");
@@ -53,8 +53,8 @@ impl Plugin for ScreenSpaceAmbientOcclusionPlugin {
         app.add_plugins(SyncComponentPlugin::<ScreenSpaceAmbientOcclusion>::default());
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

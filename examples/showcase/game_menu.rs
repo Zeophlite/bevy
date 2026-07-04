@@ -31,7 +31,7 @@ struct Setting<T>(T);
 struct Volume(u32);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // Insert as resource the initial value for the settings resources
         .insert_resource(DisplayQuality::Medium)
@@ -54,7 +54,7 @@ mod splash {
     use super::GameState;
 
     // This plugin will display a splash screen with Bevy logo for 1 second before switching to the menu
-    pub fn splash_plugin(app: &mut App) {
+    pub fn splash_plugin(app: &mut Bevy) {
         // As this plugin is managing the splash screen, it will focus on the state `GameState::Splash`
         app
             // When entering the state, spawn everything needed for this screen
@@ -120,7 +120,7 @@ mod game {
 
     // This plugin will contain the game. In this case, it's just be a screen that will
     // display the current settings for 5 seconds before returning to the menu
-    pub fn game_plugin(app: &mut App) {
+    pub fn game_plugin(app: &mut Bevy) {
         app.add_systems(OnEnter(GameState::Game), game_setup)
             .add_systems(Update, game.run_if(in_state(GameState::Game)));
     }
@@ -239,7 +239,7 @@ mod menu {
     // - a main menu with "New Game", "Settings", "Quit"
     // - a settings menu with two submenus and a back button
     // - two settings screen with a setting that can be set and a back button
-    pub fn menu_plugin(app: &mut App) {
+    pub fn menu_plugin(app: &mut Bevy) {
         app
             // At start, the menu is not enabled. This will be changed in `menu_setup` when
             // entering the `GameState::Menu` state.

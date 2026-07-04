@@ -1,7 +1,7 @@
 //! This example exhibits different available modes of constructing cubic Bezier curves.
 
 use bevy::{
-    app::{App, Startup, Update},
+    app::{Bevy, Startup, Update},
     color::*,
     ecs::system::Commands,
     gizmos::gizmos::Gizmos,
@@ -11,7 +11,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(

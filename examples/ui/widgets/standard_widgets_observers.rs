@@ -18,7 +18,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, TabNavigationPlugin))
         .insert_resource(DemoWidgetStates { slider_value: 50.0 })
         .add_systems(Startup, setup)

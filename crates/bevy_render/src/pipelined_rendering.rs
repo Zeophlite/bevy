@@ -1,6 +1,6 @@
 use async_channel::{Receiver, Sender};
 
-use bevy_app::{App, AppExit, AppLabel, Plugin, SubApp};
+use bevy_app::{Bevy, AppExit, AppLabel, Plugin, App};
 use bevy_ecs::{
     resource::Resource,
     schedule::MainThreadExecutor,
@@ -20,16 +20,16 @@ pub struct RenderExtractApp;
 /// Channels used by the main app to send and receive the render app.
 #[derive(Resource)]
 pub struct RenderAppChannels {
-    app_to_render_sender: Sender<SubApp>,
-    render_to_app_receiver: Receiver<SubApp>,
+    app_to_render_sender: Sender<App>,
+    render_to_app_receiver: Receiver<App>,
     render_app_in_render_thread: bool,
 }
 
 impl RenderAppChannels {
     /// Create a `RenderAppChannels` from a [`async_channel::Receiver`] and [`async_channel::Sender`]
     pub fn new(
-        app_to_render_sender: Sender<SubApp>,
-        render_to_app_receiver: Receiver<SubApp>,
+        app_to_render_sender: Sender<App>,
+        render_to_app_receiver: Receiver<App>,
     ) -> Self {
         Self {
             app_to_render_sender,
@@ -39,14 +39,14 @@ impl RenderAppChannels {
     }
 
     /// Send the `render_app` to the rendering thread.
-    pub fn send_blocking(&mut self, render_app: SubApp) {
+    pub fn send_blocking(&mut self, render_app: App) {
         self.app_to_render_sender.send_blocking(render_app).unwrap();
         self.render_app_in_render_thread = true;
     }
 
     /// Receive the `render_app` from the rendering thread.
     /// Return `None` if the render thread has panicked.
-    pub async fn recv(&mut self) -> Option<SubApp> {
+    pub async fn recv(&mut self) -> Option<App> {
         let render_app = self.render_to_app_receiver.recv().await.ok()?;
         self.render_app_in_render_thread = false;
         Some(render_app)
@@ -109,30 +109,30 @@ impl Drop for RenderAppChannels {
 pub struct PipelinedRenderingPlugin;
 
 impl Plugin for PipelinedRenderingPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // Don't add RenderExtractApp if RenderApp isn't initialized.
-        if app.get_sub_app(RenderApp).is_none() {
+        if app.get_app(RenderApp).is_none() {
             return;
         }
         app.insert_resource(MainThreadExecutor::new());
 
-        let mut sub_app = SubApp::new();
+        let mut sub_app = App::new();
         sub_app.set_extract(renderer_extract);
-        app.insert_sub_app(RenderExtractApp, sub_app);
+        app.insert_app(RenderExtractApp, sub_app);
     }
 
     // Sets up the render thread and inserts resources into the main app used for controlling the render thread.
-    fn cleanup(&self, app: &mut App) {
+    fn cleanup(&self, app: &mut Bevy) {
         // skip setting up when headless
-        if app.get_sub_app(RenderExtractApp).is_none() {
+        if app.get_app(RenderExtractApp).is_none() {
             return;
         }
 
-        let (app_to_render_sender, app_to_render_receiver) = async_channel::bounded::<SubApp>(1);
-        let (render_to_app_sender, render_to_app_receiver) = async_channel::bounded::<SubApp>(1);
+        let (app_to_render_sender, app_to_render_receiver) = async_channel::bounded::<App>(1);
+        let (render_to_app_sender, render_to_app_receiver) = async_channel::bounded::<App>(1);
 
         let mut render_app = app
-            .remove_sub_app(RenderApp)
+            .remove_app(RenderApp)
             .expect("Unable to get RenderApp. Another plugin may have removed the RenderApp before PipelinedRenderingPlugin");
 
         // clone main thread executor to render world

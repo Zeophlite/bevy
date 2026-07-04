@@ -59,13 +59,13 @@ pub use terminal_ctrl_c_handler::*;
 pub mod prelude {
     #[doc(hidden)]
     pub use crate::{
-        app::{App, AppExit},
+        app::{Bevy, AppExit},
         main_schedule::{
             First, FixedFirst, FixedLast, FixedPostUpdate, FixedPreUpdate, FixedUpdate, Last, Main,
             PostStartup, PostUpdate, PreStartup, PreUpdate, RunFixedMainLoop,
             RunFixedMainLoopSystems, SpawnScene, Startup, Update,
         },
-        sub_app::SubApp,
+        sub_app::App,
         Plugin, PluginGroup, TaskPoolOptions, TaskPoolPlugin,
     };
 }

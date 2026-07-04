@@ -9,7 +9,7 @@ use bevy::{
 const SHADER_ASSET_PATH: &str = "shaders/animate_shader.wgsl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, MaterialPlugin::<CustomMaterial>::default()))
         .add_systems(Startup, setup)
         .run();

@@ -47,7 +47,7 @@ use indexmap::IndexMap;
 pub use main_opaque_pass_3d_node::*;
 pub use main_transparent_pass_3d_node::*;
 
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_asset::UntypedAssetId;
 use bevy_color::LinearRgba;
 use bevy_ecs::{entity::EntityHash, prelude::*};
@@ -100,7 +100,7 @@ use crate::{
 pub struct Core3dPlugin;
 
 impl Plugin for Core3dPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.register_required_components_with::<Camera3d, DebandDither>(|| DebandDither::Enabled)
             .register_required_components_with::<Camera3d, CameraRenderGraph>(|| {
                 CameraRenderGraph::new(Core3d)
@@ -109,7 +109,7 @@ impl Plugin for Core3dPlugin {
             .add_plugins((SkyboxPlugin, ExtractComponentPlugin::<Camera3d>::default()))
             .add_systems(PostUpdate, check_msaa);
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

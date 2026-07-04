@@ -56,7 +56,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // Plugin that enables FreeCamera functionality
         .add_plugins(FreeCameraPlugin)
@@ -68,7 +68,7 @@ fn main() {
 // Plugin that spawns the camera.
 struct CameraPlugin;
 impl Plugin for CameraPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Startup, spawn_camera);
     }
 }
@@ -93,7 +93,7 @@ fn spawn_camera(mut commands: Commands) {
 // Plugin that handles camera settings controls and information text
 struct CameraSettingsPlugin;
 impl Plugin for CameraSettingsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(PostStartup, spawn_text)
             .add_systems(Update, (update_camera_settings, update_text));
     }
@@ -201,7 +201,7 @@ fn update_text(
 // Plugin that spawns the scene and lighting.
 struct ScenePlugin;
 impl Plugin for ScenePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Startup, (spawn_lights, spawn_world));
     }
 }

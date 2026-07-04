@@ -39,7 +39,7 @@ use alloc::vec;
 use alloc::vec::Vec;
 #[cfg(any(feature = "keyboard", feature = "gamepad", feature = "mouse"))]
 use bevy_app::PreUpdate;
-use bevy_app::{App, Plugin, PostStartup, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostStartup, PostUpdate};
 use bevy_ecs::{
     entity::Entities, prelude::*, query::QueryData, system::SystemParam, traversal::Traversal,
 };
@@ -268,7 +268,7 @@ impl Traversal<AcquireFocus> for WindowTraversal {
 pub struct InputFocusPlugin;
 
 impl Plugin for InputFocusPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(PostStartup, set_initial_focus)
             .init_resource::<InputFocus>()
             .init_resource::<InputFocusVisible>()
@@ -287,7 +287,7 @@ impl Plugin for InputFocusPlugin {
 pub struct InputDispatchPlugin;
 
 impl Plugin for InputDispatchPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         #[cfg(not(any(feature = "keyboard", feature = "gamepad", feature = "mouse")))]
         let _ = app;
         #[cfg(any(feature = "keyboard", feature = "gamepad", feature = "mouse"))]
@@ -522,7 +522,7 @@ mod tests {
 
     #[test]
     fn test_no_panics_if_resource_missing() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         // Note that we do not insert InputFocus here!
 
         let entity = app.world_mut().spawn_empty().id();
@@ -550,7 +550,7 @@ mod tests {
 
     #[test]
     fn initial_focus_unset_if_no_primary_window() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins((InputPlugin, InputFocusPlugin));
 
         app.update();
@@ -560,7 +560,7 @@ mod tests {
 
     #[test]
     fn initial_focus_set_to_primary_window() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins((InputPlugin, InputFocusPlugin));
 
         let entity_window = app
@@ -577,7 +577,7 @@ mod tests {
 
     #[test]
     fn initial_focus_not_overridden() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins((InputPlugin, InputFocusPlugin));
 
         app.world_mut().spawn((Window::default(), PrimaryWindow));
@@ -602,7 +602,7 @@ mod tests {
 
     #[test]
     fn test_keyboard_events() {
-        fn get_gathered(app: &App, entity: Entity) -> &str {
+        fn get_gathered(app: &Bevy, entity: Entity) -> &str {
             app.world()
                 .entity(entity)
                 .get::<GatherKeyboardEvents>()
@@ -611,7 +611,7 @@ mod tests {
                 .as_str()
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_plugins((InputPlugin, InputFocusPlugin, InputDispatchPlugin))
             .add_observer(gather_keyboard_events);
@@ -729,7 +729,7 @@ mod tests {
 
     #[test]
     fn dispatch_clears_focus_when_focused_entity_despawned() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins((InputPlugin, InputFocusPlugin, InputDispatchPlugin));
 
         app.world_mut().spawn((Window::default(), PrimaryWindow));

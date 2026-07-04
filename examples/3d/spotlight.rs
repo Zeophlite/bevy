@@ -20,7 +20,7 @@ Vertical Movement: Space and Shift
 Rotate Camera: Left and Right Arrows";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight {
             brightness: 20.0,
             ..default()

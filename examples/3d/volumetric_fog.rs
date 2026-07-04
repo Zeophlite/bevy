@@ -40,7 +40,7 @@ struct MoveBackAndForthHorizontally {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(ClearColor(Color::Srgba(Srgba {
             red: 0.02,

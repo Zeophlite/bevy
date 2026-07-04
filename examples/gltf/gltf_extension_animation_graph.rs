@@ -19,7 +19,7 @@ use rand::{RngExt, SeedableRng};
 const GLTF_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 2000.,
@@ -127,7 +127,7 @@ fn setup_camera_and_environment(
 struct GltfExtensionHandlerAnimationPlugin;
 
 impl Plugin for GltfExtensionHandlerAnimationPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         #[cfg(target_family = "wasm")]
         bevy::tasks::block_on(async {
             app.world_mut()

@@ -6,7 +6,7 @@
 use bevy::{asset::io::web::WebAssetPlugin, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WebAssetPlugin {
             silence_startup_warning: true,
         }))

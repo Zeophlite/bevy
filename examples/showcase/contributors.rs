@@ -13,7 +13,7 @@ use std::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<SelectionTimer>()
         .init_resource::<SharedRng>()

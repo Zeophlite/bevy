@@ -62,7 +62,7 @@ enum DemoVec3Field {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, FeathersPlugins))
         .insert_resource(UiTheme(create_dark_theme()))
         .insert_resource(DemoWidgetStates {

@@ -99,7 +99,7 @@ const CAMERA_MOVEMENT_SPEED: f32 = 2.0;
 
 /// The entry point.
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app.add_plugins(DefaultPlugins)
         .add_plugins(MaterialPlugin::<ShowDepthTextureMaterial>::default())
@@ -111,7 +111,7 @@ fn main() {
         .add_systems(Update, move_camera);
 
     let render_app = app
-        .get_sub_app_mut(RenderApp)
+        .get_app_mut(RenderApp)
         .expect("Render app should be present");
 
     render_app.add_systems(

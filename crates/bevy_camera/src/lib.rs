@@ -12,13 +12,13 @@ pub use clear_color::*;
 pub use components::*;
 pub use projection::*;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 
 #[derive(Default)]
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<ClearColor>().add_plugins((
             CameraProjectionPlugin,
             visibility::VisibilityPlugin,

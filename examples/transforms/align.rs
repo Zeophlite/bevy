@@ -10,7 +10,7 @@ use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (draw_ship_axes, draw_random_axes))

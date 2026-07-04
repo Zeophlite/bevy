@@ -10,7 +10,7 @@ use rand::distr::Distribution;
 use rand::SeedableRng;
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     // By default, fallible systems that return an error will respond according to the `Severity`` in the error.
     // These will typically panic, unless `with_severity` is used to change the severity of the error.
     //

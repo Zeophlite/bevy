@@ -3,7 +3,7 @@ use crate::{
     line_joint_gizmo_vertex_buffer_layouts, DrawLineGizmo, DrawLineJointGizmo, GizmoRenderSystems,
     GpuLineGizmo, LineGizmoEntities, LineGizmoUniformBindgroupLayout, SetLineGizmoBindGroup,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{load_embedded_asset, AssetServer, Handle};
 use bevy_camera::visibility::RenderLayers;
 use bevy_core_pipeline::core_2d::{Transparent2d, CORE_2D_DEPTH_FORMAT};
@@ -37,8 +37,8 @@ use tracing::error;
 pub struct LineGizmo2dPlugin;
 
 impl Plugin for LineGizmo2dPlugin {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

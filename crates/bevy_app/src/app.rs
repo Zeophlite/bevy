@@ -1,6 +1,6 @@
 use crate::{
-    First, Main, MainSchedulePlugin, PlaceholderPlugin, Plugin, Plugins, PluginsState, SubApp,
-    SubApps,
+    First, Main, MainSchedulePlugin, PlaceholderPlugin, Plugin, Plugins, PluginsState, App,
+    Apps,
 };
 use alloc::{
     boxed::Box,
@@ -82,8 +82,8 @@ pub(crate) enum AppError {
 /// }
 /// ```
 #[must_use]
-pub struct App {
-    pub(crate) sub_apps: SubApps,
+pub struct Bevy {
+    pub(crate) apps: Apps,
     /// The function that will manage the app's lifecycle.
     ///
     /// Bevy provides the [`WinitPlugin`] and [`ScheduleRunnerPlugin`] for windowed and headless
@@ -95,20 +95,20 @@ pub struct App {
     fallback_error_handler: Option<ErrorHandler>,
 }
 
-impl Debug for App {
+impl Debug for Bevy {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "App {{ sub_apps: ")?;
         f.debug_map()
-            .entries(self.sub_apps.sub_apps.iter())
+            .entries(self.apps.apps.iter())
             .finish()?;
         write!(f, "}}")
     }
 }
 
-impl Default for App {
+impl Default for Bevy {
     fn default() -> Self {
-        let mut app = App::empty();
-        app.sub_apps.main.update_schedule = Some(Main.intern());
+        let mut app = Bevy::empty();
+        app.apps.main.update_schedule = Some(Main.intern());
 
         #[cfg(feature = "bevy_reflect")]
         {
@@ -139,21 +139,21 @@ impl Default for App {
     }
 }
 
-impl App {
+impl Bevy {
     /// Creates a new [`App`] with some default structure to enable core engine features.
     /// This is the preferred constructor for most use cases.
-    pub fn new() -> App {
-        App::default()
+    pub fn new() -> Bevy {
+        Bevy::default()
     }
 
     /// Creates a new empty [`App`] with minimal default configuration.
     ///
     /// Use this constructor if you want to customize scheduling, exit handling, cleanup, etc.
-    pub fn empty() -> App {
+    pub fn empty() -> Bevy {
         Self {
-            sub_apps: SubApps {
-                main: SubApp::new(),
-                sub_apps: HashMap::default(),
+            apps: Apps {
+                main: App::new(),
+                apps: HashMap::default(),
             },
             runner: Box::new(run_once),
             fallback_error_handler: None,
@@ -166,7 +166,7 @@ impl App {
             panic!("App::update() was called while a plugin was building.");
         }
 
-        self.sub_apps.update();
+        self.apps.update();
     }
 
     /// Runs the [`App`] by calling its [runner](Self::set_runner).
@@ -196,7 +196,7 @@ impl App {
         }
 
         let runner = core::mem::replace(&mut self.runner, Box::new(run_once));
-        let app = core::mem::replace(self, App::empty());
+        let app = core::mem::replace(self, Bevy::empty());
         (runner)(app)
     }
 
@@ -227,7 +227,7 @@ impl App {
     /// App::new()
     ///     .set_runner(my_runner);
     /// ```
-    pub fn set_runner(&mut self, f: impl FnOnce(App) -> AppExit + 'static) -> &mut Self {
+    pub fn set_runner(&mut self, f: impl FnOnce(Bevy) -> AppExit + 'static) -> &mut Self {
         self.runner = Box::new(f);
         self
     }
@@ -255,7 +255,7 @@ impl App {
         };
 
         // overall state is the earliest state of any sub-app
-        self.sub_apps.iter_mut().skip(1).for_each(|s| {
+        self.apps.iter_mut().skip(1).for_each(|s| {
             overall_plugins_state = overall_plugins_state.min(s.plugins_state());
         });
 
@@ -279,7 +279,7 @@ impl App {
             core::mem::swap(&mut self.main_mut().plugin_registry[i], &mut hokeypokey);
         }
         self.main_mut().plugins_state = PluginsState::Finished;
-        self.sub_apps.iter_mut().skip(1).for_each(SubApp::finish);
+        self.apps.iter_mut().skip(1).for_each(App::finish);
     }
 
     /// Runs [`Plugin::cleanup`] for each plugin. This is usually called by the event loop after
@@ -299,12 +299,12 @@ impl App {
             core::mem::swap(&mut self.main_mut().plugin_registry[i], &mut hokeypokey);
         }
         self.main_mut().plugins_state = PluginsState::Cleaned;
-        self.sub_apps.iter_mut().skip(1).for_each(SubApp::cleanup);
+        self.apps.iter_mut().skip(1).for_each(App::cleanup);
     }
 
     /// Returns `true` if any of the sub-apps are building plugins.
     pub(crate) fn is_building_plugins(&self) -> bool {
-        self.sub_apps.iter().any(SubApp::is_building_plugins)
+        self.apps.iter().any(App::is_building_plugins)
     }
 
     /// Adds one or more systems to the given schedule in this app's [`Schedules`].
@@ -668,7 +668,7 @@ impl App {
                 "Plugins cannot be added after App::cleanup() or App::finish() has been called."
             );
         }
-        plugins.add_to_app(self);
+        plugins.add_to_bevy(self);
         self
     }
 
@@ -1198,23 +1198,23 @@ impl App {
     }
 
     /// Returns a reference to the main [`SubApp`].
-    pub fn main(&self) -> &SubApp {
-        &self.sub_apps.main
+    pub fn main(&self) -> &App {
+        &self.apps.main
     }
 
     /// Returns a mutable reference to the main [`SubApp`].
-    pub fn main_mut(&mut self) -> &mut SubApp {
-        &mut self.sub_apps.main
+    pub fn main_mut(&mut self) -> &mut App {
+        &mut self.apps.main
     }
 
     /// Returns a reference to the [`SubApps`] collection.
-    pub fn sub_apps(&self) -> &SubApps {
-        &self.sub_apps
+    pub fn apps(&self) -> &Apps {
+        &self.apps
     }
 
     /// Returns a mutable reference to the [`SubApps`] collection.
-    pub fn sub_apps_mut(&mut self) -> &mut SubApps {
-        &mut self.sub_apps
+    pub fn apps_mut(&mut self) -> &mut Apps {
+        &mut self.apps
     }
 
     /// Returns a reference to the [`SubApp`] with the given label.
@@ -1222,9 +1222,9 @@ impl App {
     /// # Panics
     ///
     /// Panics if the [`SubApp`] doesn't exist.
-    pub fn sub_app(&self, label: impl AppLabel) -> &SubApp {
+    pub fn app(&self, label: impl AppLabel) -> &App {
         let str = label.intern();
-        self.get_sub_app(label).unwrap_or_else(|| {
+        self.get_app(label).unwrap_or_else(|| {
             panic!("No sub-app with label '{:?}' exists.", str);
         })
     }
@@ -1234,41 +1234,41 @@ impl App {
     /// # Panics
     ///
     /// Panics if the [`SubApp`] doesn't exist.
-    pub fn sub_app_mut(&mut self, label: impl AppLabel) -> &mut SubApp {
+    pub fn app_mut(&mut self, label: impl AppLabel) -> &mut App {
         let str = label.intern();
-        self.get_sub_app_mut(label).unwrap_or_else(|| {
+        self.get_app_mut(label).unwrap_or_else(|| {
             panic!("No sub-app with label '{:?}' exists.", str);
         })
     }
 
     /// Returns a reference to the [`SubApp`] with the given label, if it exists.
-    pub fn get_sub_app(&self, label: impl AppLabel) -> Option<&SubApp> {
-        self.sub_apps.sub_apps.get(&label.intern())
+    pub fn get_app(&self, label: impl AppLabel) -> Option<&App> {
+        self.apps.apps.get(&label.intern())
     }
 
     /// Returns a mutable reference to the [`SubApp`] with the given label, if it exists.
-    pub fn get_sub_app_mut(&mut self, label: impl AppLabel) -> Option<&mut SubApp> {
-        self.sub_apps.sub_apps.get_mut(&label.intern())
+    pub fn get_app_mut(&mut self, label: impl AppLabel) -> Option<&mut App> {
+        self.apps.apps.get_mut(&label.intern())
     }
 
     /// Inserts a [`SubApp`] with the given label.
-    pub fn insert_sub_app(&mut self, label: impl AppLabel, mut sub_app: SubApp) {
+    pub fn insert_app(&mut self, label: impl AppLabel, mut sub_app: App) {
         if let Some(handler) = self.fallback_error_handler {
             sub_app
                 .world_mut()
                 .get_resource_or_insert_with(|| FallbackErrorHandler(handler));
         }
-        self.sub_apps.sub_apps.insert(label.intern(), sub_app);
+        self.apps.apps.insert(label.intern(), sub_app);
     }
 
     /// Removes the [`SubApp`] with the given label, if it exists.
-    pub fn remove_sub_app(&mut self, label: impl AppLabel) -> Option<SubApp> {
-        self.sub_apps.sub_apps.remove(&label.intern())
+    pub fn remove_app(&mut self, label: impl AppLabel) -> Option<App> {
+        self.apps.apps.remove(&label.intern())
     }
 
     /// Extract data from the main world into the [`SubApp`] with the given label and perform an update if it exists.
-    pub fn update_sub_app_by_label(&mut self, label: impl AppLabel) {
-        self.sub_apps.update_subapp_by_label(label);
+    pub fn update_app_by_label(&mut self, label: impl AppLabel) {
+        self.apps.update_subapp_by_label(label);
     }
 
     /// Inserts a new `schedule` under the provided `label`, overwriting any existing
@@ -1516,7 +1516,7 @@ impl App {
             "`set_error_handler` called multiple times on same `App`"
         );
         self.fallback_error_handler = Some(handler);
-        for sub_app in self.sub_apps.iter_mut() {
+        for sub_app in self.apps.iter_mut() {
             sub_app
                 .world_mut()
                 .get_resource_or_insert_with(|| FallbackErrorHandler(handler));
@@ -1528,12 +1528,12 @@ impl App {
 // Used for doing hokey pokey in finish and cleanup
 pub(crate) struct HokeyPokey;
 impl Plugin for HokeyPokey {
-    fn build(&self, _: &mut App) {}
+    fn build(&self, _: &mut Bevy) {}
 }
 
-type RunnerFn = Box<dyn FnOnce(App) -> AppExit>;
+type RunnerFn = Box<dyn FnOnce(Bevy) -> AppExit>;
 
-fn run_once(mut app: App) -> AppExit {
+fn run_once(mut app: Bevy) -> AppExit {
     while app.plugins_state() == PluginsState::Adding {
         #[cfg(not(all(target_arch = "wasm32", feature = "web")))]
         bevy_tasks::tick_global_task_pools_on_main_thread();
@@ -1643,23 +1643,23 @@ mod tests {
         world::{FromWorld, World},
     };
 
-    use crate::{App, AppExit, Plugin, SubApp, Update};
+    use crate::{Bevy, AppExit, Plugin, App, Update};
 
     struct PluginA;
     impl Plugin for PluginA {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
     }
     struct PluginB;
     impl Plugin for PluginB {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
     }
     struct PluginC<T>(T);
     impl<T: Send + Sync + 'static> Plugin for PluginC<T> {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
     }
     struct PluginD;
     impl Plugin for PluginD {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
         fn is_unique(&self) -> bool {
             false
         }
@@ -1668,9 +1668,9 @@ mod tests {
     struct PluginE;
 
     impl Plugin for PluginE {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
 
-        fn finish(&self, app: &mut App) {
+        fn finish(&self, app: &mut Bevy) {
             if app.is_plugin_added::<PluginA>() {
                 panic!("cannot run if PluginA is already registered");
             }
@@ -1680,9 +1680,9 @@ mod tests {
     struct PluginF;
 
     impl Plugin for PluginF {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
 
-        fn finish(&self, app: &mut App) {
+        fn finish(&self, app: &mut Bevy) {
             // Ensure other plugins are available during finish
             assert_eq!(
                 app.is_plugin_added::<PluginA>(),
@@ -1690,7 +1690,7 @@ mod tests {
             );
         }
 
-        fn cleanup(&self, app: &mut App) {
+        fn cleanup(&self, app: &mut Bevy) {
             // Ensure other plugins are available during finish
             assert_eq!(
                 app.is_plugin_added::<PluginA>(),
@@ -1702,32 +1702,32 @@ mod tests {
     struct PluginG;
 
     impl Plugin for PluginG {
-        fn build(&self, _app: &mut App) {}
+        fn build(&self, _app: &mut Bevy) {}
 
-        fn finish(&self, app: &mut App) {
+        fn finish(&self, app: &mut Bevy) {
             app.add_plugins(PluginB);
         }
     }
 
     #[test]
     fn can_add_two_plugins() {
-        App::new().add_plugins((PluginA, PluginB));
+        Bevy::new().add_plugins((PluginA, PluginB));
     }
 
     #[test]
     #[should_panic]
     fn cant_add_twice_the_same_plugin() {
-        App::new().add_plugins((PluginA, PluginA));
+        Bevy::new().add_plugins((PluginA, PluginA));
     }
 
     #[test]
     fn can_add_twice_the_same_plugin_with_different_type_param() {
-        App::new().add_plugins((PluginC(0), PluginC(true)));
+        Bevy::new().add_plugins((PluginC(0), PluginC(true)));
     }
 
     #[test]
     fn can_add_twice_the_same_plugin_not_unique() {
-        App::new().add_plugins((PluginD, PluginD));
+        Bevy::new().add_plugins((PluginD, PluginD));
     }
 
     #[test]
@@ -1736,14 +1736,14 @@ mod tests {
         struct PluginRun;
         struct InnerPlugin;
         impl Plugin for InnerPlugin {
-            fn build(&self, _: &mut App) {}
+            fn build(&self, _: &mut Bevy) {}
         }
         impl Plugin for PluginRun {
-            fn build(&self, app: &mut App) {
+            fn build(&self, app: &mut Bevy) {
                 app.add_plugins(InnerPlugin).run();
             }
         }
-        App::new().add_plugins(PluginRun);
+        Bevy::new().add_plugins(PluginRun);
     }
 
     #[derive(ScheduleLabel, Hash, Clone, PartialEq, Eq, Debug)]
@@ -1762,7 +1762,7 @@ mod tests {
 
     #[test]
     fn add_systems_should_create_schedule_if_it_does_not_exist() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_systems(EnterMainMenu, (foo, bar));
 
         app.world_mut().run_schedule(EnterMainMenu);
@@ -1772,7 +1772,7 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_is_plugin_added_works_during_finish() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(PluginA);
         app.add_plugins(PluginE);
         app.finish();
@@ -1780,7 +1780,7 @@ mod tests {
 
     #[test]
     fn test_get_added_plugins_works_during_finish_and_cleanup() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(PluginA);
         app.add_plugins(PluginF);
         app.finish();
@@ -1788,7 +1788,7 @@ mod tests {
 
     #[test]
     fn test_adding_plugin_works_during_finish() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(PluginA);
         app.add_plugins(PluginG);
         app.finish();
@@ -1926,7 +1926,7 @@ mod tests {
         #[derive(Component, Copy, Clone)]
         struct Foo;
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.world_mut().spawn_batch(core::iter::repeat_n(Foo, 5));
 
         fn despawn_one_foo(mut commands: Commands, foos: Query<Entity, With<Foo>>) {
@@ -1960,18 +1960,18 @@ mod tests {
         #[derive(Resource)]
         struct Foo(usize);
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.world_mut().insert_resource(Foo(0));
         app.add_systems(Update, |mut foo: ResMut<Foo>| {
             foo.0 += 1;
         });
 
-        let mut sub_app = SubApp::new();
+        let mut sub_app = App::new();
         sub_app.set_extract(|main_world, _sub_world| {
             assert!(main_world.get_resource_ref::<Foo>().unwrap().is_changed());
         });
 
-        app.insert_sub_app(MySubApp, sub_app);
+        app.insert_app(MySubApp, sub_app);
 
         app.update();
     }
@@ -1986,7 +1986,7 @@ mod tests {
             exits.write(AppExit::from_code(73));
         }
 
-        let exit = App::new().add_systems(Update, raise_exits).run();
+        let exit = Bevy::new().add_systems(Update, raise_exits).run();
 
         assert_eq!(exit, AppExit::from_code(4));
     }
@@ -2003,7 +2003,7 @@ mod tests {
         #[derive(Resource)]
         struct MyState {}
 
-        fn my_runner(mut app: App) -> AppExit {
+        fn my_runner(mut app: Bevy) -> AppExit {
             let my_state = MyState {};
             app.world_mut().insert_resource(my_state);
 
@@ -2019,7 +2019,7 @@ mod tests {
         }
 
         // Should not panic due to missing resource
-        App::new()
+        Bevy::new()
             .set_runner(my_runner)
             .add_systems(PreUpdate, my_system)
             .run();
@@ -2054,7 +2054,7 @@ mod tests {
             }
         }
 
-        App::new()
+        Bevy::new()
             .init_non_send::<NonSendTestResource>()
             .init_resource::<TestResource>();
     }
@@ -2067,19 +2067,19 @@ mod tests {
         pub struct Foo;
 
         impl Plugin for Foo {
-            fn build(&self, app: &mut App) {
+            fn build(&self, app: &mut Bevy) {
                 assert!(!app.is_plugin_added::<Self>());
             }
         }
 
-        App::new().add_plugins(Foo);
+        Bevy::new().add_plugins(Foo);
     }
     #[test]
     fn events_should_be_updated_once_per_update() {
         #[derive(Message, Clone)]
         struct TestMessage;
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_message::<TestMessage>();
 
         // Starts empty
@@ -2113,7 +2113,7 @@ mod tests {
 
     #[test]
     fn auto_despawn_unused_registered_systems() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         fn my_system() {}
 

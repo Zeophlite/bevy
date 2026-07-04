@@ -7,7 +7,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .insert_resource(ClearColor(Color::srgb(0.5, 0.5, 0.9)))
         .add_systems(Startup, setup)

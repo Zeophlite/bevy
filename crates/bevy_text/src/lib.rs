@@ -109,7 +109,7 @@ pub struct Text2dUpdateSystems;
 pub struct EditableTextSystems;
 
 impl Plugin for TextPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         if !app.is_plugin_added::<bevy_clipboard::ClipboardPlugin>() {
             app.add_plugins(bevy_clipboard::ClipboardPlugin);
         }

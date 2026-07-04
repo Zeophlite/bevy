@@ -102,7 +102,7 @@ pub struct WindowPlugin {
 }
 
 impl Plugin for WindowPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // User convenience events
         app.add_message::<WindowEvent>()
             .add_message::<WindowResized>()

@@ -23,7 +23,7 @@ use bevy::{
     },
     log::LogPlugin,
     platform::collections::HashSet,
-    prelude::{App, In, IntoSystem, Query, Schedule, SystemParamBuilder, Update},
+    prelude::{Bevy, In, IntoSystem, Query, Schedule, SystemParamBuilder, Update},
     ptr::{OwningPtr, PtrMut},
     MinimalPlugins,
 };
@@ -77,7 +77,7 @@ fn base_system(access_components: In<Vec<ComponentId>>, mut query: Query<Filtere
 #[expect(unsafe_code, reason = "Using dynamic components requires unsafe")]
 fn stress_test(num_entities: u32, num_components: u32, num_systems: u32) {
     let mut rng = ChaCha8Rng::seed_from_u64(42);
-    let mut app = App::default();
+    let mut app = Bevy::default();
     let world = app.world_mut();
 
     // register a bunch of components

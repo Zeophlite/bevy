@@ -28,7 +28,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight::NONE)
         .add_plugins(DefaultPlugins)
         .add_systems(

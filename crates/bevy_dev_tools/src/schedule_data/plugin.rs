@@ -1,7 +1,7 @@
 //! Convenience plugin for automatically performing serialization of schedules on boot.
 use std::{fs::File, io::Write, path::PathBuf};
 
-use bevy_app::{App, Main, Plugin};
+use bevy_app::{Bevy, Main, Plugin};
 use bevy_ecs::{
     error::{BevyError, ResultSeverityExt, Severity},
     intern::Interned,
@@ -56,7 +56,7 @@ impl SerializeSchedulesPlugin {
 }
 
 impl Plugin for SerializeSchedulesPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<SerializeSchedulesFilePath>()
             .add_systems(
                 self.schedule,
@@ -135,7 +135,7 @@ fn collect_system_data(world: &mut World) -> Result<(), BevyError> {
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::{App, PostUpdate, Update};
+    use bevy_app::{Bevy, PostUpdate, Update};
 
     use crate::schedule_data::{
         plugin::collect_system_data_inner,
@@ -145,7 +145,7 @@ mod tests {
     #[test]
     fn collects_all_schedules() {
         // Start with an empty app so only our stuff gets added.
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         fn a() {}
         fn b() {}
@@ -177,7 +177,7 @@ mod tests {
         // safe than sorry!
 
         // Start with an empty app so only our stuff gets added.
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         fn a() {}
         app.add_systems(Update, a);

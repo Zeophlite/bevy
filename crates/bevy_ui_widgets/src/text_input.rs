@@ -7,7 +7,7 @@
 //! [`bevy_input`] to that crate, which is intended to be usable in non-interactive contexts.
 
 use bevy_a11y::AccessibilitySystems;
-use bevy_app::{App, Plugin, PostUpdate, PreUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate, PreUpdate};
 use bevy_ecs::prelude::*;
 use bevy_input::keyboard::{Key, KeyboardInput};
 use bevy_input::{ButtonInput, InputSystems};
@@ -486,7 +486,7 @@ pub enum ImeSystems {
 pub struct EditableTextInputPlugin;
 
 impl Plugin for EditableTextInputPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<QueuedSelectAll>()
             .add_observer(on_focused_keyboard_input)
             .add_observer(on_pointer_drag)

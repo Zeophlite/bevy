@@ -164,7 +164,7 @@ impl Default for AppStatus {
 fn main() {
     let render_debug_flags = RenderDebugFlags::ALLOW_COPIES_FROM_INDIRECT_PARAMETERS;
 
-    App::new()
+    Bevy::new()
         .add_plugins(
             DefaultPlugins
                 .set(WindowPlugin {
@@ -194,7 +194,7 @@ fn main() {
 }
 
 impl Plugin for ReadbackIndirectParametersPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // Create the `SavedIndirectParameters` resource that we're going to use
         // to communicate between the thread that the GPU-to-CPU readback
         // callback runs on and the main application threads. This resource is
@@ -205,7 +205,7 @@ impl Plugin for ReadbackIndirectParametersPlugin {
         app.insert_resource(saved_indirect_parameters.clone());
 
         // Fetch the render app.
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -50,7 +50,7 @@ pub use tracing::{
 };
 pub use tracing_subscriber;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use tracing_log::LogTracer;
 use tracing_subscriber::{layer::Layered, prelude::*, registry::Registry, EnvFilter, Layer};
 #[cfg(feature = "tracing-chrome")]
@@ -233,7 +233,7 @@ pub struct LogPlugin {
     /// [`Subscriber`](tracing::Subscriber) and the [`App`].
     ///
     /// Please see the `examples/app/log_layers.rs` for a complete example.
-    pub custom_layer: fn(app: &mut App) -> Option<BoxedLayer>,
+    pub custom_layer: fn(app: &mut Bevy) -> Option<BoxedLayer>,
 
     /// Override the default [`tracing_subscriber::fmt::Layer`] with a custom one.
     ///
@@ -246,7 +246,7 @@ pub struct LogPlugin {
     /// timestamp from the log output.
     ///
     /// Please see the `examples/app/log_layers.rs` for a complete example.
-    pub fmt_layer: fn(app: &mut App) -> Option<BoxedFmtLayer>,
+    pub fmt_layer: fn(app: &mut Bevy) -> Option<BoxedFmtLayer>,
 
     /// Whether to stream events to the Tracy profiler or collector. Only enable
     /// this if you actually intend to run the profiler; the enabled Tracy
@@ -303,7 +303,7 @@ impl Default for LogPlugin {
 }
 
 impl Plugin for LogPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         #[cfg(feature = "trace")]
         {
             let old_handler = std::panic::take_hook();

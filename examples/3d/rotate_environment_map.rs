@@ -13,7 +13,7 @@ use bevy::{
 
 /// Entry point.
 pub fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, rotate_skybox_and_environment_map)

@@ -11,7 +11,7 @@ use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, FreeCameraPlugin))
         .add_systems(Startup, setup)
         .run();

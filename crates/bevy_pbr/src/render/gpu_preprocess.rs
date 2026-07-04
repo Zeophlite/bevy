@@ -8,7 +8,7 @@
 
 use core::num::{NonZero, NonZeroU64};
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, Handle};
 use bevy_core_pipeline::{
     deferred::node::late_deferred_prepass,
@@ -395,15 +395,15 @@ type WithAnyPrepass = Or<(
 )>;
 
 impl Plugin for GpuMeshPreprocessPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "mesh_preprocess.wgsl");
         embedded_asset!(app, "reset_indirect_batch_sets.wgsl");
         embedded_asset!(app, "build_indirect_params.wgsl");
         embedded_asset!(app, "unpack_bins.wgsl");
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

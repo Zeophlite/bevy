@@ -128,7 +128,7 @@ const DECAL_ANIMATE_OUT_DURATION: Duration = Duration::from_millis(300);
 
 /// The demo entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(
             DefaultPlugins
                 .set(WebAssetPlugin {

@@ -1,4 +1,4 @@
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{
     component::Component,
     hierarchy::ChildOf,
@@ -126,7 +126,7 @@ fn on_scroll_into_view(
 pub struct ScrollAreaPlugin;
 
 impl Plugin for ScrollAreaPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(scrollarea_on_scroll)
             .add_observer(on_scroll_into_view);
     }

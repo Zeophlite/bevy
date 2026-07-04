@@ -39,7 +39,7 @@ struct AtmospherePresets {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(DefaultOpaqueRendererMethod::deferred())
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(GameState::default())

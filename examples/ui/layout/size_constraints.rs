@@ -3,7 +3,7 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_message::<ButtonActivated>()
         .add_systems(Startup, setup)

@@ -5,7 +5,7 @@ use crate::{
     renderer::{RenderAdapter, RenderDevice, RenderInstance},
     Extract, ExtractSchedule, GpuResourceAppExt, Render, RenderApp, RenderSystems,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::entity::EntityHashSet;
 use bevy_ecs::{entity::EntityHashMap, prelude::*};
 use bevy_log::{debug, info, warn};
@@ -28,10 +28,10 @@ use screenshot::ScreenshotPlugin;
 pub struct WindowRenderPlugin;
 
 impl Plugin for WindowRenderPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(ScreenshotPlugin);
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<ExtractedWindows>()
                 .init_gpu_resource::<WindowSurfaces>()

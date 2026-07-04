@@ -13,7 +13,7 @@ use bevy::camera_controller::pan_camera::{PanCamera, PanCameraPlugin};
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(PanCameraPlugin) // Adds the PanCamera plugin to enable camera panning and zooming controls.
         .add_systems(Startup, (setup, spawn_text).chain())

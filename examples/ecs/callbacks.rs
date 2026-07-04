@@ -7,7 +7,7 @@
 use bevy::{ecs::system::SystemId, prelude::*};
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_systems(Startup, setup_callbacks);
     app.add_systems(Update, run_callbacks);
     app.run();

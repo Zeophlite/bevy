@@ -162,13 +162,13 @@ static VERTICES: [Vertex; 3] = [
 
 /// The entry point.
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins(DefaultPlugins)
         .add_plugins(ExtractComponentPlugin::<CustomRenderedEntity>::default())
         .add_systems(Startup, setup);
 
     // We make sure to add these to the render app, not the main app.
-    app.sub_app_mut(RenderApp)
+    app.app_mut(RenderApp)
         .init_resource::<CustomPhasePipeline>()
         .init_resource::<PendingCustomPhaseItemQueues>()
         .add_render_command::<Opaque3d, DrawCustomPhaseItemCommands>()

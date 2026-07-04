@@ -43,7 +43,7 @@ struct Args {
 fn main() {
     let args: Args = argh::from_env();
 
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
     app.insert_resource(DlssProjectId(bevy_asset::uuid::uuid!(

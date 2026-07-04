@@ -22,7 +22,7 @@ use crate::schedule::Core2d;
 use crate::tonemapping::{tonemapping, DebandDither, Tonemapping};
 use crate::upscaling::upscaling;
 use crate::Core2dSystems;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::prelude::*;
 use bevy_math::FloatOrd;
 use bevy_render::{
@@ -49,7 +49,7 @@ pub const CORE_2D_DEPTH_FORMAT: TextureFormat = TextureFormat::Depth32Float;
 pub struct Core2dPlugin;
 
 impl Plugin for Core2dPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.register_required_components::<Camera2d, DebandDither>()
             .register_required_components_with::<Camera2d, CameraRenderGraph>(|| {
                 CameraRenderGraph::new(Core2d)
@@ -57,7 +57,7 @@ impl Plugin for Core2dPlugin {
             .register_required_components_with::<Camera2d, Tonemapping>(|| Tonemapping::None)
             .add_plugins(ExtractComponentPlugin::<Camera2d>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

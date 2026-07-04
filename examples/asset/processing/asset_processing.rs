@@ -17,7 +17,7 @@ use std::convert::Infallible;
 use thiserror::Error;
 
 fn main() {
-    App::new()
+    Bevy::new()
         // Using the "processed" mode will configure the AssetPlugin to use asset processing.
         // If you also enable the `asset_processor` cargo feature, this will run the AssetProcessor
         // in the background, run them through configured asset processors, and write the results to
@@ -53,7 +53,7 @@ fn main() {
 struct TextPlugin;
 
 impl Plugin for TextPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "examples/asset/processing/", "e.txt");
         app.init_asset::<CoolText>()
             .init_asset::<Text>()

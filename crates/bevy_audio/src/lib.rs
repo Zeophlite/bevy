@@ -79,7 +79,7 @@ pub struct AudioPlugin {
 }
 
 impl Plugin for AudioPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.insert_resource(self.global_volume)
             .insert_resource(DefaultSpatialScale(self.default_spatial_scale))
             .configure_sets(
@@ -104,7 +104,7 @@ impl Plugin for AudioPlugin {
     }
 }
 
-impl AddAudioSource for App {
+impl AddAudioSource for Bevy {
     fn add_audio_source<T>(&mut self) -> &mut Self
     where
         T: Decodable + Asset,

@@ -64,7 +64,7 @@ pub struct TimePlugin;
 pub struct TimeSystems;
 
 impl Plugin for TimePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<Time>()
             .init_resource::<Time<Real>>()
             .init_resource::<Time<Virtual>>()
@@ -196,7 +196,7 @@ pub fn time_system(
 #[expect(clippy::print_stdout, reason = "Allowed in tests.")]
 mod tests {
     use crate::{Fixed, Time, TimePlugin, TimeUpdateStrategy, Virtual};
-    use bevy_app::{App, FixedUpdate, Startup, Update};
+    use bevy_app::{Bevy, FixedUpdate, Startup, Update};
     use bevy_ecs::{
         message::{
             Message, MessageReader, MessageRegistry, MessageWriter, Messages, ShouldUpdateMessages,
@@ -258,7 +258,7 @@ mod tests {
         let fixed_update_timestep = Time::<Fixed>::default().timestep();
         let time_step = fixed_update_timestep / 2 + Duration::from_millis(1);
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(TimePlugin)
             .add_systems(FixedUpdate, count_fixed_updates)
             .add_systems(Update, report_time)
@@ -310,7 +310,7 @@ mod tests {
     fn events_get_dropped_regression_test_11528() -> Result<(), impl Error> {
         let (tx1, rx1) = std::sync::mpsc::channel();
         let (tx2, rx2) = std::sync::mpsc::channel();
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(TimePlugin)
             .add_message::<TestMessage<i32>>()
             .add_message::<TestMessage<()>>()
@@ -360,7 +360,7 @@ mod tests {
             messages.write(DummyMessage);
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(TimePlugin)
             .add_message::<DummyMessage>()
             .init_resource::<FixedUpdateCounter>()

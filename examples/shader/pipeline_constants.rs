@@ -22,7 +22,7 @@ use bevy::{
 const SHADER_ASSET_PATH: &str = "shaders/pipeline_constants.wgsl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins,
             Material2dPlugin::<PosterizeMaterial>::default(),

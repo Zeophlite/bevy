@@ -1,4 +1,4 @@
-use crate::{App, Plugin};
+use crate::{Bevy, Plugin};
 use alloc::{vec, vec::Vec};
 use bevy_ecs::{
     resource::Resource,
@@ -309,7 +309,7 @@ impl Main {
 pub struct MainSchedulePlugin;
 
 impl Plugin for MainSchedulePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // simple "facilitator" schedules benefit from simpler single threaded scheduling
         let mut main_schedule = Schedule::new(Main);
         main_schedule.set_executor(SingleThreadedExecutor::new());

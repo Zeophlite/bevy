@@ -39,7 +39,7 @@ use std::{any::TypeId, sync::Arc};
 const SHADER_ASSET_PATH: &str = "shaders/manual_material.wgsl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, ImageMaterialPlugin))
         .add_systems(Startup, setup)
         .run();
@@ -48,7 +48,7 @@ fn main() {
 struct ImageMaterialPlugin;
 
 impl Plugin for ImageMaterialPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<ImageMaterial>()
             .add_plugins(ErasedRenderAssetPlugin::<ImageMaterial>::default())
             .add_systems(
@@ -57,7 +57,7 @@ impl Plugin for ImageMaterialPlugin {
             )
             .init_resource::<EntitiesNeedingSpecialization<ImageMaterial>>();
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

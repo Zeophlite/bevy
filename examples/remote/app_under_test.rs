@@ -19,7 +19,7 @@ use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // To make the app available for integration testing, we add these
         // remote plugins to expose API’s for a testing framework to call.

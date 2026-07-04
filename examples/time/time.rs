@@ -32,7 +32,7 @@ fn help() {
     println!("  u: Unpause");
 }
 
-fn runner(mut app: App) -> AppExit {
+fn runner(mut app: Bevy) -> AppExit {
     banner();
     help();
     let stdin = io::stdin();
@@ -109,7 +109,7 @@ fn print_time(time: Res<Time>) {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(MinimalPlugins)
         .insert_resource(Time::<Virtual>::from_max_delta(Duration::from_secs(5)))
         .insert_resource(Time::<Fixed>::from_duration(Duration::from_secs(1)))

@@ -23,7 +23,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(bevy::log::LogPlugin {
             // Show logs all the way up to the trace level, but only for logs
             // produced by this example.
@@ -98,7 +98,7 @@ impl tracing::field::Visit for CaptureLayerVisitor<'_> {
         }
     }
 }
-fn custom_layer(app: &mut App) -> Option<BoxedLayer> {
+fn custom_layer(app: &mut Bevy) -> Option<BoxedLayer> {
     let (sender, receiver) = mpsc::channel();
 
     let layer = CaptureLayer { sender };

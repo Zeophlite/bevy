@@ -15,7 +15,7 @@
 //! To configure the settings of this controller, modify the fields of the [`FreeCamera`] component.
 // TODO: Discuss switching camera to orthographic mode.
 
-use bevy_app::{App, Plugin, RunFixedMainLoop, RunFixedMainLoopSystems};
+use bevy_app::{Bevy, Plugin, RunFixedMainLoop, RunFixedMainLoopSystems};
 use bevy_camera::Camera;
 use bevy_ecs::prelude::*;
 use bevy_input::keyboard::KeyCode;
@@ -41,7 +41,7 @@ use core::{f32::consts::*, fmt};
 pub struct FreeCameraPlugin;
 
 impl Plugin for FreeCameraPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // This ordering is required so that both fixed update and update systems can see the results correctly
         app.add_systems(
             RunFixedMainLoop,

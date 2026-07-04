@@ -17,7 +17,7 @@ use bevy::{
 use bevy::window::CompositeAlphaMode;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy Desk Toy".into(),

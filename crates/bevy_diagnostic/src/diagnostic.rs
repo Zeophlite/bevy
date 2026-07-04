@@ -4,7 +4,7 @@ use core::{
     time::Duration,
 };
 
-use bevy_app::{App, SubApp};
+use bevy_app::{Bevy, App};
 use bevy_ecs::resource::Resource;
 use bevy_ecs::system::{Deferred, Res, SystemBuffer, SystemParam};
 use bevy_platform::{collections::HashMap, hash::PassHash, time::Instant};
@@ -420,7 +420,7 @@ pub trait RegisterDiagnostic {
     fn register_diagnostic(&mut self, diagnostic: Diagnostic) -> &mut Self;
 }
 
-impl RegisterDiagnostic for SubApp {
+impl RegisterDiagnostic for App {
     fn register_diagnostic(&mut self, diagnostic: Diagnostic) -> &mut Self {
         self.init_resource::<DiagnosticsStore>();
         let mut diagnostics = self.world_mut().resource_mut::<DiagnosticsStore>();
@@ -430,9 +430,9 @@ impl RegisterDiagnostic for SubApp {
     }
 }
 
-impl RegisterDiagnostic for App {
+impl RegisterDiagnostic for Bevy {
     fn register_diagnostic(&mut self, diagnostic: Diagnostic) -> &mut Self {
-        SubApp::register_diagnostic(self.main_mut(), diagnostic);
+        App::register_diagnostic(self.main_mut(), diagnostic);
         self
     }
 }

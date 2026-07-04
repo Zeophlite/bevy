@@ -38,7 +38,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         // Input focus is not enabled by default, so we need to add the corresponding plugins
         // The navigation system's resources are initialized by the DirectionalNavigationPlugin.
         .add_plugins((DefaultPlugins, DirectionalNavigationPlugin))

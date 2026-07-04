@@ -272,7 +272,7 @@ impl GltfPlugin {
 }
 
 impl Plugin for GltfPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<Gltf>()
             .init_asset::<GltfNode>()
             .init_asset::<GltfPrimitive>()
@@ -283,7 +283,7 @@ impl Plugin for GltfPlugin {
             .init_resource::<GltfExtensionHandlers>();
     }
 
-    fn finish(&self, app: &mut App) {
+    fn finish(&self, app: &mut Bevy) {
         let supported_compressed_formats = if let Some(resource) =
             app.world().get_resource::<CompressedImageFormatSupport>()
         {

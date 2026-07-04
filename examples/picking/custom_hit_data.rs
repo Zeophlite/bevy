@@ -23,7 +23,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, MeshPickingPlugin))
         .insert_resource(MeshPickingSettings {
             require_markers: true,

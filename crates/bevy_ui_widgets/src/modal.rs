@@ -1,6 +1,6 @@
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{
     component::Component,
     event::EntityEvent,
@@ -132,7 +132,7 @@ fn modal_dialog_barrier_on_spawn(add: On<Add, ModalDialog>, mut commands: Comman
 pub struct ModalDialogPlugin;
 
 impl Plugin for ModalDialogPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(set_modal_dialog_tab_group_modal)
             .add_observer(modal_dialog_barrier_on_spawn)
             .add_observer(modal_dialog_barrier_on_click)

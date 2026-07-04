@@ -42,7 +42,7 @@ pub struct TonemappingLuts {
 pub struct TonemappingPlugin;
 
 impl Plugin for TonemappingPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "tonemapping_shared.wgsl");
         load_shader_library!(app, "lut_bindings.wgsl");
 
@@ -89,7 +89,7 @@ impl Plugin for TonemappingPlugin {
             ExtractComponentPlugin::<DebandDither>::default(),
         ));
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

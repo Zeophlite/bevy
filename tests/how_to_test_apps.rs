@@ -22,7 +22,7 @@ impl Default for Player {
 
 /// Splitting a Bevy project into multiple smaller plugins can make it more testable. We can
 /// write tests for individual plugins in isolation, as well as for the entire project.
-fn game_plugin(app: &mut App) {
+fn game_plugin(app: &mut Bevy) {
     app.add_systems(Startup, (spawn_player, window_title_system).chain());
     app.add_systems(Update, spell_casting);
 }
@@ -49,8 +49,8 @@ fn spell_casting(mut player: Query<&mut Player>, keyboard_input: Res<ButtonInput
     }
 }
 
-fn create_test_app() -> App {
-    let mut app = App::new();
+fn create_test_app() -> Bevy {
+    let mut app = Bevy::new();
 
     // Note the use of `MinimalPlugins` instead of `DefaultPlugins`, as described above.
     app.add_plugins(MinimalPlugins);

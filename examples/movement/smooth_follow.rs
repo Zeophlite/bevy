@@ -8,7 +8,7 @@ use chacha20::ChaCha8Rng;
 use rand::SeedableRng;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (move_target, move_follower).chain())

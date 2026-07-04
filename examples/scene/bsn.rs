@@ -2,7 +2,7 @@
 use bevy::{prelude::*, text::FontSourceTemplate};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, scene.spawn())
         .run();

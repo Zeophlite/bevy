@@ -16,7 +16,7 @@
 //! is optional -- the gizmo will use that camera automatically. When multiple cameras
 //! exist, the marker is required so the gizmo knows which one to use.
 
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_camera::Camera;
 use bevy_color::Color;
 use bevy_ecs::{
@@ -226,7 +226,7 @@ pub struct TransformGizmoMeshMarker {
 pub struct TransformGizmoPlugin;
 
 impl Plugin for TransformGizmoPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<TransformGizmoSettings>()
             .init_resource::<TransformGizmoState>()
             .register_type::<TransformGizmoFocus>()

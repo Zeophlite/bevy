@@ -7,7 +7,7 @@ use core::any::TypeId;
 use core::time::Duration;
 use std::collections::HashMap;
 
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_ecs::{
     change_detection::Tick,
     reflect::{AppTypeRegistry, ReflectComponent, ReflectResource},
@@ -122,7 +122,7 @@ impl SettingsPlugin {
 }
 
 impl Plugin for SettingsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let app_name = self.app_name.clone();
         let world = app.world();
         let last_save = world.read_change_tick();

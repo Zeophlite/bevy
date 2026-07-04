@@ -92,7 +92,7 @@ pub struct Args {
 pub fn main() {
     let args: Args = argh::from_env();
 
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app.init_resource::<CameraPositions>()
         .init_resource::<FrameLowHigh>()

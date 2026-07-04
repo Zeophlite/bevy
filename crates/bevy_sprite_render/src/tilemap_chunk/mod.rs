@@ -1,5 +1,5 @@
 use crate::{AlphaMode2d, MeshMaterial2d};
-use bevy_app::{App, Plugin, Update};
+use bevy_app::{Bevy, Plugin, Update};
 use bevy_asset::{Assets, Handle};
 use bevy_color::Color;
 use bevy_derive::{Deref, DerefMut};
@@ -36,7 +36,7 @@ pub use tile_orientation::*;
 pub struct TilemapChunkPlugin;
 
 impl Plugin for TilemapChunkPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<TilemapChunkMeshCache>()
             .add_systems(Update, update_tilemap_chunk_indices);
     }

@@ -14,7 +14,7 @@
 //!
 //! [Depth of field]: https://en.wikipedia.org/wiki/Depth_of_field
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_camera::{Camera3d, PhysicalCameraParameters, Projection};
 use bevy_derive::{Deref, DerefMut};
@@ -193,14 +193,14 @@ enum DofPass {
 }
 
 impl Plugin for DepthOfFieldPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "dof.wgsl");
 
         app.add_plugins(UniformComponentPlugin::<DepthOfFieldUniform>::default());
 
         app.add_plugins(SyncComponentPlugin::<DepthOfField>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -8,7 +8,7 @@
 use bevy::prelude::*;
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins(DefaultPlugins)
         .init_state::<AppState>() // Alternatively we could use .insert_state(AppState::Menu)
         .add_systems(Startup, setup)

@@ -20,7 +20,7 @@ use bevy_platform::cell::SyncCell;
 #[cfg(target_arch = "wasm32")]
 use core::cell::RefCell;
 
-use bevy_app::{App, Plugin, PostUpdate, PreStartup, PreUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate, PreStartup, PreUpdate};
 use bevy_ecs::entity::EntityHashMap;
 use bevy_ecs::prelude::*;
 use bevy_input::InputSystems;
@@ -88,7 +88,7 @@ pub struct GilrsPlugin;
 pub struct RumbleSystems;
 
 impl Plugin for GilrsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         match GilrsBuilder::new()
             .with_default_filters(false)
             .set_update_state(false)
@@ -122,7 +122,7 @@ mod tests {
     // Regression test for https://github.com/bevyengine/bevy/issues/17697
     #[test]
     fn world_is_truly_send() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(GilrsPlugin);
         let world = core::mem::take(app.world_mut());
 

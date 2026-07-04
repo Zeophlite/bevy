@@ -24,7 +24,7 @@ use crate::{check_entities_needing_specialization, MeshMaterial2d};
 pub struct SpriteMeshPlugin;
 
 impl Plugin for SpriteMeshPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         load_shader_library!(app, "sprite_bindings.wgsl");
         load_shader_library!(app, "sprite_functions.wgsl");
         load_shader_library!(app, "sprite_types.wgsl");

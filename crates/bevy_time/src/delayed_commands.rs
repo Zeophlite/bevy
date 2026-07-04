@@ -172,7 +172,7 @@ mod tests {
     use core::time::Duration;
     use std::println;
 
-    use bevy_app::{App, Startup};
+    use bevy_app::{Bevy, Startup};
     use bevy_ecs::{component::Component, system::Commands};
 
     use crate::{DelayedCommandsExt, TimePlugin, TimeUpdateStrategy};
@@ -196,7 +196,7 @@ mod tests {
             in_1_sec.spawn(DummyComponent);
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(TimePlugin)
             .add_systems(Startup, queue_commands)
             .insert_resource(TimeUpdateStrategy::ManualDuration(Duration::from_secs_f32(

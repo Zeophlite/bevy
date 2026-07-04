@@ -14,7 +14,7 @@ use rand::{RngExt, SeedableRng};
 const FOX_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 2000.,

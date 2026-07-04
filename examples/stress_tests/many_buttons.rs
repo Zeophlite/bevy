@@ -74,7 +74,7 @@ fn main() {
 
     warn!(include_str!("warning_string.txt"));
 
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app.add_plugins((
         DefaultPlugins.set(WindowPlugin {

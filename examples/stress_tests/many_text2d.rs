@@ -72,7 +72,7 @@ fn main() {
     #[cfg(target_arch = "wasm32")]
     let args = Args::from_args(&[], &[]).unwrap();
 
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app.add_plugins((
         FrameTimeDiagnosticsPlugin::default(),

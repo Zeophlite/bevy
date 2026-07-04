@@ -327,7 +327,7 @@ pub enum ExtractAppDataError {
 ///
 /// This is public to allow other test modules in this crate to use its utilities.
 pub mod tests {
-    use bevy_app::{App, Update};
+    use bevy_app::{Bevy, Update};
     use bevy_ecs::{
         component::Component,
         query::{With, Without},
@@ -341,7 +341,7 @@ pub mod tests {
         SystemConflict, SystemData, SystemSetData, SystemSetIndex,
     };
 
-    fn app_data_from_app(app: &mut App) -> Result<AppData, ExtractAppDataError> {
+    fn app_data_from_app(app: &mut Bevy) -> Result<AppData, ExtractAppDataError> {
         let schedules = app.world_mut().resource::<Schedules>();
         // TODO: This is a pain. It would be nice to be able to just hokey-pokey the whole
         // `Schedules` resource, but initializing a schedule writes to `Schedules`. Also we need to
@@ -562,7 +562,7 @@ pub mod tests {
 
     #[test]
     fn linear() {
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         fn a() {}
         fn b() {}
@@ -610,7 +610,7 @@ pub mod tests {
 
     #[test]
     fn linear_with_system_sets() {
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         app.configure_sets(Update, (MySet::<0>, MySet::<1>, MySet::<2>).chain());
 
@@ -642,7 +642,7 @@ pub mod tests {
 
     #[test]
     fn stack_of_system_sets() {
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         fn a() {}
 
@@ -680,7 +680,7 @@ pub mod tests {
 
     #[test]
     fn records_system_kind_flags() {
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         fn a0(_commands: Commands) {}
         fn a1(_commands: Commands) {}
@@ -768,7 +768,7 @@ pub mod tests {
 
     #[test]
     fn records_conflicts() {
-        let mut app = App::empty();
+        let mut app = Bevy::empty();
 
         // These two systems don't conflict.
         fn a0(_: Query<&MyComponent<0>>) {}

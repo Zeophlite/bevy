@@ -25,7 +25,7 @@ use crate::{
     GpuResourceAppExt, Render, RenderApp, RenderSystems,
 };
 use alloc::sync::{Arc, Weak};
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_color::{LinearRgba, Oklaba, Srgba};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{prelude::*, VariantDefaults};
@@ -167,7 +167,7 @@ pub fn texture_format_from_code(code: u8) -> Option<TextureFormat> {
 pub struct ViewPlugin;
 
 impl Plugin for ViewPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "view.wgsl");
 
         app
@@ -178,7 +178,7 @@ impl Plugin for ViewPlugin {
                 RenderVisibilityRangePlugin,
             ));
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.add_systems(
                 Render,
                 (
@@ -205,8 +205,8 @@ impl Plugin for ViewPlugin {
         }
     }
 
-    fn finish(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+    fn finish(&self, app: &mut Bevy) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<ViewUniforms>()
                 .init_gpu_resource::<ViewTargetAttachments>();

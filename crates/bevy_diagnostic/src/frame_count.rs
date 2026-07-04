@@ -25,7 +25,7 @@ pub struct FrameCount(pub u32);
 pub struct FrameCountPlugin;
 
 impl Plugin for FrameCountPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<FrameCount>();
         app.add_systems(Last, update_frame_count);
     }
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn frame_counter_update() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(FrameCountPlugin);
         app.update();
 

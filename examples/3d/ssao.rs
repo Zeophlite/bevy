@@ -11,7 +11,7 @@ use bevy::{
 use std::f32::consts::PI;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight {
             brightness: 1000.,
             ..default()

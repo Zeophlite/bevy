@@ -4,7 +4,7 @@
 use bevy::{app::PluginGroupBuilder, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             // Two PluginGroups that are included with bevy are DefaultPlugins and MinimalPlugins
             DefaultPlugins,
@@ -37,7 +37,7 @@ impl PluginGroup for HelloWorldPlugins {
 struct PrintHelloPlugin;
 
 impl Plugin for PrintHelloPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Update, print_hello_system);
     }
 }
@@ -49,7 +49,7 @@ fn print_hello_system() {
 struct PrintWorldPlugin;
 
 impl Plugin for PrintWorldPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Update, print_world_system);
     }
 }

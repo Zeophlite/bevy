@@ -761,7 +761,7 @@ pub fn enable_entities_on_enter_state<S: States>(
 mod tests {
     use super::*;
 
-    use bevy_app::App;
+    use bevy_app::Bevy;
 
     use crate::{
         app::{AppExtStates, StatesPlugin},
@@ -789,7 +789,7 @@ mod tests {
             }
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
 
         app.insert_state(State::On);
@@ -835,7 +835,7 @@ mod tests {
             On,
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
 
         app.insert_state(State::On);

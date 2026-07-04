@@ -26,7 +26,7 @@ impl Scaling {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (change_scale_direction, scale_cube))

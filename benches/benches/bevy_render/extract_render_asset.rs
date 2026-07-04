@@ -1,4 +1,4 @@
-use bevy_app::{App, AppLabel};
+use bevy_app::{Bevy, AppLabel};
 use bevy_asset::{Asset, AssetApp, AssetEvent, AssetId, Assets, RenderAssetUsages};
 use bevy_ecs::prelude::*;
 use bevy_reflect::TypePath;
@@ -41,7 +41,7 @@ fn extract_render_asset_bench(c: &mut Criterion) {
         group.throughput(Throughput::Elements(size as u64));
         group.bench_with_input(BenchmarkId::new("allocations", size), &size, |b, &size| {
             // --- ONCE PER BENCHMARK SCALE ---
-            let mut app = App::new();
+            let mut app = Bevy::new();
 
             app.add_plugins(bevy_asset::AssetPlugin::default());
             app.init_asset::<DummyAsset>();
@@ -72,7 +72,7 @@ fn extract_render_asset_bench(c: &mut Criterion) {
                             .write_message(AssetEvent::Modified { id: handle.id() });
                     }
 
-                    let bevy_app::SubApps { main, sub_apps } = app.sub_apps_mut();
+                    let bevy_app::Apps { main, apps: sub_apps } = app.apps_mut();
                     let render_app = sub_apps
                         .get_mut(&RenderApp.intern())
                         .expect("RenderApp should exist");

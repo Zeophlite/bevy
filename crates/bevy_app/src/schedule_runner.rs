@@ -1,5 +1,5 @@
 use crate::{
-    app::{App, AppExit},
+    app::{Bevy, AppExit},
     plugin::Plugin,
     PluginsState,
 };
@@ -71,9 +71,9 @@ impl ScheduleRunnerPlugin {
 }
 
 impl Plugin for ScheduleRunnerPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let run_mode = self.run_mode;
-        app.set_runner(move |mut app: App| {
+        app.set_runner(move |mut app: Bevy| {
             let plugins_state = app.plugins_state();
             if plugins_state != PluginsState::Cleaned {
                 while app.plugins_state() == PluginsState::Adding {
@@ -95,7 +95,7 @@ impl Plugin for ScheduleRunnerPlugin {
                     AppExit::Success
                 }
                 RunMode::Loop { wait } => {
-                    let tick = move |app: &mut App,
+                    let tick = move |app: &mut Bevy,
                                      _wait: Option<Duration>|
                           -> Result<Option<Duration>, AppExit> {
                         let start_time = Instant::now();

@@ -2,7 +2,7 @@
 
 use core::ops::Range;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{load_embedded_asset, AssetServer, Handle};
 use bevy_core_pipeline::{
     core_3d::{main_opaque_pass_3d, DEPTH_PREPASS_TEXTURE_SUPPORTED},
@@ -191,13 +191,13 @@ pub struct ScreenSpaceReflectionsPipelineKey {
 }
 
 impl Plugin for ScreenSpaceReflectionsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "ssr.wgsl");
         load_shader_library!(app, "raymarch.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<ScreenSpaceReflections>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

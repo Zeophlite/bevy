@@ -26,7 +26,7 @@ impl<S: Subscriber> Layer<S> for CustomLayer {
 
 // We don't need App for this example, as we are just printing log information.
 // For an example that uses App, see log_layers_ecs.
-fn custom_layer(_app: &mut App) -> Option<BoxedLayer> {
+fn custom_layer(_app: &mut Bevy) -> Option<BoxedLayer> {
     // You can provide multiple layers like this, since Vec<Layer> is also a layer:
     Some(Box::new(vec![
         bevy::log::tracing_subscriber::fmt::layer()
@@ -42,7 +42,7 @@ fn custom_layer(_app: &mut App) -> Option<BoxedLayer> {
 //
 // In this example, we're disabling the timestamp in the log output and enabling the alternative debugging format.
 // This formatting inserts newlines into logs that use the debug sigil (`?`) like `info!(foo=?bar)`
-fn fmt_layer(_app: &mut App) -> Option<BoxedFmtLayer> {
+fn fmt_layer(_app: &mut Bevy) -> Option<BoxedFmtLayer> {
     Some(Box::new(
         bevy::log::tracing_subscriber::fmt::Layer::default()
             .without_time()
@@ -52,7 +52,7 @@ fn fmt_layer(_app: &mut App) -> Option<BoxedFmtLayer> {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(bevy::log::LogPlugin {
             custom_layer,
             fmt_layer,

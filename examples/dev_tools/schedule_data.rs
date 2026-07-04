@@ -3,7 +3,7 @@
 use bevy::{dev_tools::schedule_data::plugin::*, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, SerializeSchedulesPlugin::default()))
         // This resource is only necessary to put the output in a nice spot for the example code.
         // By default, this lands at "<working directory>/app_data.ron".

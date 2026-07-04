@@ -23,7 +23,7 @@ use std::{num::NonZero, process::exit};
 const SHADER_ASSET_PATH: &str = "shaders/texture_binding_array.wgsl";
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins((
         DefaultPlugins.set(ImagePlugin::default_nearest()),
         GpuFeatureSupportChecker,
@@ -41,8 +41,8 @@ const TILE_ID: [usize; 16] = [
 struct GpuFeatureSupportChecker;
 
 impl Plugin for GpuFeatureSupportChecker {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

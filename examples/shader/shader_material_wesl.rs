@@ -15,7 +15,7 @@ use bevy::{
 const FRAGMENT_SHADER_ASSET_PATH: &str = "shaders/custom_material.wesl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins,
             MaterialPlugin::<CustomMaterial>::default(),
@@ -38,7 +38,7 @@ pub struct CustomMaterialPlugin;
 struct UtilityShader(Handle<Shader>);
 
 impl Plugin for CustomMaterialPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let handle = app
             .world_mut()
             .resource_mut::<AssetServer>()

@@ -3,7 +3,7 @@ use criterion::{criterion_group, Criterion};
 use glam::Mat4;
 use std::{path::Path, time::Duration};
 
-use bevy_app::App;
+use bevy_app::Bevy;
 use bevy_asset::{
     asset_value,
     io::{
@@ -369,7 +369,7 @@ fn raw_ui() -> impl Bundle {
 }
 
 /// Fork of `bevy_asset::tests::run_app_until`.
-fn run_app_until(app: &mut App, mut predicate: impl FnMut() -> bool) {
+fn run_app_until(app: &mut Bevy, mut predicate: impl FnMut() -> bool) {
     const LARGE_ITERATION_COUNT: usize = 10000;
     for _ in 0..LARGE_ITERATION_COUNT {
         app.update();
@@ -381,8 +381,8 @@ fn run_app_until(app: &mut App, mut predicate: impl FnMut() -> bool) {
     panic!("Ran out of loops to return `Some` from `predicate`");
 }
 
-fn bench_app(before: impl FnOnce(&mut App), after: impl FnOnce(&mut App)) -> App {
-    let mut app = App::new();
+fn bench_app(before: impl FnOnce(&mut Bevy), after: impl FnOnce(&mut Bevy)) -> Bevy {
+    let mut app = Bevy::new();
     before(&mut app);
     app.add_plugins((
         bevy_app::TaskPoolPlugin::default(),
@@ -395,7 +395,7 @@ fn bench_app(before: impl FnOnce(&mut App), after: impl FnOnce(&mut App)) -> App
     app
 }
 
-fn in_memory_asset_source(dir: Dir, app: &mut App) {
+fn in_memory_asset_source(dir: Dir, app: &mut Bevy) {
     app.register_asset_source(
         AssetSourceId::Default,
         AssetSourceBuilder::new(move || Box::new(MemoryAssetReader { root: dir.clone() })),

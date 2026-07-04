@@ -28,7 +28,7 @@ mod draw;
 mod draw_state;
 mod rangefinder;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::entity::EntityHash;
 use bevy_platform::collections::{hash_map::Entry, HashMap};
@@ -1513,8 +1513,8 @@ where
     BPI: BinnedPhaseItem,
     GFBD: GetFullBatchData + Sync + Send + 'static,
 {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -1634,8 +1634,8 @@ where
     SPI: SortedPhaseItem + CachedRenderPipelinePhaseItem,
     GFBD: GetFullBatchData + Sync + Send + 'static,
 {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -3,7 +3,7 @@ use crate::{
     renderer::{RenderDevice, RenderQueue},
     GpuResourceAppExt, Render, RenderApp, RenderSystems,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{component::Component, prelude::*};
 use core::{marker::PhantomData, ops::Deref};
 
@@ -39,8 +39,8 @@ impl<C> Default for UniformComponentPlugin<C> {
 }
 
 impl<C: Component + ShaderType + WriteInto + Clone> Plugin for UniformComponentPlugin<C> {
-    fn build(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+    fn build(&self, app: &mut Bevy) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<ComponentUniforms<C>>()
                 .add_systems(

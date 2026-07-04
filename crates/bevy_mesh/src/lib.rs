@@ -14,7 +14,7 @@ pub mod morph;
 pub mod primitives;
 pub mod skinning;
 mod vertex;
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_asset::{AssetApp, AssetEventSystems};
 use bevy_ecs::schedule::IntoScheduleConfigs;
 use bitflags::bitflags;
@@ -60,7 +60,7 @@ bitflags! {
 pub struct MeshPlugin;
 
 impl Plugin for MeshPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<Mesh>()
             .init_asset::<skinning::SkinnedMeshInverseBindposes>()
             .register_asset_reflect::<Mesh>()

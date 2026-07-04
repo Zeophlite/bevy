@@ -141,14 +141,14 @@ pub fn load_font_assets_into_font_collection(
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::{App, Update};
+    use bevy_app::{Bevy, Update};
     use bevy_asset::Assets;
 
     use super::*;
 
     #[test]
     fn font_asset_registration_and_cleanup() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.init_resource::<Assets<Font>>()
             .init_resource::<FontCx>()
             .add_systems(Update, load_font_assets_into_font_collection);

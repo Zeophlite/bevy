@@ -37,7 +37,7 @@ use crate::{
     prelude::{AnimatableProperty, EvaluatorId},
 };
 
-use bevy_app::{AnimationSystems, App, Plugin, PostUpdate};
+use bevy_app::{AnimationSystems, Bevy, Plugin, PostUpdate};
 use bevy_asset::{Asset, AssetApp, AssetEventSystems, Assets};
 use bevy_ecs::{prelude::*, resource::IsResource, world::EntityMutExcept};
 use bevy_math::FloatOrd;
@@ -1278,7 +1278,7 @@ pub fn animate_targets(
 pub struct AnimationPlugin;
 
 impl Plugin for AnimationPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<AnimationClip>()
             .init_asset::<AnimationGraph>()
             .init_asset_loader::<AnimationGraphAssetLoader>()

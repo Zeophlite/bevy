@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use std::time::Duration;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_message::<PlayPitch>()
         .add_systems(Startup, setup)

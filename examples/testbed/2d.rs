@@ -22,7 +22,7 @@ fn main() {
     #[cfg(target_arch = "wasm32")]
     let args: Args = Args::from_args(&[], &[]).unwrap();
 
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins((DefaultPlugins,))
         .add_systems(OnEnter(Scene::Shapes), shapes::setup)
         .add_systems(OnEnter(Scene::Bloom), bloom::setup)

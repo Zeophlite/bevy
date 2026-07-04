@@ -13,7 +13,7 @@ use bevy::{
 use std::path::Path;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, EmbeddedAssetPlugin))
         .add_systems(Startup, setup)
         .run();
@@ -22,7 +22,7 @@ fn main() {
 struct EmbeddedAssetPlugin;
 
 impl Plugin for EmbeddedAssetPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // We get to choose some prefix relative to the workspace root which
         // will be ignored in "embedded://" asset paths.
         let omit_prefix = "examples/asset";

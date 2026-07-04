@@ -74,7 +74,7 @@ use bevy_reflect::{prelude::*, Reflect};
 pub struct DirectionalNavigationPlugin;
 
 impl Plugin for DirectionalNavigationPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<DirectionalNavigationMap>()
             .init_resource::<AutoNavigationConfig>();
     }

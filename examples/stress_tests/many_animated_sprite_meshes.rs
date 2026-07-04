@@ -19,7 +19,7 @@ use rand::RngExt;
 const CAMERA_SPEED: f32 = 1000.0;
 
 fn main() {
-    App::new()
+    Bevy::new()
         // Since this is also used as a benchmark, we want it to display performance data.
         .add_plugins((
             LogDiagnosticsPlugin::default(),

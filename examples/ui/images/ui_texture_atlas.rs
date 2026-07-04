@@ -3,7 +3,7 @@
 use bevy::{color::palettes::css::*, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(
             // This sets image filtering to nearest
             // This is done to prevent textures with low resolution (e.g. pixel art) from being blurred

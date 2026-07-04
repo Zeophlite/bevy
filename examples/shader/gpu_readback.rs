@@ -26,7 +26,7 @@ const SHADER_ASSET_PATH: &str = "shaders/gpu_readback.wgsl";
 const BUFFER_LEN: usize = 16;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins,
             GpuReadbackPlugin,
@@ -42,8 +42,8 @@ fn main() {
 // We need a plugin to organize all the systems and render node required for this example
 struct GpuReadbackPlugin;
 impl Plugin for GpuReadbackPlugin {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

@@ -248,7 +248,7 @@ pub enum DiagnosticsOverlaySystems {
 pub struct DiagnosticsOverlayPlugin;
 
 impl Plugin for DiagnosticsOverlayPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<DiagnosticsOverlayStyle>();
         app.configure_sets(Update, DiagnosticsOverlaySystems::Rebuild);
         app.add_systems(PreStartup, build_plane);

@@ -7,7 +7,7 @@
 //! This is a general solution that works for any background: skyboxes, atmospheric sky,
 //! solid color backgrounds, etc.
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_ecs::{
     component::Component,
@@ -93,19 +93,19 @@ impl BackgroundMotionVectorsPlugin {
 }
 
 impl Plugin for BackgroundMotionVectorsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "background_motion_vectors.wgsl");
         app.register_type::<NoBackgroundMotionVectors>()
             .add_plugins(ExtractComponentPlugin::<NoBackgroundMotionVectors>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app.init_gpu_resource::<PreviousViewUniforms>();
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

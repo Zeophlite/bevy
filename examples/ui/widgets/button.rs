@@ -8,7 +8,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // `InputFocus` must be set for accessibility to recognize the button.
         .init_resource::<InputFocus>()

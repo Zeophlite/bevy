@@ -42,7 +42,7 @@ use bevy_app::Plugin;
 pub struct ControlsPlugin;
 
 impl Plugin for ControlsPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.add_plugins((
             AlphaPatternPlugin,
             ButtonPlugin,

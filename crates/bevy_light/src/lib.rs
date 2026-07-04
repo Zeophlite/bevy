@@ -4,7 +4,7 @@
 
 extern crate alloc;
 
-use bevy_app::{App, Plugin, PostUpdate, Update};
+use bevy_app::{Bevy, Plugin, PostUpdate, Update};
 use bevy_asset::{AssetApp, AssetEventSystems};
 use bevy_camera::{
     primitives::{Aabb, CascadesFrusta, CubemapFrusta, Frustum, Sphere},
@@ -163,7 +163,7 @@ pub mod light_consts {
 pub struct LightPlugin;
 
 impl Plugin for LightPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<GlobalAmbientLight>()
             .init_resource::<DirectionalLightShadowMap>()
             .init_resource::<PointLightShadowMap>()

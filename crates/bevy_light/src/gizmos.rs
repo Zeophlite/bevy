@@ -133,7 +133,7 @@ fn rect_light_gizmo(
 pub struct LightGizmoPlugin;
 
 impl Plugin for LightGizmoPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.init_gizmo_group::<LightGizmoConfigGroup>().add_systems(
             PostUpdate,
             (

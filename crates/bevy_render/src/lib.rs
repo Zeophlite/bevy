@@ -96,7 +96,7 @@ use crate::{
 };
 use alloc::sync::Arc;
 use batching::gpu_preprocessing::BatchingPlugin;
-use bevy_app::{App, AppLabel, Plugin, SubApp};
+use bevy_app::{Bevy, AppLabel, Plugin, App};
 use bevy_asset::{AssetApp, AssetServer};
 use bevy_derive::Deref;
 use bevy_ecs::{
@@ -233,7 +233,7 @@ pub trait GpuResourceAppExt {
     fn init_gpu_resource<R: Resource + FromWorld>(&mut self) -> &mut Self;
 }
 
-impl GpuResourceAppExt for SubApp {
+impl GpuResourceAppExt for App {
     fn init_gpu_resource<R: Resource + FromWorld>(&mut self) -> &mut Self {
         self.add_systems(RenderStartup, init_gpu_resource::<R>.ambiguous_with_all())
     }
@@ -347,7 +347,7 @@ pub struct RenderApp;
 
 impl Plugin for RenderPlugin {
     /// Initializes the renderer, sets up the [`RenderSystems`] and creates the rendering sub-app.
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<Shader>()
             .init_asset_loader::<ShaderLoader>();
         load_shader_library!(app, "utils.wgsl");
@@ -387,7 +387,7 @@ impl Plugin for RenderPlugin {
         let asset_server = app.world().resource::<AssetServer>().clone();
         app.init_resource::<RenderAssetBytesPerFrame>()
             .init_resource::<RenderErrorHandler>();
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.init_resource::<RenderScheduleOrder>();
             render_app.init_resource::<RenderAssetBytesPerFrameLimiter>();
             render_app.init_gpu_resource::<renderer::PendingCommandBuffers>();
@@ -435,7 +435,7 @@ impl Plugin for RenderPlugin {
         }
     }
 
-    fn ready(&self, app: &App) -> bool {
+    fn ready(&self, app: &Bevy) -> bool {
         // This is a little tricky. `FutureRenderResources` is added in `build`, which runs synchronously before `ready`.
         // It is only added if there is a wgpu backend and thus the renderer can be created.
         // Hence, if we try and get the resource and it is not present, that means we are ready, because we dont need it.
@@ -450,11 +450,11 @@ impl Plugin for RenderPlugin {
             .unwrap_or(true)
     }
 
-    fn finish(&self, app: &mut App) {
+    fn finish(&self, app: &mut Bevy) {
         if let Some(future_render_resources) =
             app.world_mut().remove_resource::<FutureRenderResources>()
         {
-            let bevy_app::SubApps { main, sub_apps } = app.sub_apps_mut();
+            let bevy_app::Apps { main, apps: sub_apps } = app.apps_mut();
             let render = sub_apps.get_mut(&RenderApp.intern()).unwrap();
             let render_resources = future_render_resources.0.lock().unwrap().take().unwrap();
 

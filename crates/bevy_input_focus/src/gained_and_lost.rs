@@ -108,7 +108,7 @@ mod tests {
     use super::*;
     use alloc::vec;
     use alloc::vec::Vec;
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_ecs::observer::On;
     use bevy_input::InputPlugin;
 
@@ -122,8 +122,8 @@ mod tests {
     #[derive(Resource, Default)]
     struct FocusEventLog(Vec<FocusEvent>);
 
-    fn setup_app() -> App {
-        let mut app = App::new();
+    fn setup_app() -> Bevy {
+        let mut app = Bevy::new();
         app.add_plugins((InputPlugin, super::super::InputFocusPlugin));
         app.init_resource::<FocusEventLog>();
 
@@ -141,7 +141,7 @@ mod tests {
     }
 
     // Convenience method to extract and clear the log values for assertions
-    fn take_log(app: &mut App) -> Vec<FocusEvent> {
+    fn take_log(app: &mut Bevy) -> Vec<FocusEvent> {
         core::mem::take(&mut app.world_mut().resource_mut::<FocusEventLog>().0)
     }
 

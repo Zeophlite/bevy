@@ -8,7 +8,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         // By default, a primary window is spawned by `WindowPlugin`, contained in `DefaultPlugins`.
         // The primary window is given the `PrimaryWindow` marker component.
         .add_plugins(DefaultPlugins.set(WindowPlugin {

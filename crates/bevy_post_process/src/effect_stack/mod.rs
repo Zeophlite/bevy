@@ -19,7 +19,7 @@ use crate::effect_stack::chromatic_aberration::{
     DefaultChromaticAberrationLut, DEFAULT_CHROMATIC_ABERRATION_LUT_DATA,
 };
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{
     embedded_asset, load_embedded_asset, AssetServer, Assets, Handle, RenderAssetUsages,
 };
@@ -123,7 +123,7 @@ pub struct PostProcessingUniformBufferOffsets {
 }
 
 impl Plugin for EffectStackPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "chromatic_aberration.wgsl");
         load_shader_library!(app, "lens_distortion.wgsl");
         load_shader_library!(app, "vignette.wgsl");
@@ -148,7 +148,7 @@ impl Plugin for EffectStackPlugin {
             .add_plugins(ExtractComponentPlugin::<LensDistortion>::default())
             .add_plugins(ExtractComponentPlugin::<Vignette>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

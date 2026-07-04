@@ -11,7 +11,7 @@
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_state::<GameState>()
         .add_systems(Startup, setup_camera)

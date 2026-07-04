@@ -12,7 +12,7 @@ use crate::{
     ExtractSchedule, MainWorld, Render, RenderApp, RenderSystems,
 };
 use async_channel::{Receiver, Sender};
-use bevy_app::{App, First, Plugin};
+use bevy_app::{Bevy, First, Plugin};
 use bevy_asset::Handle;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -50,7 +50,7 @@ impl Default for GpuReadbackPlugin {
 }
 
 impl Plugin for GpuReadbackPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(ExtractComponentPlugin::<Readback>::default())
             .register_type::<ReadbackOnce>()
             .add_systems(
@@ -58,7 +58,7 @@ impl Plugin for GpuReadbackPlugin {
                 cleanup_readback_once.after(bevy_ecs::message::MessageUpdateSystems),
             );
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<GpuReadbackBufferPool>()
                 .init_resource::<GpuReadbacks>()

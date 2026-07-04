@@ -1,7 +1,7 @@
 //! Manages mesh vertex and index buffers.
 
 use alloc::borrow::Cow;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::AssetId;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -194,8 +194,8 @@ pub struct ElementLayout {
 }
 
 impl Plugin for MeshAllocatorPlugin {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -209,8 +209,8 @@ impl Plugin for MeshAllocatorPlugin {
             );
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -4,7 +4,7 @@
 use bevy::{audio::Volume, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (cycle_game_state, fade_in, fade_out))

@@ -2,7 +2,7 @@ use crate::{
     init_mesh_2d_pipeline, DrawMesh2d, Mesh2dPipeline, Mesh2dPipelineKey, RenderMesh2dInstances,
     SetMesh2dBindGroup, SetMesh2dViewBindGroup, ViewKeyCache,
 };
-use bevy_app::{App, Plugin, PostUpdate, Startup, Update};
+use bevy_app::{Bevy, Plugin, PostUpdate, Startup, Update};
 use bevy_asset::{
     embedded_asset, load_embedded_asset, prelude::AssetChanged, AsAssetId, Asset, AssetApp,
     AssetEventSystems, AssetId, AssetServer, Assets, Handle, UntypedAssetId,
@@ -78,7 +78,7 @@ impl Wireframe2dPlugin {
 }
 
 impl Plugin for Wireframe2dPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "wireframe2d.wgsl");
 
         app.add_plugins((
@@ -107,7 +107,7 @@ impl Plugin for Wireframe2dPlugin {
                 .run_if(resource_exists::<Wireframe2dConfig>),
         );
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

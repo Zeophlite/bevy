@@ -7,7 +7,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(MeshPickingPlugin)
         // Enable the FPS overlay with a high resolution refresh interval. This makes it

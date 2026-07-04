@@ -2,7 +2,7 @@ mod node;
 mod phase;
 mod texture;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_camera::Camera3d;
 use bevy_core_pipeline::{
     core_3d::{main_opaque_pass_3d, main_transparent_pass_3d},
@@ -28,13 +28,13 @@ use crate::{DrawMaterial, MeshPipelineKey};
 pub struct ScreenSpaceTransmissionPlugin;
 
 impl Plugin for ScreenSpaceTransmissionPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "transmission.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<ScreenSpaceTransmission>::default())
             .register_required_components::<Camera3d, ScreenSpaceTransmission>();
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -19,7 +19,7 @@ use crate::mip_generation::experimental::depth::{
 use crate::prepass::node::late_prepass;
 use crate::schedule::{Core3d, Core3dSystems};
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId, Assets, Handle};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -252,7 +252,7 @@ pub struct DownsamplingConstants {
 pub struct MipGenerationPlugin;
 
 impl Plugin for MipGenerationPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "experimental/downsample_depth.wgsl");
         embedded_asset!(app, "downsample.wgsl");
 
@@ -283,7 +283,7 @@ impl Plugin for MipGenerationPlugin {
         };
         app.insert_resource(downsample_shaders.clone());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -327,8 +327,8 @@ impl Plugin for MipGenerationPlugin {
             );
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

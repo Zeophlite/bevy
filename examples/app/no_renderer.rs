@@ -10,7 +10,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(
             DefaultPlugins.set(RenderPlugin {
                 render_creation: WgpuSettings {

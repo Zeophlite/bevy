@@ -106,7 +106,7 @@ static FOX_ASSET_PATH: &str = "models/animated/Fox.glb";
 
 /// The app entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy Mirror Example".into(),

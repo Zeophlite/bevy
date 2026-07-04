@@ -1,6 +1,6 @@
 use core::marker::PhantomData;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{
     bundle::{Bundle, NoBundleEffect},
     component::Component,
@@ -46,7 +46,7 @@ pub trait SyncComponent<F = ()>: Component {
 }
 
 impl<C: SyncComponent<F>, F: Send + Sync + 'static> Plugin for SyncComponentPlugin<C, F> {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.register_required_components::<C, SyncToRenderWorld>();
 
         app.world_mut()

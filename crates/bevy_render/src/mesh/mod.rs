@@ -13,7 +13,7 @@ use crate::{
     Render, RenderApp, RenderSystems,
 };
 use allocator::MeshAllocatorPlugin;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{AssetId, Assets, Handle, RenderAssetUsages};
 use bevy_camera::primitives::MeshAabb;
 use bevy_ecs::{
@@ -38,7 +38,7 @@ use crate::mesh::morph::RenderMorphTargetAllocator;
 pub struct MeshRenderAssetPlugin;
 
 impl Plugin for MeshRenderAssetPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "mesh_metadata_types.wgsl");
 
         app
@@ -46,7 +46,7 @@ impl Plugin for MeshRenderAssetPlugin {
             .add_plugins(RenderAssetPlugin::<RenderMesh, GpuImage>::default())
             .add_plugins(MeshAllocatorPlugin);
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -60,7 +60,7 @@ impl Plugin for MeshRenderAssetPlugin {
             );
     }
 
-    fn finish(&self, app: &mut App) {
+    fn finish(&self, app: &mut Bevy) {
         let mut mesh_assets = app.world_mut().resource_mut::<Assets<Mesh>>();
         let handle = mesh_assets.add(
             Mesh::new(PrimitiveTopology::PointList, RenderAssetUsages::all())
@@ -72,7 +72,7 @@ impl Plugin for MeshRenderAssetPlugin {
                 .compressed_mesh(MeshAttributeCompressionFlags::COMPRESS_POSITION, false),
         );
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -84,7 +84,7 @@ mod tests {
     use alloc::{vec, vec::Vec};
     use core::f32::consts::TAU;
 
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_ecs::{hierarchy::ChildOf, system::SystemState};
     use bevy_math::{Quat, Vec3};
 
@@ -116,7 +116,7 @@ mod tests {
     }
 
     fn match_transform_propagation_systems_inner(transforms: Vec<Transform>) {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(TransformPlugin);
 
         let mut entity = None;

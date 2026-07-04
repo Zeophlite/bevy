@@ -103,7 +103,7 @@ mod tests {
         prelude::DespawnOnEnter,
         state::{ComputedStates, StateTransition},
     };
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_ecs::component::Component;
     use bevy_state_macros::States;
 
@@ -126,7 +126,7 @@ mod tests {
 
     #[test]
     fn computed_states_are_state_scoped_by_default() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
         app.insert_state(TestState);
         app.add_computed_state::<TestComputedState>();

@@ -15,7 +15,7 @@ use bevy_a11y::{
     AccessibilityNode, AccessibilityRequested, AccessibilitySystems,
     ActionRequest as ActionRequestWrapper, ManageAccessibilityUpdates,
 };
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{entity::EntityHashMap, prelude::*, system::NonSendMarker};
 use bevy_window::{PrimaryWindow, Window, WindowClosed};
@@ -309,7 +309,7 @@ fn add_children_nodes(
 pub struct AccessKitPlugin;
 
 impl Plugin for AccessKitPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<WinitActionRequestHandlers>()
             .add_message::<ActionRequestWrapper>()
             .add_systems(

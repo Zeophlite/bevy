@@ -3,7 +3,7 @@
 //! See [`OcclusionCulling`] for a detailed description of occlusion culling in
 //! Bevy.
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{component::Component, entity::Entity, prelude::ReflectComponent};
 use bevy_reflect::{prelude::ReflectDefault, Reflect};
 use bevy_shader::load_shader_library;
@@ -17,7 +17,7 @@ use crate::{extract_component::ExtractComponent, render_resource::TextureView};
 pub struct OcclusionCullingPlugin;
 
 impl Plugin for OcclusionCullingPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "mesh_preprocess_types.wgsl");
     }
 }

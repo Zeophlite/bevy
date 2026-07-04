@@ -5,7 +5,7 @@
 use bevy::{math::ops, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, fade_transparency)

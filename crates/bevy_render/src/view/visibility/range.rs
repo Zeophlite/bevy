@@ -2,7 +2,7 @@
 //! as *hierarchical levels of detail* or *HLOD*s.
 
 use super::VisibilityRange;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{
     entity::Entity,
     lifecycle::RemovedComponents,
@@ -43,8 +43,8 @@ const VISIBILITY_RANGE_UNIFORM_BUFFER_SIZE: usize = 64;
 pub struct RenderVisibilityRangePlugin;
 
 impl Plugin for RenderVisibilityRangePlugin {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -20,7 +20,7 @@
 
 use core::{num::NonZero, ops::Deref};
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{AssetId, Handle};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_derive::{Deref, DerefMut};
@@ -158,12 +158,12 @@ impl Default for DecalsBuffer {
 }
 
 impl Plugin for ClusteredDecalPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "clustered.wgsl");
 
         app.add_plugins(SyncComponentPlugin::<ClusteredDecal, Self>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

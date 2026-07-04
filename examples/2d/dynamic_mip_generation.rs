@@ -206,7 +206,7 @@ struct RegenerateImage;
 
 /// The application entry point.
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins((
         DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
@@ -245,7 +245,7 @@ fn main() {
     // Because `MipGenerationJobs` is part of the render app, we need to add the
     // associated systems to that app, not the main one.
 
-    let render_app = app.get_sub_app_mut(RenderApp).expect("Need a render app");
+    let render_app = app.get_app_mut(RenderApp).expect("Need a render app");
 
     render_app.add_systems(Core2d, generate_mips_for_example);
 

@@ -14,7 +14,7 @@ use bevy::{
 use serde::{Deserialize, Serialize};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(AssetPlugin {
             // This is just overriding the default asset paths to scope this to the correct example
             // folder. You can generally skip this in your own projects.
@@ -233,7 +233,7 @@ impl AssetLoader for ManyBoxesLoader {
 /// Plugin for doing all the box-editing.
 ///
 /// This doesn't really have anything to do with asset saving, but provides a real use-case.
-fn box_editing_plugin(app: &mut App) {
+fn box_editing_plugin(app: &mut Bevy) {
     app.add_systems(Startup, setup)
         .add_observer(spawn_box)
         .add_observer(start_rotate_box_hue)

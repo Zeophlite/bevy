@@ -22,7 +22,7 @@ use bevy::{
 };
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins(DefaultPlugins).add_systems(Startup, setup);
 
     app.run();

@@ -27,7 +27,7 @@ use bevy::anti_alias::dlss::{
 };
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     #[cfg(all(feature = "dlss", not(feature = "force_disable_dlss")))]
     app.insert_resource(DlssProjectId(bevy_asset::uuid::uuid!(

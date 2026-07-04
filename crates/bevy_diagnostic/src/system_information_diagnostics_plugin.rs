@@ -22,7 +22,7 @@ use bevy_ecs::resource::Resource;
 #[derive(Default)]
 pub struct SystemInformationDiagnosticsPlugin;
 impl Plugin for SystemInformationDiagnosticsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         internal::setup_plugin(app);
     }
 }
@@ -82,7 +82,7 @@ mod internal {
         sync::Arc,
     };
     use atomic_waker::AtomicWaker;
-    use bevy_app::{App, First, Startup, Update};
+    use bevy_app::{Bevy, First, Startup, Update};
     use bevy_ecs::resource::Resource;
     use bevy_ecs::{prelude::ResMut, system::Commands};
     use bevy_platform::{cell::SyncCell, time::Instant};
@@ -103,7 +103,7 @@ mod internal {
     /// schedule. If enough time has passed since the last refresh, it sends [`SysinfoRefreshData`]
     /// through a channel. The [`read_diagnostic_task`] system receives this data during the
     /// [`Update`] schedule and adds it as diagnostic measurements.
-    pub(super) fn setup_plugin(app: &mut App) {
+    pub(super) fn setup_plugin(app: &mut Bevy) {
         app.add_systems(Startup, setup_system)
             .add_systems(First, wake_diagnostic_task)
             .add_systems(Update, read_diagnostic_task);
@@ -288,9 +288,9 @@ mod internal {
 )))]
 mod internal {
     use alloc::string::ToString;
-    use bevy_app::{App, Startup};
+    use bevy_app::{Bevy, Startup};
 
-    pub(super) fn setup_plugin(app: &mut App) {
+    pub(super) fn setup_plugin(app: &mut Bevy) {
         app.add_systems(Startup, setup_system);
     }
 

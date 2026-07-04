@@ -7,7 +7,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: None,
             exit_condition: ExitCondition::DontExit,

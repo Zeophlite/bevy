@@ -1,5 +1,5 @@
 use crate::{AlphaMode2d, Material2d, Material2dPlugin, TileData};
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, embedded_path, Asset, AssetPath, Handle, RenderAssetUsages};
 use bevy_color::ColorToPacked;
 use bevy_image::{Image, ImageSampler, ToExtents};
@@ -13,7 +13,7 @@ use bytemuck::{Pod, Zeroable};
 pub struct TilemapChunkMaterialPlugin;
 
 impl Plugin for TilemapChunkMaterialPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "tilemap_chunk_material.wgsl");
 
         app.add_plugins(Material2dPlugin::<TilemapChunkMaterial>::default());

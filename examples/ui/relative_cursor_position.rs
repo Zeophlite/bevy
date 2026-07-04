@@ -3,7 +3,7 @@
 use bevy::{camera::Viewport, prelude::*, ui::RelativeCursorPosition};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, relative_cursor_position_system)

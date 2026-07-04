@@ -213,7 +213,7 @@ use alloc::{
     sync::Arc,
     vec::Vec,
 };
-use bevy_app::{App, Plugin, PostUpdate, PreUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate, PreUpdate};
 use bevy_ecs::{prelude::Component, schedule::common_conditions::resource_exists};
 use bevy_ecs::{
     reflect::AppTypeRegistry,
@@ -350,7 +350,7 @@ impl AssetPlugin {
 }
 
 impl Plugin for AssetPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let embedded = EmbeddedAssetRegistry::default();
         {
             let mut sources = app
@@ -606,7 +606,7 @@ pub trait AssetApp {
     fn preregister_asset_loader<L: AssetLoader>(&mut self, extensions: &[&str]) -> &mut Self;
 }
 
-impl AssetApp for App {
+impl AssetApp for Bevy {
     fn register_asset_loader<L: AssetLoader>(&mut self, loader: L) -> &mut Self {
         self.world()
             .resource::<AssetServer>()
@@ -750,7 +750,7 @@ mod tests {
         vec::Vec,
     };
     use async_channel::{Receiver, Sender};
-    use bevy_app::{App, TaskPoolPlugin, Update};
+    use bevy_app::{Bevy, TaskPoolPlugin, Update};
     use bevy_diagnostic::{DiagnosticsPlugin, DiagnosticsStore};
     use bevy_ecs::{
         message::MessageCursor,
@@ -924,8 +924,8 @@ mod tests {
     }
 
     /// Creates a basic asset app and an in-memory file system.
-    pub(crate) fn create_app() -> (App, Dir) {
-        let mut app = App::new();
+    pub(crate) fn create_app() -> (Bevy, Dir) {
+        let mut app = Bevy::new();
         let dir = Dir::default();
         let dir_clone = dir.clone();
         let dir_clone2 = dir.clone();
@@ -954,8 +954,8 @@ mod tests {
         (app, dir)
     }
 
-    fn create_app_with_gate(dir: Dir) -> (App, GateOpener) {
-        let mut app = App::new();
+    fn create_app_with_gate(dir: Dir) -> (Bevy, GateOpener) {
+        let mut app = Bevy::new();
         let (gated_memory_reader, gate_opener) = GatedReader::new(MemoryAssetReader { root: dir });
         app.register_asset_source(
             AssetSourceId::Default,
@@ -973,7 +973,7 @@ mod tests {
         (app, gate_opener)
     }
 
-    pub fn run_app_until(app: &mut App, mut predicate: impl FnMut(&mut World) -> Option<()>) {
+    pub fn run_app_until(app: &mut Bevy, mut predicate: impl FnMut(&mut World) -> Option<()>) {
         for _ in 0..LARGE_ITERATION_COUNT {
             app.update();
             if predicate(app.world_mut()).is_some() {
@@ -1913,7 +1913,7 @@ mod tests {
         dir.insert_asset_text(Path::new(a_path), a_ron);
         let unstable_reader = UnstableMemoryAssetReader::new(dir, 2);
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.register_asset_source(
             AssetSourceId::Default,
             AssetSourceBuilder::new(move || {
@@ -2118,7 +2118,7 @@ mod tests {
     #[derive(Asset, TypePath)]
     pub struct TupleTestAsset(#[dependency] Handle<TestAsset>);
 
-    fn unapproved_path_setup(mode: UnapprovedPathMode) -> App {
+    fn unapproved_path_setup(mode: UnapprovedPathMode) -> Bevy {
         let dir = Dir::default();
         let a_path = "../a.cool.ron";
         let a_ron = r#"
@@ -2131,7 +2131,7 @@ mod tests {
 
         dir.insert_asset_text(Path::new(a_path), a_ron);
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         let memory_reader = MemoryAssetReader { root: dir };
         app.register_asset_source(
             AssetSourceId::Default,
@@ -2367,8 +2367,8 @@ mod tests {
 
     // Creates a basic app with the default asset source engineered to get back the asset event
     // sender.
-    fn create_app_with_source_event_sender() -> (App, Dir, Sender<AssetSourceEvent>) {
-        let mut app = App::new();
+    fn create_app_with_source_event_sender() -> (Bevy, Dir, Sender<AssetSourceEvent>) {
+        let mut app = Bevy::new();
         let dir = Dir::default();
         let memory_reader = MemoryAssetReader { root: dir.clone() };
 

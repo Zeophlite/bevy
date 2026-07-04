@@ -109,7 +109,7 @@ impl GamepadButtonBundle {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<ButtonMaterials>()
         .init_resource::<ButtonMeshes>()

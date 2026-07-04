@@ -11,7 +11,7 @@
 //! This module provides realtime filtering via [`bevy_light::GeneratedEnvironmentMapLight`].
 //! For prefiltered environment maps, see [`bevy_light::EnvironmentMapLight`].
 //! These components are intended to be added to a camera.
-use bevy_app::{App, Plugin, Update};
+use bevy_app::{Bevy, Plugin, Update};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Assets, RenderAssetUsages};
 use bevy_core_pipeline::mip_generation::{self, DownsampleShaders, DownsamplingConstants};
 use bevy_ecs::{
@@ -101,9 +101,9 @@ pub struct DownsamplingConfig {
 pub struct EnvironmentMapGenerationPlugin;
 
 impl Plugin for EnvironmentMapGenerationPlugin {
-    fn build(&self, _: &mut App) {}
-    fn finish(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+    fn build(&self, _: &mut Bevy) {}
+    fn finish(&self, app: &mut Bevy) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             let adapter = render_app.world().resource::<RenderAdapter>();
             let device = render_app.world().resource::<RenderDevice>();
 
@@ -131,7 +131,7 @@ impl Plugin for EnvironmentMapGenerationPlugin {
         app.add_plugins(SyncComponentPlugin::<GeneratedEnvironmentMapLight, Self>::default())
             .add_systems(Update, generate_environment_map_light);
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

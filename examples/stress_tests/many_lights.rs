@@ -17,7 +17,7 @@ use bevy::{
 use rand::{rng, RngExt};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
@@ -150,8 +150,8 @@ fn print_light_count(time: Res<Time>, mut timer: Local<PrintingTimer>, lights: Q
 struct LogVisibleLights;
 
 impl Plugin for LogVisibleLights {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

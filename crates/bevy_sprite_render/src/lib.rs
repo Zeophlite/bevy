@@ -61,7 +61,7 @@ pub enum SpriteSystems {
 }
 
 impl Plugin for SpriteRenderPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "render/sprite_view_bindings.wgsl");
 
         embedded_asset!(app, "render/sprite.wgsl");
@@ -88,7 +88,7 @@ impl Plugin for SpriteRenderPlugin {
 
         app.register_required_components::<Sprite, SyncToRenderWorld>();
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<ImageBindGroups>()
                 .init_gpu_resource::<SpecializedRenderPipelines<SpritePipeline>>()

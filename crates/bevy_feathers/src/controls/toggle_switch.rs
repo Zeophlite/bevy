@@ -425,7 +425,7 @@ fn set_switch_styles(
 pub struct ToggleSwitchPlugin;
 
 impl Plugin for ToggleSwitchPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (update_switch_styles, update_switch_styles_remove).in_set(PickingSystems::Last),

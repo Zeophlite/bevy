@@ -19,7 +19,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             // We want to intercept the exit so that we can save settings.
             exit_condition: ExitCondition::DontExit,

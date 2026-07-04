@@ -33,7 +33,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, DirectionalNavigationPlugin))
         // This resource is canonically used to track whether or not to render a focus indicator
         // It starts as false, but we set it to true here as we would like to see the focus indicator

@@ -36,7 +36,7 @@ const CUBEMAPS: &[(&str, CompressedImageFormats)] = &[
 ];
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(FreeCameraPlugin)
         .add_systems(Startup, setup)

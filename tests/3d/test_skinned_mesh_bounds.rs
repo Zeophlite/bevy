@@ -13,7 +13,7 @@ use bevy::{
 use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Test Skinned Mesh Bounds".into(),

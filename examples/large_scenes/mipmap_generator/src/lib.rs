@@ -123,7 +123,7 @@ fn format_bytes_size(size_in_bytes: usize) -> String {
 
 pub struct MipmapGeneratorPlugin;
 impl Plugin for MipmapGeneratorPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         if let Some(image_plugin) = app
             .init_resource::<MipmapGenerationProgress>()
             .get_added_plugins::<ImagePlugin>()
@@ -143,7 +143,7 @@ impl Plugin for MipmapGeneratorPlugin {
 pub struct MipmapGeneratorDebugTextPlugin;
 #[cfg(feature = "debug_text")]
 impl Plugin for MipmapGeneratorDebugTextPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.insert_resource(self.clone())
             .add_systems(Startup, init_loading_text)
             .add_systems(Update, update_loading_text);

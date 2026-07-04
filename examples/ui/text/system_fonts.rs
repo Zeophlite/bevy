@@ -6,7 +6,7 @@ use bevy::{
 };
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins((DefaultPlugins, FrameTimeDiagnosticsPlugin::default()))
         .add_systems(Startup, setup);
 

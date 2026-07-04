@@ -17,7 +17,7 @@ use crate::{
     bloom::BloomPlugin, dof::DepthOfFieldPlugin, effect_stack::EffectStackPlugin,
     motion_blur::MotionBlurPlugin, msaa_writeback::MsaaWritebackPlugin,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_shader::load_shader_library;
 
 /// Adds bloom, motion blur, depth of field, and chromatic aberration support.
@@ -25,7 +25,7 @@ use bevy_shader::load_shader_library;
 pub struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "gaussian_blur.wgsl");
 
         app.add_plugins((

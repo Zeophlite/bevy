@@ -926,7 +926,7 @@ pub use scene_patch::*;
 pub use spawn::*;
 pub use spawn_system::*;
 
-use bevy_app::{App, Plugin, SceneSpawnerSystems, SpawnScene};
+use bevy_app::{Bevy, Plugin, SceneSpawnerSystems, SpawnScene};
 use bevy_asset::AssetApp;
 use bevy_ecs::prelude::*;
 
@@ -1068,7 +1068,7 @@ pub use bevy_scene_macros::SceneComponent;
 pub struct ScenePlugin;
 
 impl Plugin for ScenePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<QueuedScenes>()
             .init_resource::<WaitingScenes>()
             .init_asset::<ScenePatch>()
@@ -1089,7 +1089,7 @@ mod tests {
     use crate::{self as bevy_scene, ScenePlugin};
     use crate::{prelude::*, ScenePatch};
     use alloc::sync::Arc;
-    use bevy_app::{App, TaskPoolPlugin};
+    use bevy_app::{Bevy, TaskPoolPlugin};
     use bevy_asset::io::memory::{Dir, MemoryAssetReader};
     use bevy_asset::io::{AssetSourceBuilder, AssetSourceId};
     use bevy_asset::{Asset, AssetApp, AssetLoader, AssetPlugin, AssetServer, Assets, Handle};
@@ -1104,8 +1104,8 @@ mod tests {
     use std::path::Path;
     use std::sync::Mutex;
 
-    fn test_app() -> App {
-        let mut app = App::new();
+    fn test_app() -> Bevy {
+        let mut app = Bevy::new();
         app.add_plugins((
             TaskPoolPlugin::default(),
             AssetPlugin::default(),
@@ -1225,7 +1225,7 @@ mod tests {
             value: usize,
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         let dir = Dir::default();
         let dir_clone = dir.clone();
         app.register_asset_source(
@@ -2632,7 +2632,7 @@ mod tests {
         assert_eq!(current_entities, world.entities().len());
     }
 
-    fn run_app_until(app: &mut App, mut predicate: impl FnMut() -> bool) {
+    fn run_app_until(app: &mut Bevy, mut predicate: impl FnMut() -> bool) {
         const LARGE_ITERATION_COUNT: usize = 10000;
         for _ in 0..LARGE_ITERATION_COUNT {
             app.update();

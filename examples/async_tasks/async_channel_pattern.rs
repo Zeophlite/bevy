@@ -20,7 +20,7 @@ const NUM_CUBES: i32 = 6;
 const LIGHT_RADIUS: f32 = 8.0;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(
             Startup,

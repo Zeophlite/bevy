@@ -1,5 +1,5 @@
 use approx::relative_eq;
-use bevy_app::{App, AppExit, PluginsState};
+use bevy_app::{Bevy, AppExit, PluginsState};
 use bevy_ecs::{
     change_detection::{DetectChanges, Res},
     entity::Entity,
@@ -50,7 +50,7 @@ use crate::{
 /// [`UpdateMode`].
 pub(crate) struct WinitAppRunnerState {
     /// The running app.
-    app: App,
+    app: Bevy,
     /// Exit value once the loop is finished.
     app_exit: Option<AppExit>,
     /// Current update mode of the app.
@@ -95,7 +95,7 @@ pub(crate) struct WinitAppRunnerState {
 }
 
 impl WinitAppRunnerState {
-    fn new(mut app: App) -> Self {
+    fn new(mut app: Bevy) -> Self {
         let windows_system_state: SystemState<
             Query<(&mut Window, &mut CachedWindow, &mut WinitWindowPressedKeys)>,
         > = SystemState::new(app.world_mut());
@@ -882,7 +882,7 @@ impl WinitAppRunnerState {
 ///
 /// Overriding the app's [runner](bevy_app::App::runner) while using `WinitPlugin` will bypass the
 /// `EventLoop`.
-pub fn winit_runner(mut app: App, event_loop: EventLoop<WinitUserEvent>) -> AppExit {
+pub fn winit_runner(mut app: Bevy, event_loop: EventLoop<WinitUserEvent>) -> AppExit {
     if app.plugins_state() == PluginsState::Ready {
         app.finish();
         app.cleanup();
@@ -1086,8 +1086,8 @@ mod tests {
     fn setup_react_to_scale_factor_change_test_app(
         initial_scale_factor: f32,
         changed_scale_factor: f64,
-    ) -> (App, Entity) {
-        let mut app = App::new();
+    ) -> (Bevy, Entity) {
+        let mut app = Bevy::new();
         app.add_message::<WindowBackendScaleFactorChanged>();
         app.add_message::<WindowScaleFactorChanged>();
         app.add_message::<BevyWindowEvent>();
@@ -1207,8 +1207,8 @@ mod tests {
     fn setup_react_to_resize(
         initial_size: PhysicalSize<u32>,
         changed_size: PhysicalSize<u32>,
-    ) -> (App, Entity) {
-        let mut app = App::new();
+    ) -> (Bevy, Entity) {
+        let mut app = Bevy::new();
         app.add_message::<WindowResized>();
         app.add_message::<BevyWindowEvent>();
         app.add_systems(

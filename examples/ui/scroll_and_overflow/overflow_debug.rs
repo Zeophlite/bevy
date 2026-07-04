@@ -8,7 +8,7 @@ const CONTAINER_SIZE: f32 = 150.0;
 const LOOP_LENGTH: f32 = 4.0;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<AnimationState>()
         .add_systems(Startup, setup)

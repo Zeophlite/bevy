@@ -10,7 +10,7 @@ use chacha20::ChaCha8Rng;
 use rand::{RngExt, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_systems(Startup, (setup, spawn_fake_player).chain())
         .add_systems(Update, (update_tilemap, move_player, log_tile))

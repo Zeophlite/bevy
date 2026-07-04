@@ -94,7 +94,7 @@ struct Compressed<T> {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_asset::<GzAsset>()
         .init_asset_loader::<GzAssetLoader>()

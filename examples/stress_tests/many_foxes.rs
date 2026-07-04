@@ -51,7 +51,7 @@ fn main() {
     #[cfg(target_arch = "wasm32")]
     let args = Args::from_args(&[], &[]).unwrap();
 
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins
                 .set(WindowPlugin {

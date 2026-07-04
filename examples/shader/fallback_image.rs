@@ -13,7 +13,7 @@ use bevy::{
 const SHADER_ASSET_PATH: &str = "shaders/fallback_image_test.wgsl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins,
             MaterialPlugin::<FallbackTestMaterial>::default(),

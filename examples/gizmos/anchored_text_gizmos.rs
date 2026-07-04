@@ -7,7 +7,7 @@ use bevy::color::palettes::css::{BLUE, GREEN, ORANGE, RED, YELLOW};
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup_camera)
         .add_systems(Update, anchors)

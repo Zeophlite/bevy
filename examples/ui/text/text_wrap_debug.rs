@@ -31,7 +31,7 @@ fn main() {
         Window::default()
     };
 
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(window),
             ..Default::default()

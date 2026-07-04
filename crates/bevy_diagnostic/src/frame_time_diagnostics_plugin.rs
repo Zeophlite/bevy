@@ -36,7 +36,7 @@ impl FrameTimeDiagnosticsPlugin {
 }
 
 impl Plugin for FrameTimeDiagnosticsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.register_diagnostic(
             Diagnostic::new(Self::FRAME_TIME)
                 .with_suffix("ms")

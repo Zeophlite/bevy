@@ -1,5 +1,5 @@
 use crate::FullscreenShader;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_camera::CompositingSpace;
 use bevy_ecs::prelude::*;
@@ -18,10 +18,10 @@ use bevy_utils::default;
 pub struct BlitPlugin;
 
 impl Plugin for BlitPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "blit.wgsl");
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

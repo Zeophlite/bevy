@@ -16,7 +16,7 @@ use pipelines_ready::*;
 // will transition to the scene we just loaded.
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // `PipelinesReadyPlugin` is declared in the `pipelines_ready` module below.
         .add_plugins(PipelinesReadyPlugin)
@@ -281,7 +281,7 @@ mod pipelines_ready {
 
     pub struct PipelinesReadyPlugin;
     impl Plugin for PipelinesReadyPlugin {
-        fn build(&self, app: &mut App) {
+        fn build(&self, app: &mut Bevy) {
             app.insert_resource(PipelinesReady::default());
 
             // In order to gain access to the pipelines status, we have to
@@ -289,7 +289,7 @@ mod pipelines_ready {
             // and then update the pipelines status from there.
             // Writing between these Apps can only be done through the
             // `ExtractSchedule`.
-            app.sub_app_mut(RenderApp)
+            app.app_mut(RenderApp)
                 .add_systems(ExtractSchedule, update_pipelines_ready);
         }
     }

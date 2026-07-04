@@ -18,7 +18,7 @@ use crate::{
 use anyhow::Result as AnyhowResult;
 use async_channel::{Receiver, Sender};
 use async_io::Async;
-use bevy_app::{App, Plugin, Startup};
+use bevy_app::{Bevy, Plugin, Startup};
 use bevy_ecs::resource::Resource;
 #[cfg(feature = "bevy_render")]
 use bevy_ecs::schedule::IntoScheduleConfigs as _;
@@ -133,7 +133,7 @@ impl Default for RemoteHttpPlugin {
 }
 
 impl Plugin for RemoteHttpPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.insert_resource(HostAddress(self.address))
             .insert_resource(HostPort(self.port))
             .insert_resource(HostHeaders(self.headers.clone()))
@@ -143,7 +143,7 @@ impl Plugin for RemoteHttpPlugin {
         {
             use bevy_ecs::schedule::common_conditions::run_once;
 
-            let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+            let Some(render_app) = app.get_app_mut(RenderApp) else {
                 return;
             };
 

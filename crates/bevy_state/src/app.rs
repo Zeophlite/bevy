@@ -1,4 +1,4 @@
-use bevy_app::{App, MainScheduleOrder, Plugin, PreStartup, PreUpdate, SubApp};
+use bevy_app::{Bevy, MainScheduleOrder, Plugin, PreStartup, PreUpdate, App};
 use bevy_ecs::{message::Messages, schedule::IntoScheduleConfigs, world::FromWorld};
 use bevy_utils::once;
 use log::warn;
@@ -84,7 +84,7 @@ pub trait AppExtStates {
 }
 
 /// Separate function to only warn once for all state installation methods.
-fn warn_if_no_states_plugin_installed(app: &SubApp) {
+fn warn_if_no_states_plugin_installed(app: &App) {
     if !app.is_plugin_added::<StatesPlugin>() {
         once!(warn!(
             "States were added to the app, but `StatesPlugin` is not installed."
@@ -92,7 +92,7 @@ fn warn_if_no_states_plugin_installed(app: &SubApp) {
     }
 }
 
-impl AppExtStates for SubApp {
+impl AppExtStates for App {
     fn init_state<S: FreelyMutableState + FromWorld>(&mut self) -> &mut Self {
         warn_if_no_states_plugin_installed(self);
         if !self.world().contains_resource::<State<S>>() {
@@ -241,7 +241,7 @@ impl AppExtStates for SubApp {
     }
 }
 
-fn enable_state_scoped_entities<S: States>(app: &mut SubApp) {
+fn enable_state_scoped_entities<S: States>(app: &mut App) {
     if !app
         .world()
         .contains_resource::<Messages<StateTransitionEvent<S>>>()
@@ -285,7 +285,7 @@ fn enable_state_scoped_entities<S: States>(app: &mut SubApp) {
     );
 }
 
-impl AppExtStates for App {
+impl AppExtStates for Bevy {
     fn init_state<S: FreelyMutableState + FromWorld>(&mut self) -> &mut Self {
         self.main_mut().init_state::<S>();
         self
@@ -330,7 +330,7 @@ impl AppExtStates for App {
 pub struct StatesPlugin;
 
 impl Plugin for StatesPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let mut schedule = app.world_mut().resource_mut::<MainScheduleOrder>();
         schedule.insert_after(PreUpdate, StateTransition);
         schedule.insert_startup_before(PreStartup, StateTransition);
@@ -344,7 +344,7 @@ mod tests {
         app::StatesPlugin,
         state::{State, StateTransition, StateTransitionEvent},
     };
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_ecs::message::Messages;
     use bevy_state_macros::States;
 
@@ -360,7 +360,7 @@ mod tests {
 
     #[test]
     fn insert_state_can_overwrite_init_state() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
 
         app.init_state::<TestState>();
@@ -380,7 +380,7 @@ mod tests {
 
     #[test]
     fn insert_state_can_overwrite_insert_state() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
 
         app.insert_state(TestState::B);

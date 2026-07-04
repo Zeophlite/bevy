@@ -6,7 +6,7 @@ use std::f32::consts::*;
 use bevy::{math::ops, mesh::skinning::SkinnedMesh, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(GlobalAmbientLight {
             brightness: 750.0,

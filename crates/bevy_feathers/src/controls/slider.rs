@@ -402,7 +402,7 @@ fn update_slider_pos(
 pub struct SliderPlugin;
 
 impl Plugin for SliderPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (

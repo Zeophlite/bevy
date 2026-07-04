@@ -458,7 +458,7 @@ impl FeathersMenuDivider {
 pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (

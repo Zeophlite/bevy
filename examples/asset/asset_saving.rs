@@ -18,7 +18,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(AssetPlugin {
             // This is just overriding the default asset paths to scope this to the correct example
             // folder. You can generally skip this in your own projects.
@@ -65,7 +65,7 @@ fn perform_save(
 /// Plugin for doing image drawing.
 ///
 /// This doesn't really have anything to do with asset saving, but provides a real-use case.
-fn image_drawing_plugin(app: &mut App) {
+fn image_drawing_plugin(app: &mut Bevy) {
     app.add_systems(Startup, setup)
         .add_observer(on_drag_start)
         .add_observer(on_drag)

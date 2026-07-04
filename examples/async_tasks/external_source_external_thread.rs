@@ -7,7 +7,7 @@ use crossbeam_channel::{bounded, Receiver};
 use rand::{RngExt, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_message::<StreamMessage>()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)

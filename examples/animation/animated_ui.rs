@@ -24,7 +24,7 @@ struct AnimationInfo {
 
 // The entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // Note that we don't need any systems other than the setup system,
         // because Bevy automatically updates animations every frame.

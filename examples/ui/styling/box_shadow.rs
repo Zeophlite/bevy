@@ -115,7 +115,7 @@ struct HeldButton {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(SHADOW_DEFAULT_SETTINGS)
         .insert_resource(SHAPE_DEFAULT_SETTINGS)

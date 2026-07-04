@@ -2,7 +2,7 @@
 use core::time::Duration;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use bevy_app::{App, Plugin, PostUpdate, Update};
+use bevy_app::{Bevy, Plugin, PostUpdate, Update};
 use bevy_camera::Camera;
 use bevy_ecs::prelude::*;
 use bevy_input::{common_conditions::input_just_pressed, keyboard::KeyCode};
@@ -47,7 +47,7 @@ impl Default for EasyScreenshotPlugin {
 }
 
 impl Plugin for EasyScreenshotPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let format = self.format;
         app.add_systems(
             Update,
@@ -181,7 +181,7 @@ impl Plugin for EasyScreenRecordPlugin {
         target_os = "windows",
         expect(unused_variables, reason = "not working on windows")
     )]
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         #[cfg(target_os = "windows")]
         {
             tracing::warn!("Screen recording is not currently supported on Windows: see https://github.com/bevyengine/bevy/issues/22132");
@@ -367,7 +367,7 @@ pub struct CameraMovement {
 }
 
 impl Plugin for EasyCameraMovementPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let decay_rate = self.decay_rate;
         app.add_systems(
             PostUpdate,

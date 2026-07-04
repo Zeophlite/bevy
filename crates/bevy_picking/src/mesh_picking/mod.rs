@@ -67,7 +67,7 @@ impl Default for MeshPickingSettings {
 pub struct MeshPickingPlugin;
 
 impl Plugin for MeshPickingPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<MeshPickingSettings>()
             .add_systems(PreUpdate, update_hits.in_set(PickingSystems::Backend));
     }

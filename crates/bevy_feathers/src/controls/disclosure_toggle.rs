@@ -1,4 +1,4 @@
-use bevy_app::{App, Plugin, PreUpdate};
+use bevy_app::{Bevy, Plugin, PreUpdate};
 use bevy_ecs::{
     entity::Entity,
     hierarchy::Children,
@@ -150,7 +150,7 @@ fn set_toggle_styles(
 pub struct DisclosureTogglePlugin;
 
 impl Plugin for DisclosureTogglePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(
             PreUpdate,
             (update_toggle_styles, update_toggle_styles_remove).in_set(PickingSystems::Last),

@@ -47,7 +47,7 @@ fn finish_off_first(mut commands: Commands, mut query: Query<(Entity, &mut Healt
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Update, (apply_health_decay, finish_off_first).chain())
         .add_systems(Startup, setup)

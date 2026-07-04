@@ -1,6 +1,6 @@
 //! Light probes for baked global illumination.
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::AssetId;
 use bevy_camera::{visibility::VisibleEntities, Camera3d};
 use bevy_derive::{Deref, DerefMut};
@@ -371,7 +371,7 @@ pub trait LightProbeComponent: Send + Sync + Component + Sized {
 }
 
 impl Plugin for LightProbePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "light_probe.wgsl");
         load_shader_library!(app, "environment_map.wgsl");
         load_shader_library!(app, "irradiance_volume.wgsl");
@@ -381,7 +381,7 @@ impl Plugin for LightProbePlugin {
             ExtractInstancesPlugin::<EnvironmentMapIds>::new(),
         ));
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

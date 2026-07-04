@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use std::f32::consts::FRAC_PI_2;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(FixedUpdate, player_movement_system)

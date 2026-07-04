@@ -33,7 +33,7 @@ use bevy::prelude::*;
 use bevy::text::{EditableText, TextCursorStyle};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(TabNavigationPlugin)
         .add_systems(Startup, setup)

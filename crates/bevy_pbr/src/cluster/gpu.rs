@@ -50,7 +50,7 @@
 use alloc::sync::Arc;
 use std::sync::Mutex;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_camera::Camera;
 use bevy_color::Color;
@@ -122,7 +122,7 @@ const Z_SLICING_WORKGROUP_SIZE: u32 = 64;
 pub struct GpuClusteringPlugin;
 
 impl Plugin for GpuClusteringPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "cluster.wgsl");
         embedded_asset!(app, "cluster_z_slice.wgsl");
         embedded_asset!(app, "cluster_raster.wgsl");
@@ -134,8 +134,8 @@ impl Plugin for GpuClusteringPlugin {
         >::default());
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -55,7 +55,7 @@ pub mod prelude {
 pub struct ClipboardPlugin;
 
 impl bevy_app::Plugin for ClipboardPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.init_resource::<Clipboard>();
     }
 }

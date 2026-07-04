@@ -12,7 +12,7 @@ use std::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup_scene)
         .add_systems(Update, (update_bloom_settings, bounce_spheres))

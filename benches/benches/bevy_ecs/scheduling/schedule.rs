@@ -1,4 +1,4 @@
-use bevy_app::{App, Update};
+use bevy_app::{Bevy, Update};
 use bevy_ecs::prelude::*;
 use criterion::Criterion;
 
@@ -81,7 +81,7 @@ pub fn build_schedule(criterion: &mut Criterion) {
         // Basic benchmark without constraints.
         group.bench_function(format!("{graph_size}_schedule_no_constraints"), |bencher| {
             bencher.iter(|| {
-                let mut app = App::new();
+                let mut app = Bevy::new();
                 for _ in 0..graph_size {
                     app.add_systems(Update, empty_system);
                 }
@@ -92,7 +92,7 @@ pub fn build_schedule(criterion: &mut Criterion) {
         // Benchmark with constraints.
         group.bench_function(format!("{graph_size}_schedule"), |bencher| {
             bencher.iter(|| {
-                let mut app = App::new();
+                let mut app = Bevy::new();
                 app.add_systems(Update, empty_system.in_set(DummySet));
 
                 // Build a fully-connected dependency graph describing the One True Ordering.
@@ -120,7 +120,7 @@ pub fn build_schedule(criterion: &mut Criterion) {
 }
 
 pub fn empty_schedule_run(criterion: &mut Criterion) {
-    let mut app = App::default();
+    let mut app = Bevy::default();
 
     let mut group = criterion.benchmark_group("run_empty_schedule");
 

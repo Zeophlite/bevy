@@ -21,7 +21,7 @@ use rand::RngExt;
 use std::time::Duration;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, (setup_env, add_assets, spawn_tasks))
         .add_systems(Update, handle_tasks)

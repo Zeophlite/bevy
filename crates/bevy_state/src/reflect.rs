@@ -134,7 +134,7 @@ mod tests {
         reflect::{ReflectFreelyMutableState, ReflectState},
         state::State,
     };
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_ecs::prelude::AppTypeRegistry;
     use bevy_reflect::Reflect;
     use bevy_state_macros::States;
@@ -148,7 +148,7 @@ mod tests {
 
     #[test]
     fn test_reflect_state_operations() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin)
             .insert_state(StateTest::A)
             .register_type_mutable_state::<StateTest>();

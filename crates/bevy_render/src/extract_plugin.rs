@@ -2,7 +2,7 @@ use crate::{
     sync_world::{despawn_temporary_entities, entity_sync_system, SyncWorldPlugin},
     Render, RenderApp, RenderSystems,
 };
-use bevy_app::{App, Plugin, SubApp};
+use bevy_app::{Bevy, Plugin, App};
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
     resource::Resource,
@@ -29,11 +29,11 @@ impl Default for ExtractPlugin {
 }
 
 impl Plugin for ExtractPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(SyncWorldPlugin);
         app.init_resource::<ScratchMainWorld>();
 
-        let mut render_app = SubApp::new();
+        let mut render_app = App::new();
 
         let mut extract_schedule = Schedule::new(ExtractSchedule);
         // We skip applying any commands during the ExtractSchedule
@@ -72,7 +72,7 @@ impl Plugin for ExtractPlugin {
             extract(main_world, render_world);
         });
 
-        app.insert_sub_app(RenderApp, render_app);
+        app.insert_app(RenderApp, render_app);
     }
 }
 
@@ -127,7 +127,7 @@ pub fn extract(main_world: &mut World, render_world: &mut World) {
 
 #[cfg(test)]
 mod test {
-    use bevy_app::{App, Startup};
+    use bevy_app::{Bevy, Startup};
     use bevy_ecs::{prelude::*, schedule::ScheduleLabel};
 
     use crate::{
@@ -168,7 +168,7 @@ mod test {
 
     #[test]
     fn extraction_works() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_plugins(ExtractPlugin::default());
         app.add_plugins(ExtractComponentPlugin::<RenderComponent>::default());
@@ -177,7 +177,7 @@ mod test {
             commands.spawn((RenderComponent, RenderComponentSeparate));
         });
 
-        let render_app = app.get_sub_app_mut(RenderApp).unwrap();
+        let render_app = app.get_app_mut(RenderApp).unwrap();
 
         // Normally RenderPlugin sets the RenderRecovery schedule as update, but for
         // testing we just use the Render schedule directly.
@@ -196,7 +196,7 @@ mod test {
 
         // Check that all components have been extracted
         {
-            let render_app = app.get_sub_app_mut(RenderApp).unwrap();
+            let render_app = app.get_app_mut(RenderApp).unwrap();
             render_app
                 .world_mut()
                 .run_system_cached(
@@ -231,7 +231,7 @@ mod test {
 
         // Check that the extracted components have been removed
         {
-            let render_app = app.get_sub_app_mut(RenderApp).unwrap();
+            let render_app = app.get_app_mut(RenderApp).unwrap();
             render_app
                 .world_mut()
                 .run_system_cached(

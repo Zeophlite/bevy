@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 
-use crate::{App, Plugin};
+use crate::{Bevy, Plugin};
 #[cfg(feature = "bevy_reflect")]
 use bevy_ecs::reflect::ReflectComponent;
 use bevy_ecs::{
@@ -137,7 +137,7 @@ impl<C: Component + Clone + PartialEq> Default for PropagateSet<C> {
 impl<C: Component + Clone + PartialEq, F: QueryFilter + 'static, R: Relationship> Plugin
     for HierarchyPropagatePlugin<C, F, R>
 {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(
             self.schedule,
             (
@@ -331,7 +331,7 @@ pub fn propagate_output<C: Component + Clone + PartialEq, F: QueryFilter>(
 mod tests {
     use bevy_ecs::schedule::Schedule;
 
-    use crate::{App, Update};
+    use crate::{Bevy, Update};
 
     use super::*;
 
@@ -340,7 +340,7 @@ mod tests {
 
     #[test]
     fn test_simple_propagate() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -368,7 +368,7 @@ mod tests {
 
     #[test]
     fn test_remove_propagate() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -397,7 +397,7 @@ mod tests {
 
     #[test]
     fn test_remove_and_reinsert_propagate() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -423,7 +423,7 @@ mod tests {
 
     #[test]
     fn test_remove_orphan() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -451,7 +451,7 @@ mod tests {
 
     #[test]
     fn test_reparented() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -481,7 +481,7 @@ mod tests {
 
     #[test]
     fn test_reparented_with_prior() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -510,7 +510,7 @@ mod tests {
 
     #[test]
     fn test_detach_and_reattach_propagates_to_descendants() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -549,7 +549,7 @@ mod tests {
 
     #[test]
     fn test_propagate_over() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -575,7 +575,7 @@ mod tests {
 
     #[test]
     fn test_remove_propagate_over() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -625,7 +625,7 @@ mod tests {
 
     #[test]
     fn test_propagate_over_parent_removed() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -657,7 +657,7 @@ mod tests {
 
     #[test]
     fn test_orphaned_propagate_over() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -694,7 +694,7 @@ mod tests {
 
     #[test]
     fn test_propagate_stop() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -720,7 +720,7 @@ mod tests {
 
     #[test]
     fn test_remove_propagate_stop() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -757,7 +757,7 @@ mod tests {
 
     #[test]
     fn test_intermediate_override() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -800,7 +800,7 @@ mod tests {
         #[derive(Component)]
         struct Marker;
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue, With<Marker>>::new(
             Update,
@@ -856,7 +856,7 @@ mod tests {
 
     #[test]
     fn test_removed_propagate_still_inherits() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 
@@ -890,7 +890,7 @@ mod tests {
 
     #[test]
     fn test_reparent_respects_stop() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_schedule(Schedule::new(Update));
         app.add_plugins(HierarchyPropagatePlugin::<TestValue>::new(Update));
 

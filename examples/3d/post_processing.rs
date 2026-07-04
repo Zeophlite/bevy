@@ -49,7 +49,7 @@ struct AppSettings {
 
 /// The entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .init_resource::<AppSettings>()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)

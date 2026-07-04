@@ -1,4 +1,4 @@
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_camera::visibility::Visibility;
 use bevy_ecs::{
     change_detection::DetectChangesMut,
@@ -461,7 +461,7 @@ pub(crate) fn update_scrollbar_thumb(
 pub struct ScrollbarPlugin;
 
 impl Plugin for ScrollbarPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(scrollbar_on_pointer_down)
             .add_observer(scrollbar_on_drag_start)
             .add_observer(scrollbar_on_drag_end)

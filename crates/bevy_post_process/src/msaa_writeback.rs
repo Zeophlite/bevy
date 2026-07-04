@@ -1,4 +1,4 @@
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_camera::{ClearColorConfig, MsaaWriteback};
 use bevy_color::LinearRgba;
 use bevy_core_pipeline::{
@@ -21,8 +21,8 @@ use bevy_render::{
 pub struct MsaaWritebackPlugin;
 
 impl Plugin for MsaaWritebackPlugin {
-    fn build(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn build(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app.add_systems(

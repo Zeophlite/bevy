@@ -14,8 +14,8 @@ pub use node::upscaling;
 pub struct UpscalingPlugin;
 
 impl Plugin for UpscalingPlugin {
-    fn build(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+    fn build(&self, app: &mut Bevy) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.add_systems(
                 Render,
                 // This system should probably technically be run *after* all of the other systems

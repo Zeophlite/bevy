@@ -1,4 +1,4 @@
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_color::{ColorToComponents, LinearRgba};
 use bevy_ecs::prelude::*;
 use bevy_math::{Vec3, Vec4};
@@ -125,12 +125,12 @@ pub struct ViewFogUniformOffset {
 pub struct FogPlugin;
 
 impl Plugin for FogPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "fog.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<DistanceFog>::default());
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<FogMeta>()
                 .add_systems(Render, prepare_fog.in_set(RenderSystems::PrepareResources));

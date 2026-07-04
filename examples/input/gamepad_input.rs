@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Update, gamepad_system)
         .run();

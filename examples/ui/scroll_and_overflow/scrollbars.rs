@@ -9,7 +9,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, TabNavigationPlugin))
         .insert_resource(UiScale(1.25))
         .add_systems(Startup, setup_view_root)

@@ -720,7 +720,7 @@ pub fn world_instance_spawner(
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_asset::{AssetPlugin, AssetServer, Handle};
     use bevy_ecs::{
         component::Component,
@@ -752,7 +752,7 @@ mod tests {
 
     #[test]
     fn spawn_and_delete() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_plugins(ScheduleRunnerPlugin::default())
             .add_plugins(AssetPlugin::default())
@@ -876,8 +876,8 @@ mod tests {
     #[reflect(Resource)]
     struct TriggerCount(u32);
 
-    fn setup() -> App {
-        let mut app = App::new();
+    fn setup() -> Bevy {
+        let mut app = Bevy::new();
         app.add_plugins((AssetPlugin::default(), WorldSerializationPlugin));
         app.init_resource::<TriggerCount>();
 
@@ -888,7 +888,7 @@ mod tests {
         app
     }
 
-    fn build_world_asset(app: &mut App) -> Handle<WorldAsset> {
+    fn build_world_asset(app: &mut Bevy) -> Handle<WorldAsset> {
         app.world_mut()
             .run_system_once(
                 |world: &World,
@@ -906,7 +906,7 @@ mod tests {
             .expect("Failed to run world asset builder system.")
     }
 
-    fn build_dynamic_world(app: &mut App) -> Handle<DynamicWorld> {
+    fn build_dynamic_world(app: &mut Bevy) -> Handle<DynamicWorld> {
         app.world_mut()
             .run_system_once(|world: &World, asset_server: Res<AssetServer>| {
                 asset_server.add(DynamicWorld::from_world(world))
@@ -914,7 +914,7 @@ mod tests {
             .expect("Failed to run dynamic world builder system.")
     }
 
-    fn observe_trigger(app: &mut App, instance_id: InstanceId, instance_entity: Option<Entity>) {
+    fn observe_trigger(app: &mut Bevy, instance_id: InstanceId, instance_entity: Option<Entity>) {
         // Add observer
         app.world_mut().add_observer(
             move |event: On<WorldInstanceReady>,
@@ -1042,7 +1042,7 @@ mod tests {
 
     #[test]
     fn despawn_instance() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins((AssetPlugin::default(), WorldSerializationPlugin));
         app.register_type::<ComponentF>();
 
@@ -1091,7 +1091,7 @@ mod tests {
 
     #[test]
     fn world_asset_child_order_preserved_when_archetype_order_mismatched() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_plugins(ScheduleRunnerPlugin::default())
             .add_plugins(AssetPlugin::default())

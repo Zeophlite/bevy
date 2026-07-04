@@ -1,6 +1,6 @@
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
@@ -326,7 +326,7 @@ fn trigger_radio_button_and_radio_group_value_change(
 pub struct RadioGroupPlugin;
 
 impl Plugin for RadioGroupPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(radio_group_on_key_input)
             .add_observer(radio_button_on_click)
             .add_observer(radio_button_on_key_input)

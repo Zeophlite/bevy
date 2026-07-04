@@ -1,6 +1,6 @@
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::event::EntityEvent;
 use bevy_ecs::query::{Has, With, Without};
 use bevy_ecs::system::ResMut;
@@ -256,7 +256,7 @@ fn checkbox_on_toggle_checked(
 pub struct CheckboxPlugin;
 
 impl Plugin for CheckboxPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_observer(checkbox_on_key_input)
             .add_observer(checkbox_on_pointer_click)
             .add_observer(checkbox_on_pointer_down)

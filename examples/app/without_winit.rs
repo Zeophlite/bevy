@@ -3,7 +3,7 @@
 use bevy::{prelude::*, winit::WinitPlugin};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.build().disable::<WinitPlugin>())
         .add_systems(Update, setup_system)
         .run();

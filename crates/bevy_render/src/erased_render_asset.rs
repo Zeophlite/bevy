@@ -2,7 +2,7 @@ use crate::{
     render_resource::AsBindGroupError, ExtractSchedule, MainWorld, Render, RenderApp,
     RenderStartup, RenderSystems, Res,
 };
-use bevy_app::{App, Plugin, SubApp};
+use bevy_app::{Bevy, Plugin, App};
 use bevy_asset::RenderAssetUsages;
 use bevy_asset::{Asset, AssetEvent, AssetId, Assets, UntypedAssetId};
 use bevy_ecs::{
@@ -116,12 +116,12 @@ impl<A: ErasedRenderAsset, AFTER: ErasedRenderAssetDependency + 'static> Default
 impl<A: ErasedRenderAsset, AFTER: ErasedRenderAssetDependency + 'static> Plugin
     for ErasedRenderAssetPlugin<A, AFTER>
 {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<CachedExtractErasedRenderAssetSystemState<A>>();
     }
 
-    fn finish(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+    fn finish(&self, app: &mut Bevy) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<ExtractedAssets<A>>()
                 .init_resource::<ErasedRenderAssets<A::ErasedAsset>>()
@@ -145,17 +145,17 @@ impl<A: ErasedRenderAsset, AFTER: ErasedRenderAssetDependency + 'static> Plugin
 
 // helper to allow specifying dependencies between render assets
 pub trait ErasedRenderAssetDependency {
-    fn register_system(render_app: &mut SubApp, system: ScheduleConfigs<ScheduleSystem>);
+    fn register_system(render_app: &mut App, system: ScheduleConfigs<ScheduleSystem>);
 }
 
 impl ErasedRenderAssetDependency for () {
-    fn register_system(render_app: &mut SubApp, system: ScheduleConfigs<ScheduleSystem>) {
+    fn register_system(render_app: &mut App, system: ScheduleConfigs<ScheduleSystem>) {
         render_app.add_systems(Render, system);
     }
 }
 
 impl<A: ErasedRenderAsset> ErasedRenderAssetDependency for A {
-    fn register_system(render_app: &mut SubApp, system: ScheduleConfigs<ScheduleSystem>) {
+    fn register_system(render_app: &mut App, system: ScheduleConfigs<ScheduleSystem>) {
         render_app.add_systems(Render, system.after(prepare_erased_assets::<A>));
     }
 }

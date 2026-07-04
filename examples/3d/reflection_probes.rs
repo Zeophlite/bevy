@@ -69,7 +69,7 @@ struct Cubemaps {
 
 fn main() {
     // Create the app.
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<AppStatus>()
         .init_resource::<Cubemaps>()

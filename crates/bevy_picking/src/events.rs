@@ -1253,7 +1253,7 @@ pub fn pointer_events(
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_camera::{Camera, ManualTextureViewHandle};
 
     use crate::pointer::update_pointer_map;
@@ -1266,7 +1266,7 @@ mod tests {
         position: Vec2::new(3., 4.),
     };
 
-    fn initialize_app_for_test(app: &mut App) {
+    fn initialize_app_for_test(app: &mut Bevy) {
         // Init all the resources and messages necessary to run `pointer_events`
         app.init_resource::<HoverMap>()
             .init_resource::<PreviousHoverMap>()
@@ -1301,7 +1301,7 @@ mod tests {
             .is_ok());
     }
 
-    fn update_hover_map_with_hovered_entities(app: &mut App, camera: Entity, entities: &[Entity]) {
+    fn update_hover_map_with_hovered_entities(app: &mut Bevy, camera: Entity, entities: &[Entity]) {
         let mut hover_map = HoverMap::default();
         let mut entity_map = EntityHashMap::with_capacity(entities.len());
         for entity in entities {
@@ -1347,7 +1347,7 @@ mod tests {
                 .or_insert(0_usize) += 1;
         }
 
-        fn assert_msg_event_counts(app: &App, enter_count: usize, leave_count: usize) {
+        fn assert_msg_event_counts(app: &Bevy, enter_count: usize, leave_count: usize) {
             let enter_messages = app.world().resource::<Messages<Pointer<Enter>>>();
             let leave_messages = app.world().resource::<Messages<Pointer<Leave>>>();
             assert_eq!(enter_messages.len(), enter_count);
@@ -1355,7 +1355,7 @@ mod tests {
         }
 
         fn assert_observer_event_counts(
-            app: &App,
+            app: &Bevy,
             entity: Entity,
             enter_in_bounds_counts: usize,
             enter_out_of_bounds_counts: usize,
@@ -1396,7 +1396,7 @@ mod tests {
             );
         }
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         initialize_app_for_test(&mut app);
         app.init_resource::<EnterEventCounts>()
             .init_resource::<LeaveEventCounts>();

@@ -165,7 +165,7 @@ pub(crate) fn transform_hotspot(
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_asset::RenderAssetUsages;
     use bevy_image::Image;
     use bevy_math::Rect;

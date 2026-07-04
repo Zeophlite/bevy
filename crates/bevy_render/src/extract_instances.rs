@@ -6,7 +6,7 @@
 
 use core::marker::PhantomData;
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_derive::{Deref, DerefMut};
 use bevy_ecs::{
@@ -94,8 +94,8 @@ impl<EI> Plugin for ExtractInstancesPlugin<EI>
 where
     EI: ExtractInstance,
 {
-    fn build(&self, app: &mut App) {
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+    fn build(&self, app: &mut Bevy) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.init_resource::<ExtractedInstances<EI>>();
             if self.only_extract_visible {
                 render_app.add_systems(ExtractSchedule, extract_visible::<EI>);

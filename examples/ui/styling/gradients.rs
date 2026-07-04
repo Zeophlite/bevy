@@ -17,7 +17,7 @@ use std::f32::consts::TAU;
 struct CurrentColorSpaceLabel;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, update)

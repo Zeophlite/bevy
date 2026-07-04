@@ -196,7 +196,7 @@ fn demo_3(world: &mut World) {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_systems(Startup, demo_1)
         .add_systems(Startup, demo_2)
         .add_systems(Startup, demo_3)

@@ -29,7 +29,7 @@
 //! * Compatibility with SSAA and MSAA.
 //!
 //! [SMAA]: https://www.iryoku.com/smaa/
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_core_pipeline::{
     schedule::{Core2d, Core2dSystems, Core3d, Core3dSystems},
@@ -286,7 +286,7 @@ pub struct SmaaSpecializedRenderPipelines {
 }
 
 impl Plugin for SmaaPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // Load the shader.
         embedded_asset!(app, "smaa.wgsl");
 
@@ -355,7 +355,7 @@ impl Plugin for SmaaPlugin {
 
         app.add_plugins(ExtractComponentPlugin::<Smaa>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

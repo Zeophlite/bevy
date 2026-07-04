@@ -8,7 +8,7 @@ pub use binder::RaytracingSceneBindings;
 pub use types::RaytracingMesh3d;
 
 use crate::SolariPlugins;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_ecs::schedule::IntoScheduleConfigs;
 use bevy_render::{
     extract_resource::ExtractResourcePlugin,
@@ -30,14 +30,14 @@ use tracing::warn;
 pub struct RaytracingScenePlugin;
 
 impl Plugin for RaytracingScenePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         load_shader_library!(app, "brdf.wgsl");
         load_shader_library!(app, "raytracing_scene_bindings.wgsl");
         load_shader_library!(app, "sampling.wgsl");
     }
 
-    fn finish(&self, app: &mut App) {
-        let render_app = app.sub_app_mut(RenderApp);
+    fn finish(&self, app: &mut Bevy) {
+        let render_app = app.app_mut(RenderApp);
         let render_device = render_app.world().resource::<RenderDevice>();
         let features = render_device.features();
         if !features.contains(SolariPlugins::required_wgpu_features()) {
@@ -50,7 +50,7 @@ impl Plugin for RaytracingScenePlugin {
 
         app.add_plugins(ExtractResourcePlugin::<StandardMaterialAssets>::default());
 
-        let render_app = app.sub_app_mut(RenderApp);
+        let render_app = app.app_mut(RenderApp);
 
         render_app
             .world_mut()

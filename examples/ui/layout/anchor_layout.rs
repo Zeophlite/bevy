@@ -4,7 +4,7 @@ use bevy::prelude::*;
 const MARGIN: Val = Val::Px(12.);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Bevy Anchor Layout Example".to_string(),

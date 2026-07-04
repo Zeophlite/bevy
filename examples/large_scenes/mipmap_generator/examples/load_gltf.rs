@@ -26,7 +26,7 @@ pub struct Args {
 fn main() {
     let args: Args = argh::from_env();
 
-    App::new()
+    Bevy::new()
         .insert_resource(ClearColor(Color::srgb(0.1, 0.1, 0.1)))
         .add_plugins(DefaultPlugins.set(AssetPlugin {
             // Needed to load from the parent bevy assets folder

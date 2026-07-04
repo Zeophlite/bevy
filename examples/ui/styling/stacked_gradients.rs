@@ -7,7 +7,7 @@ use bevy::prelude::*;
 use core::f32::consts::TAU;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .run();

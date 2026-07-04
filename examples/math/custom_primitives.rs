@@ -128,7 +128,7 @@ struct Shape2d;
 struct Shape3d;
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
 
     app.add_plugins(DefaultPlugins);
 

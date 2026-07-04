@@ -3,7 +3,7 @@
 use bevy::{asset::LoadedFolder, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .run();

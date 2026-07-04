@@ -1,5 +1,5 @@
 //! Provides a way to automatically set the mouse cursor based on hovered entity.
-use bevy_app::{App, Plugin, PreUpdate};
+use bevy_app::{Bevy, Plugin, PreUpdate};
 use bevy_derive::Deref;
 use bevy_ecs::{
     component::Component,
@@ -122,7 +122,7 @@ pub(crate) fn update_cursor(
 pub struct CursorIconPlugin;
 
 impl Plugin for CursorIconPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         if app.world().get_resource::<DefaultCursor>().is_none() {
             app.init_resource::<DefaultCursor>();
             app.init_resource::<OverrideCursor>();

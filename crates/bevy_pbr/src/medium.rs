@@ -1,7 +1,7 @@
 use bevy_color::ColorToComponents;
 use bevy_light::atmosphere::{ScatteringMedium, ScatteringTerm};
 
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::AssetId;
 use bevy_ecs::{
     resource::Resource,
@@ -24,10 +24,10 @@ use smallvec::SmallVec;
 pub struct ScatteringMediumPlugin;
 
 impl Plugin for ScatteringMediumPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(RenderAssetPlugin::<GpuScatteringMedium>::default());
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             render_app.add_systems(RenderStartup, init_scattering_medium_sampler);
         }
     }

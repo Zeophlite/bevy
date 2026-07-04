@@ -9,7 +9,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)

@@ -14,7 +14,7 @@ const SLIDER_TRACK: Color = Color::srgb(0.05, 0.05, 0.05);
 const SLIDER_THUMB: Color = Color::srgb(0.35, 0.75, 0.35);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, TabNavigationPlugin))
         .add_systems(Startup, setup)
         .add_systems(Update, (update_slider_visuals, update_value_labels))

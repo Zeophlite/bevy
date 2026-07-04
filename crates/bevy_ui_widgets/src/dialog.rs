@@ -1,6 +1,6 @@
 use accesskit::Role;
 use bevy_a11y::AccessibilityNode;
-use bevy_app::{App, Plugin, Update};
+use bevy_app::{Bevy, Plugin, Update};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
@@ -220,7 +220,7 @@ fn dialog_drag(
 pub struct DialogPlugin;
 
 impl Plugin for DialogPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<DialogStack>()
             .add_observer(register_dialog)
             .add_observer(deregister_dialog)

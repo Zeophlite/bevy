@@ -5,7 +5,7 @@
 use crate::io::{AssetReader, AssetReaderError, AssetSourceBuilder, PathStream, Reader};
 use crate::{AssetApp, AssetPlugin};
 use alloc::boxed::Box;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_tasks::ConditionalSendFuture;
 use std::path::{Path, PathBuf};
 use tracing::warn;
@@ -65,7 +65,7 @@ pub struct WebAssetPlugin {
 }
 
 impl Plugin for WebAssetPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         if !self.silence_startup_warning {
             warn!("WebAssetPlugin is potentially insecure! Make sure to verify asset URLs are safe to load before loading them. \
             If you promise you know what you're doing, you can silence this warning by setting silence_startup_warning: true \

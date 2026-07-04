@@ -25,7 +25,7 @@
 //! used to navigate between focusable entities.
 
 use alloc::vec::Vec;
-use bevy_app::{App, Plugin, Startup};
+use bevy_app::{Bevy, Plugin, Startup};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
@@ -380,7 +380,7 @@ pub(crate) fn acquire_focus(
 pub struct TabNavigationPlugin;
 
 impl Plugin for TabNavigationPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(Startup, setup_tab_navigation);
         app.add_observer(acquire_focus);
         #[cfg(feature = "bevy_picking")]
@@ -475,7 +475,7 @@ mod tests {
 
     #[test]
     fn test_tab_navigation() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         let world = app.world_mut();
 
         let tab_group_entity = world.spawn(TabGroup::new(0)).id();
@@ -504,7 +504,7 @@ mod tests {
 
     #[test]
     fn test_tab_navigation_between_groups_is_sorted_by_group() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         let world = app.world_mut();
 
         let tab_group_1 = world.spawn(TabGroup::new(0)).id();

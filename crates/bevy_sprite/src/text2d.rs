@@ -381,7 +381,7 @@ pub fn calculate_bounds_text2d(
 #[cfg(test)]
 mod tests {
 
-    use bevy_app::{App, Update};
+    use bevy_app::{Bevy, Update};
     use bevy_asset::{load_internal_binary_asset, Handle};
     use bevy_camera::{ComputedCameraValues, RenderTargetInfo};
     use bevy_ecs::schedule::IntoScheduleConfigs;
@@ -393,12 +393,12 @@ mod tests {
     const FIRST_TEXT: &str = "Sample text.";
     const SECOND_TEXT: &str = "Another, longer sample text.";
 
-    fn setup() -> (App, Entity) {
+    fn setup() -> (Bevy, Entity) {
         setup_with_scale_factor(1.)
     }
 
-    fn setup_with_scale_factor(scale_factor: f32) -> (App, Entity) {
-        let mut app = App::new();
+    fn setup_with_scale_factor(scale_factor: f32) -> (Bevy, Entity) {
+        let mut app = Bevy::new();
         app.init_resource::<Assets<Font>>()
             .init_resource::<Assets<Image>>()
             .init_resource::<Assets<TextureAtlasLayout>>()

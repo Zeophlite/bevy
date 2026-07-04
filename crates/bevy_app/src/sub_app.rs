@@ -1,4 +1,4 @@
-use crate::{App, AppLabel, InternedAppLabel, Plugin, Plugins, PluginsState};
+use crate::{Bevy, AppLabel, InternedAppLabel, Plugin, Plugins, PluginsState};
 use alloc::{boxed::Box, string::String, vec::Vec};
 use bevy_ecs::{
     message::MessageRegistry,
@@ -62,7 +62,7 @@ type ExtractFn = Box<dyn FnMut(&mut World, &mut World) + Send>;
 /// // Update the application once (using the default runner).
 /// app.run();
 /// ```
-pub struct SubApp {
+pub struct App {
     /// The data of this application.
     world: World,
     /// List of plugins that have been added.
@@ -80,13 +80,13 @@ pub struct SubApp {
     extract: Option<ExtractFn>,
 }
 
-impl Debug for SubApp {
+impl Debug for App {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "SubApp")
     }
 }
 
-impl Default for SubApp {
+impl Default for App {
     fn default() -> Self {
         let mut world = World::new();
         world.init_resource::<Schedules>();
@@ -102,7 +102,7 @@ impl Default for SubApp {
     }
 }
 
-impl SubApp {
+impl App {
     /// Returns a default, empty [`SubApp`].
     pub fn new() -> Self {
         Self::default()
@@ -112,12 +112,12 @@ impl SubApp {
     /// works on an [`App`] as a whole.
     fn run_as_app<F>(&mut self, f: F)
     where
-        F: FnOnce(&mut App),
+        F: FnOnce(&mut Bevy),
     {
-        let mut app = App::empty();
-        core::mem::swap(self, &mut app.sub_apps.main);
+        let mut app = Bevy::empty();
+        core::mem::swap(self, &mut app.apps.main);
         f(&mut app);
-        core::mem::swap(self, &mut app.sub_apps.main);
+        core::mem::swap(self, &mut app.apps.main);
     }
 
     /// Returns a reference to the [`World`].
@@ -392,7 +392,7 @@ impl SubApp {
 
     /// See [`App::add_plugins`].
     pub fn add_plugins<M>(&mut self, plugins: impl Plugins<M>) -> &mut Self {
-        self.run_as_app(|app| plugins.add_to_app(app));
+        self.run_as_app(|app| plugins.add_to_bevy(app));
         self
     }
 
@@ -553,14 +553,14 @@ impl SubApp {
 
 /// The collection of sub-apps that belong to an [`App`].
 #[derive(Default)]
-pub struct SubApps {
+pub struct Apps {
     /// The primary sub-app that contains the "main" world.
-    pub main: SubApp,
+    pub main: App,
     /// Other, labeled sub-apps.
-    pub sub_apps: HashMap<InternedAppLabel, SubApp>,
+    pub apps: HashMap<InternedAppLabel, App>,
 }
 
-impl SubApps {
+impl Apps {
     /// Calls [`update`](SubApp::update) for the main sub-app, and then calls
     /// [`extract`](SubApp::extract) and [`update`](SubApp::update) for the rest.
     pub fn update(&mut self) {
@@ -571,7 +571,7 @@ impl SubApps {
             let _bevy_frame_update_span = info_span!("main app").entered();
             self.main.run_default_schedule();
         }
-        for (_label, sub_app) in self.sub_apps.iter_mut() {
+        for (_label, sub_app) in self.apps.iter_mut() {
             #[cfg(feature = "trace")]
             let _sub_app_span = info_span!("sub app", name = ?_label).entered();
             sub_app.extract(&mut self.main.world);
@@ -582,18 +582,18 @@ impl SubApps {
     }
 
     /// Returns an iterator over the sub-apps (starting with the main one).
-    pub fn iter(&self) -> impl Iterator<Item = &SubApp> + '_ {
-        core::iter::once(&self.main).chain(self.sub_apps.values())
+    pub fn iter(&self) -> impl Iterator<Item = &App> + '_ {
+        core::iter::once(&self.main).chain(self.apps.values())
     }
 
     /// Returns a mutable iterator over the sub-apps (starting with the main one).
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut SubApp> + '_ {
-        core::iter::once(&mut self.main).chain(self.sub_apps.values_mut())
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut App> + '_ {
+        core::iter::once(&mut self.main).chain(self.apps.values_mut())
     }
 
     /// Extract data from the main world into the [`SubApp`] with the given label and perform an update if it exists.
     pub fn update_subapp_by_label(&mut self, label: impl AppLabel) {
-        if let Some(sub_app) = self.sub_apps.get_mut(&label.intern()) {
+        if let Some(sub_app) = self.apps.get_mut(&label.intern()) {
             sub_app.extract(&mut self.main.world);
             sub_app.update();
         }

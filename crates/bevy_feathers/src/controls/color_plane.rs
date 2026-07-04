@@ -459,7 +459,7 @@ fn on_drag_cancel(
 pub struct ColorPlanePlugin;
 
 impl Plugin for ColorPlanePlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.add_plugins(UiMaterialPlugin::<ColorPlaneMaterial>::default());
         app.add_systems(PostUpdate, update_plane_color);
         app.add_observer(on_pointer_press)

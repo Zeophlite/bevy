@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 
-use bevy_app::{App, SubApp};
+use bevy_app::{Bevy, App};
 use bevy_ecs::{
     message::{Message, MessageReader, Messages},
     resource::Resource,
@@ -107,7 +107,7 @@ fn clear_messages_on_enter<S: States>(
 }
 
 fn clear_messages_on_state_transition<M: Message, S: States>(
-    app: &mut SubApp,
+    app: &mut App,
     _p: PhantomData<M>,
     state: S,
     transition_type: TransitionType,
@@ -147,7 +147,7 @@ pub trait StateScopedMessagesAppExt {
     fn clear_messages_on_enter<M: Message>(&mut self, state: impl States) -> &mut Self;
 }
 
-impl StateScopedMessagesAppExt for App {
+impl StateScopedMessagesAppExt for Bevy {
     fn clear_messages_on_exit<M: Message>(&mut self, state: impl States) -> &mut Self {
         clear_messages_on_state_transition(
             self.main_mut(),
@@ -169,7 +169,7 @@ impl StateScopedMessagesAppExt for App {
     }
 }
 
-impl StateScopedMessagesAppExt for SubApp {
+impl StateScopedMessagesAppExt for App {
     fn clear_messages_on_exit<M: Message>(&mut self, state: impl States) -> &mut Self {
         clear_messages_on_state_transition(self, PhantomData::<M>, state, TransitionType::OnExit);
         self
@@ -203,7 +203,7 @@ mod tests {
 
     #[test]
     fn clear_message_on_exit_state() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
         app.init_state::<TestState>();
 
@@ -239,7 +239,7 @@ mod tests {
 
     #[test]
     fn clear_message_on_enter_state() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(StatesPlugin);
         app.init_state::<TestState>();
 

@@ -22,7 +22,7 @@ const ATTRIBUTE_BARYCENTRIC: MeshVertexAttribute =
     MeshVertexAttribute::new("Barycentric", 2137464976, VertexFormat::Float32x3);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 1.0 / 5.0f32,

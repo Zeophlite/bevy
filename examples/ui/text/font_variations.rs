@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy::text::{FontVariationTag, FontVariations};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .run();

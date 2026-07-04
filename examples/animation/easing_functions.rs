@@ -7,7 +7,7 @@ use bevy::prelude::*;
 struct EaseFunctionPlot(EaseFunction, Color);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, display_curves)

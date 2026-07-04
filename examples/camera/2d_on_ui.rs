@@ -3,7 +3,7 @@
 use bevy::{camera::visibility::RenderLayers, color::palettes::tailwind, prelude::*};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, rotate_sprite)

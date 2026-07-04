@@ -8,7 +8,7 @@ use core::any::type_name;
 use core::marker::PhantomData;
 
 use crate::{schedule::Core3d, tonemapping::tonemapping, Core3dSystems, FullscreenShader};
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::AssetServer;
 use bevy_ecs::{
     component::Component,
@@ -48,13 +48,13 @@ pub struct FullscreenMaterialPlugin<T: FullscreenMaterial> {
 }
 
 impl<T: FullscreenMaterial> Plugin for FullscreenMaterialPlugin<T> {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins((
             ExtractComponentPlugin::<T>::default(),
             UniformComponentPlugin::<T>::default(),
         ));
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

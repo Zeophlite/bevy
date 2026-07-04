@@ -56,7 +56,7 @@ pub struct WorldSerializationPlugin;
 
 #[cfg(feature = "serialize")]
 impl Plugin for WorldSerializationPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_asset::<DynamicWorld>()
             .init_asset::<WorldAsset>()
             .init_asset_loader::<WorldAssetLoader>()
@@ -120,12 +120,12 @@ impl Plugin for WorldSerializationPlugin {
 
 #[cfg(not(feature = "serialize"))]
 impl Plugin for WorldSerializationPlugin {
-    fn build(&self, _: &mut App) {}
+    fn build(&self, _: &mut Bevy) {}
 }
 
 #[cfg(test)]
 mod tests {
-    use bevy_app::App;
+    use bevy_app::Bevy;
     use bevy_asset::{AssetPlugin, Assets};
     use bevy_ecs::{
         component::Component,
@@ -167,7 +167,7 @@ mod tests {
 
     #[test]
     fn world_instance_spawns_and_respawns_after_change() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_plugins((AssetPlugin::default(), WorldSerializationPlugin))
             .register_type::<ChildOf>()
@@ -299,7 +299,7 @@ mod tests {
 
     #[test]
     fn dynamic_world_spawns_and_respawns_after_change() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_plugins((AssetPlugin::default(), WorldSerializationPlugin))
             .register_type::<ChildOf>()

@@ -3,7 +3,7 @@ mod node;
 mod prepare;
 
 use crate::SolariPlugins;
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::embedded_asset;
 use bevy_camera::Hdr;
 use bevy_core_pipeline::{
@@ -27,12 +27,12 @@ use tracing::warn;
 pub struct PathtracingPlugin;
 
 impl Plugin for PathtracingPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "pathtracer.wgsl");
     }
 
-    fn finish(&self, app: &mut App) {
-        let render_app = app.sub_app_mut(RenderApp);
+    fn finish(&self, app: &mut Bevy) {
+        let render_app = app.app_mut(RenderApp);
 
         let render_device = render_app.world().resource::<RenderDevice>();
         let features = render_device.features();

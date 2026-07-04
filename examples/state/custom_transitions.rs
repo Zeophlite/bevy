@@ -25,7 +25,7 @@ enum AppState {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         // We insert the custom transitions plugin for `AppState`.
         .add_plugins((
             DefaultPlugins,
@@ -61,7 +61,7 @@ mod custom_transitions {
     pub struct IdentityTransitionsPlugin<S: States>(PhantomData<S>);
 
     impl<S: States> Plugin for IdentityTransitionsPlugin<S> {
-        fn build(&self, app: &mut App) {
+        fn build(&self, app: &mut Bevy) {
             app.add_systems(
                 StateTransition,
                 // The internals can generate at most one transition event of specific type per frame.

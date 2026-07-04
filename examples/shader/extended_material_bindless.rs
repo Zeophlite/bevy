@@ -94,7 +94,7 @@ impl<'a> From<&'a ExampleBindlessExtension> for ExampleBindlessExtensionUniform 
 
 /// The entry point.
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(MaterialPlugin::<
             ExtendedMaterial<StandardMaterial, ExampleBindlessExtension>,

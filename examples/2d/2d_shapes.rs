@@ -21,7 +21,7 @@ use bevy::{
 use bevy::{input::common_conditions::input_toggle_active, prelude::*};
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins((
         DefaultPlugins,
         #[cfg(not(target_arch = "wasm32"))]

@@ -58,7 +58,7 @@ pub struct Args {
 fn main() {
     let args: Args = argh::from_env();
 
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {

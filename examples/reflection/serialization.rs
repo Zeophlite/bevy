@@ -12,7 +12,7 @@ use bevy::{
 use serde::de::DeserializeSeed;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, (deserialize, serialize).chain())
         .run();

@@ -7,7 +7,7 @@ use bevy::{
 use mipmap_generator::{generate_mipmaps, MipmapGeneratorDebugTextPlugin, MipmapGeneratorPlugin};
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         // Add MipmapGeneratorPlugin after default plugins

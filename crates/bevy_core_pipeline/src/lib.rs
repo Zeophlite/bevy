@@ -35,7 +35,7 @@ use crate::{
     prepass::BackgroundMotionVectorsPlugin, tonemapping::TonemappingPlugin,
     upscaling::UpscalingPlugin,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::embedded_asset;
 use bevy_render::renderer::{RenderGraph, RenderGraphSystems};
 use bevy_render::RenderApp;
@@ -45,7 +45,7 @@ use oit::OrderIndependentTransparencyPlugin;
 pub struct CorePipelinePlugin;
 
 impl Plugin for CorePipelinePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "fullscreen_vertex_shader/fullscreen.wgsl");
 
         app.add_plugins((Core2dPlugin, Core3dPlugin, CopyDeferredLightingIdPlugin))
@@ -57,7 +57,7 @@ impl Plugin for CorePipelinePlugin {
                 MipGenerationPlugin,
                 BackgroundMotionVectorsPlugin,
             ));
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app.init_resource::<FullscreenShader>().add_systems(

@@ -114,7 +114,7 @@ fn main() {
     #[cfg(not(feature = "free_camera"))]
     println!("Enable feature free_camera to add a free camera to this example");
 
-    App::new()
+    Bevy::new()
         .init_resource::<AppStatus>()
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {

@@ -6,7 +6,7 @@ use crate::{
     bloom::bloom,
     motion_blur::pipeline::{MotionBlurPipeline, MotionBlurPipelineId},
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_asset::embedded_asset;
 use bevy_camera::{Camera, Camera3d};
 use bevy_core_pipeline::{
@@ -148,7 +148,7 @@ pub struct MotionBlurUniform {
 #[derive(Default)]
 pub struct MotionBlurPlugin;
 impl Plugin for MotionBlurPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "motion_blur.wgsl");
 
         app.add_plugins((
@@ -156,7 +156,7 @@ impl Plugin for MotionBlurPlugin {
             UniformComponentPlugin::<MotionBlurUniform>::default(),
         ));
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

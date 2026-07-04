@@ -14,7 +14,7 @@ use event_listener::Event;
 use futures_lite::Future;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_state::<LoadingState>()
         .insert_resource(GlobalAmbientLight {

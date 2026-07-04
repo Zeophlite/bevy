@@ -1828,7 +1828,7 @@ mod tests {
     };
     use crate::ButtonState;
     use alloc::string::ToString;
-    use bevy_app::{App, PreUpdate};
+    use bevy_app::{Bevy, PreUpdate};
     use bevy_ecs::entity::Entity;
     use bevy_ecs::message::Messages;
     use bevy_ecs::schedule::IntoScheduleConfigs;
@@ -2194,12 +2194,12 @@ mod tests {
     }
 
     struct TestContext {
-        pub app: App,
+        pub app: Bevy,
     }
 
     impl TestContext {
         pub fn new() -> Self {
-            let mut app = App::new();
+            let mut app = Bevy::new();
             app.add_systems(
                 PreUpdate,
                 (

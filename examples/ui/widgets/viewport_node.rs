@@ -7,7 +7,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, MeshPickingPlugin))
         .add_systems(Startup, test)
         .add_systems(Update, draw_mesh_intersections)

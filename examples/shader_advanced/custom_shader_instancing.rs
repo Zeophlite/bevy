@@ -47,7 +47,7 @@ use bytemuck::{Pod, Zeroable};
 const SHADER_ASSET_PATH: &str = "shaders/instancing.wgsl";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, CustomMaterialPlugin))
         .add_systems(Startup, setup)
         .run();
@@ -107,9 +107,9 @@ impl ExtractComponent for InstanceMaterialData {
 struct CustomMaterialPlugin;
 
 impl Plugin for CustomMaterialPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(ExtractComponentPlugin::<InstanceMaterialData>::default());
-        app.sub_app_mut(RenderApp)
+        app.app_mut(RenderApp)
             .add_render_command::<Transparent3d, DrawCustom>()
             .init_resource::<SpecializedMeshPipelines<CustomPipeline>>()
             .add_systems(

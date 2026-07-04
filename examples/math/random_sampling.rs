@@ -10,7 +10,7 @@ use chacha20::ChaCha8Rng;
 use rand::{distr::Distribution, SeedableRng};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (handle_mouse, handle_keypress))

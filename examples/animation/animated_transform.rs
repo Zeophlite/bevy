@@ -8,7 +8,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,

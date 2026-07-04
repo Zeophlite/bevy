@@ -3,7 +3,7 @@
 use bevy::prelude::*;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // this system will run once every update (it should match your screen's refresh rate)
         .add_systems(Update, frame_update)

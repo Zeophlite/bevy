@@ -19,7 +19,7 @@ const SHADER_ASSET_PATH: &str = "shaders/array_texture.wgsl";
 const TEXTURE_COUNT: u32 = 4;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins,
             MaterialPlugin::<ArrayTextureMaterial>::default(),

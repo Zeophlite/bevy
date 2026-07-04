@@ -50,14 +50,14 @@ use bevy_transform::components::{GlobalTransform, Transform};
 pub struct InfiniteGridPlugin;
 
 impl Plugin for InfiniteGridPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "infinite_grid.wgsl");
         app.register_type::<InfiniteGrid>()
             .register_type::<InfiniteGridSettings>();
     }
 
-    fn finish(&self, app: &mut App) {
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+    fn finish(&self, app: &mut Bevy) {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
         render_app

@@ -8,7 +8,7 @@ use bevy::prelude::*;
 use core::time::Duration;
 
 fn main() {
-    App::new()
+    Bevy::new()
         // plugins are registered as part of the "app building" process
         .add_plugins((
             DefaultPlugins,
@@ -29,7 +29,7 @@ struct PrintMessagePlugin {
 
 impl Plugin for PrintMessagePlugin {
     // this is where we set up our plugin
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let state = PrintMessageState {
             message: self.message.clone(),
             timer: Timer::new(self.wait_duration, TimerMode::Repeating),

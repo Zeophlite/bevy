@@ -20,7 +20,7 @@ struct Counter(i32);
 struct CounterText;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((
             DefaultPlugins,
             // Don't forget to add the plugin.

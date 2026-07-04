@@ -6,7 +6,7 @@ use bevy::camera::RenderTarget;
 use bevy::{camera::visibility::RenderLayers, prelude::*, render::render_resource::TextureFormat};
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (cube_rotator_system, rotator_system))

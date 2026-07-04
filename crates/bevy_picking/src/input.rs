@@ -93,7 +93,7 @@ impl Default for PointerInputSettings {
 pub struct PointerInputPlugin;
 
 impl Plugin for PointerInputPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<PointerInputSettings>()
             .add_systems(Startup, spawn_mouse_pointer)
             .add_systems(

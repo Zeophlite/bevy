@@ -6,7 +6,7 @@ use core::{
     ops::Range,
 };
 
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_ecs::{
     component::Component,
     entity::{Entity, EntityHashMap},
@@ -29,7 +29,7 @@ use crate::{camera::Camera, primitives::Aabb, visibility::NoCpuCulling, ShadowLo
 pub struct VisibilityRangePlugin;
 
 impl Plugin for VisibilityRangePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.init_resource::<VisibleEntityRanges>().add_systems(
             PostUpdate,
             check_visibility_ranges

@@ -27,7 +27,7 @@ const COLORS: [Color; 3] = [Color::Srgba(BLUE), Color::Srgba(WHITE), Color::Srgb
 struct ColorTint(bool);
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(ColorTint(
             std::env::args().nth(1).unwrap_or_default() == "--colored",
         ))

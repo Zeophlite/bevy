@@ -7,7 +7,7 @@ use bevy::{
 use std::f32::consts::*;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(DirectionalLightShadowMap { size: 4096 })
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)

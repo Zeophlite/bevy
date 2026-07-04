@@ -34,7 +34,7 @@ impl Default for CameraSettings {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<CameraSettings>()
         .add_systems(Startup, (setup, instructions))

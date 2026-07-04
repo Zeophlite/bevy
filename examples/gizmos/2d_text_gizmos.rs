@@ -14,7 +14,7 @@ const X_STEP: f32 = 250.0;
 const Y_STEP: f32 = 50.0;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(WinitSettings::continuous())
         .add_plugins((
             DefaultPlugins.set(WindowPlugin {

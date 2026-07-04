@@ -1,7 +1,7 @@
 //! This example shows how to make an externally driven headless renderer,
 //! pumping the update loop manually.
 use bevy::{
-    app::SubApps,
+    app::Apps,
     asset::RenderAssetUsages,
     camera::RenderTarget,
     diagnostic::FrameCount,
@@ -33,7 +33,7 @@ fn main() {
     bw.update();
 }
 
-struct BevyWrapper(SubApps);
+struct BevyWrapper(Apps);
 
 impl BevyWrapper {
     fn new() -> Self {
@@ -51,7 +51,7 @@ impl BevyWrapper {
             ..default()
         };
 
-        let mut app = App::new();
+        let mut app = Bevy::new();
         app.add_plugins(
             DefaultPlugins
                 .set(window_plugin)
@@ -69,7 +69,7 @@ impl BevyWrapper {
 
         // We grab the sub apps cus we dont want the runner, as we'll
         // be pumping the update loop ourselves manually.
-        Self(std::mem::take(app.sub_apps_mut()))
+        Self(std::mem::take(app.apps_mut()))
     }
 
     fn new_render_target(&mut self, width: u32, height: u32) -> RenderTarget {

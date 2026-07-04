@@ -21,7 +21,7 @@ use core::cell::RefCell;
 use winit::{event_loop::EventLoop, window::WindowId};
 
 use bevy_a11y::AccessibilityRequested;
-use bevy_app::{App, Last, OnAppExitSystems, Plugin};
+use bevy_app::{Bevy, Last, OnAppExitSystems, Plugin};
 use bevy_ecs::prelude::*;
 use bevy_window::{CursorOptions, Window, WindowCreated};
 use system::{changed_cursor_options, changed_windows, check_keyboard_focus_lost, despawn_windows};
@@ -87,7 +87,7 @@ impl Plugin for WinitPlugin {
         "bevy_winit::WinitPlugin"
     }
 
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let mut event_loop_builder = EventLoop::<WinitUserEvent>::with_user_event();
 
         // linux check is needed because x11 might be enabled on other platforms.

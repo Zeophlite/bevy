@@ -129,7 +129,7 @@ fn play_damage_received_particle_effect(mut damage_received_reader: MessageReade
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // Messages must be added to the app before they can be used
         // using the 'add_message' method

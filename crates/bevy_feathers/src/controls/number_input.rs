@@ -1246,7 +1246,7 @@ fn update_slidebar_styles_theme(
 pub struct NumberInputPlugin;
 
 impl Plugin for NumberInputPlugin {
-    fn build(&self, app: &mut bevy_app::App) {
+    fn build(&self, app: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             update_slidebar_styles_theme.in_set(PickingSystems::Last),

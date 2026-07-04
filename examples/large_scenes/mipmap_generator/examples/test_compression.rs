@@ -26,7 +26,7 @@ pub struct Args {
 fn main() {
     let args: Args = argh::from_env();
 
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins(DefaultPlugins)
         .insert_resource(MipmapGeneratorSettings {
             compression: Some(Default::default()),

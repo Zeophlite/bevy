@@ -423,7 +423,7 @@ mod tests {
         layout::ui_surface::UiSurface, prelude::*, ui_layout_system,
         update::propagate_ui_target_cameras, ContentSize, LayoutContext,
     };
-    use bevy_app::{App, HierarchyPropagatePlugin, PostUpdate, PropagateSet, TaskPoolPlugin};
+    use bevy_app::{Bevy, HierarchyPropagatePlugin, PostUpdate, PropagateSet, TaskPoolPlugin};
     use bevy_camera::{Camera, Camera2d, ComputedCameraValues, RenderTargetInfo, Viewport};
     use bevy_ecs::{prelude::*, system::RunSystemOnce};
     use bevy_math::{Rect, UVec2, Vec2};
@@ -436,8 +436,8 @@ mod tests {
     const TARGET_WIDTH: u32 = 1000;
     const TARGET_HEIGHT: u32 = 100;
 
-    fn setup_ui_test_app() -> App {
-        let mut app = App::new();
+    fn setup_ui_test_app() -> Bevy {
+        let mut app = Bevy::new();
         app.add_plugins(TaskPoolPlugin::default());
 
         app.add_plugins(HierarchyPropagatePlugin::<ComputedUiTargetCamera>::new(
@@ -908,7 +908,7 @@ mod tests {
             }
         }
 
-        fn do_move_and_test(app: &mut App, new_pos: Vec2, expected_camera_entity: &Entity) {
+        fn do_move_and_test(app: &mut Bevy, new_pos: Vec2, expected_camera_entity: &Entity) {
             let world = app.world_mut();
             world.run_system_once_with(move_ui_node, new_pos).unwrap();
             app.update();
@@ -1223,7 +1223,7 @@ mod tests {
 
     #[test]
     fn no_camera_ui() {
-        let mut app = App::new();
+        let mut app = Bevy::new();
 
         app.add_systems(
             PostUpdate,

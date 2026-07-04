@@ -30,7 +30,7 @@ const SIZE: UVec2 = UVec2::new(1280 / DISPLAY_FACTOR, 720 / DISPLAY_FACTOR);
 const WORKGROUP_SIZE: u32 = 8;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins((
             DefaultPlugins
@@ -91,14 +91,14 @@ fn switch_textures(images: Res<GameOfLifeImages>, mut sprite: Single<&mut Sprite
 struct GameOfLifeComputePlugin;
 
 impl Plugin for GameOfLifeComputePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         // Extract the game of life image resource from the main world into the render world
         // for operation on by the compute shader and display on the sprite.
         app.add_plugins((
             ExtractResourcePlugin::<GameOfLifeImages>::default(),
             ExtractResourcePlugin::<GameOfLifeUniforms>::default(),
         ));
-        let render_app = app.sub_app_mut(RenderApp);
+        let render_app = app.app_mut(RenderApp);
         render_app
             .init_resource::<GameOfLifeState>()
             .add_systems(RenderStartup, init_game_of_life_pipeline)

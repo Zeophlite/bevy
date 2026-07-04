@@ -2,7 +2,7 @@ use core::fmt::Debug;
 use core::ops::{Deref, DerefMut};
 
 use crate::{primitives::Frustum, visibility::VisibilitySystems};
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_ecs::prelude::*;
 use bevy_math::{ops, primitives::ViewFrustum, vec4, AspectRatio, Mat4, Rect, Vec2, Vec3A, Vec4};
 use bevy_reflect::{std_traits::ReflectDefault, Reflect, ReflectDeserialize, ReflectSerialize};
@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 pub struct CameraProjectionPlugin;
 
 impl Plugin for CameraProjectionPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(
             PostUpdate,
             crate::visibility::update_frusta

@@ -16,7 +16,7 @@ use bevy::{
 };
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             // We want to intercept the exit so that we can save settings.
             exit_condition: ExitCondition::DontExit,
@@ -46,7 +46,7 @@ struct WindowSettings {
 }
 
 /// A "glue" plugin that copies the window settings to the actual window entity.
-fn init_window_pos(app: &mut App) {
+fn init_window_pos(app: &mut Bevy) {
     let world = app.world_mut();
     let Some(window_settings) = world.get_resource::<WindowSettings>() else {
         return;

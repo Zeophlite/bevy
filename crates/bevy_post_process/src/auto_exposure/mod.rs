@@ -45,7 +45,7 @@ struct AutoExposureResources {
 }
 
 impl Plugin for AutoExposurePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "auto_exposure.wgsl");
 
         app.add_plugins(RenderAssetPlugin::<GpuAutoExposureCompensationCurve>::default())
@@ -58,7 +58,7 @@ impl Plugin for AutoExposurePlugin {
 
         app.add_plugins(ExtractComponentPlugin::<AutoExposure>::default());
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

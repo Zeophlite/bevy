@@ -10,7 +10,7 @@ use crate::{
     PrepassVertexShader, RenderLightmaps, RenderMaterialInstances, RenderMeshInstanceFlags,
     RenderMeshInstances, SetMaterialBindGroup, SetMeshBindGroup, ShadowView,
 };
-use bevy_app::{App, Plugin, PreUpdate};
+use bevy_app::{Bevy, Plugin, PreUpdate};
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetServer, Handle};
 use bevy_camera::{Camera, Camera3d, MainPassResolutionOverride};
 use bevy_core_pipeline::{core_3d::CORE_3D_DEPTH_FORMAT, deferred::*, prepass::*};
@@ -74,14 +74,14 @@ use bevy_utils::default;
 pub struct PrepassPipelinePlugin;
 
 impl Plugin for PrepassPipelinePlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         embedded_asset!(app, "prepass.wgsl");
 
         load_shader_library!(app, "prepass_bindings.wgsl");
         load_shader_library!(app, "prepass_utils.wgsl");
         load_shader_library!(app, "prepass_io.wgsl");
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -118,7 +118,7 @@ impl PrepassPlugin {
 }
 
 impl Plugin for PrepassPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         let no_prepass_plugin_loaded = app
             .world()
             .get_resource::<AnyPrepassPluginLoaded>()
@@ -143,7 +143,7 @@ impl Plugin for PrepassPlugin {
                 ));
         }
 
-        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_app_mut(RenderApp) else {
             return;
         };
 

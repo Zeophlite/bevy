@@ -3,7 +3,7 @@ use crate::{
     sync_world::RenderEntity,
     Extract, ExtractSchedule, RenderApp,
 };
-use bevy_app::{App, Plugin};
+use bevy_app::{Bevy, Plugin};
 use bevy_camera::visibility::ViewVisibility;
 use bevy_ecs::{
     bundle::NoBundleEffect,
@@ -81,10 +81,10 @@ impl<C, F> ExtractComponentPlugin<C, F> {
 }
 
 impl<C: ExtractComponent<F>, F: 'static + Send + Sync> Plugin for ExtractComponentPlugin<C, F> {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_plugins(SyncComponentPlugin::<C, F>::default());
 
-        if let Some(render_app) = app.get_sub_app_mut(RenderApp) {
+        if let Some(render_app) = app.get_app_mut(RenderApp) {
             if self.only_extract_visible {
                 render_app.add_systems(ExtractSchedule, extract_visible_components::<C, F>);
             } else {

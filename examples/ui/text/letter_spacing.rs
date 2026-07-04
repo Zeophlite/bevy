@@ -19,7 +19,7 @@ enum SpacingMode {
 }
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .init_resource::<SpacingMode>()
         .add_systems(Startup, setup)

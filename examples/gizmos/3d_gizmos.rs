@@ -8,7 +8,7 @@ use bevy::{
 use std::f32::consts::PI;
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins((DefaultPlugins, FreeCameraPlugin))
         .init_gizmo_group::<MyRoundGizmos>()
         .add_systems(Startup, setup)

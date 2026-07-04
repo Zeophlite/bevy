@@ -12,7 +12,7 @@ use bevy::{
 };
 
 fn main() {
-    let mut app = App::new();
+    let mut app = Bevy::new();
     app.add_plugins(
         DefaultPlugins
             .build()
@@ -32,7 +32,7 @@ fn main() {
     let main_app = app.main_mut();
     configure_ambiguity_detection(main_app);
 
-    let sub_app = app.sub_app_mut(bevy_render::RenderApp);
+    let sub_app = app.app_mut(bevy_render::RenderApp);
     configure_ambiguity_detection(sub_app);
 
     // Make sure all the system stuff is added.
@@ -46,7 +46,7 @@ fn main() {
         "Main app has unexpected ambiguities among the following schedules: \n{main_app_ambiguities:#?}.",
     );
 
-    let render_app = app.sub_app_mut(bevy_render::RenderApp);
+    let render_app = app.app_mut(bevy_render::RenderApp);
     // Initialize the MainWorld so the render world systems don't fail initialization.
     render_app.init_resource::<bevy_render::MainWorld>();
     let render_app_ambiguities = count_ambiguities(render_app);
@@ -67,7 +67,7 @@ impl AmbiguitiesCount {
     }
 }
 
-fn configure_ambiguity_detection(sub_app: &mut SubApp) {
+fn configure_ambiguity_detection(sub_app: &mut App) {
     let mut schedules = sub_app.world_mut().resource_mut::<Schedules>();
     for (_, schedule) in schedules.iter_mut() {
         schedule.set_build_settings(ScheduleBuildSettings {
@@ -88,7 +88,7 @@ fn configure_ambiguity_detection(sub_app: &mut SubApp) {
 }
 
 /// Returns the number of conflicting systems per schedule.
-fn count_ambiguities(sub_app: &mut SubApp) -> AmbiguitiesCount {
+fn count_ambiguities(sub_app: &mut App) -> AmbiguitiesCount {
     let schedule_labels = sub_app
         .world()
         .resource::<Schedules>()

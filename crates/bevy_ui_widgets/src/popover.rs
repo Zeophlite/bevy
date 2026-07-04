@@ -1,6 +1,6 @@
 //! Framework for positioning of popups, tooltips, and other popover UI elements.
 
-use bevy_app::{App, Plugin, PostUpdate};
+use bevy_app::{Bevy, Plugin, PostUpdate};
 use bevy_ecs::{
     component::Component,
     entity::Entity,
@@ -309,7 +309,7 @@ fn translate_ui_children_recursive(
 pub struct PopoverPlugin;
 
 impl Plugin for PopoverPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.add_systems(
             PostUpdate,
             position_popover

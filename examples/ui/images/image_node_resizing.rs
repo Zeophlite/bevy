@@ -15,7 +15,7 @@ const IMAGE_GROUP_BOX_INIT_HEIGHT: f32 =
 const TEXT_PREFIX: &str = "Compare NodeImageMode(Auto, Stretch) press `Up`/`Down` to resize height, press `Left`/`Right` to resize width\n";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         // Enable for image outline
         .insert_resource(GlobalUiDebugOptions {

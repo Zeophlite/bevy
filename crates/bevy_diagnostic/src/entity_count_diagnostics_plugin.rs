@@ -29,7 +29,7 @@ impl EntityCountDiagnosticsPlugin {
 }
 
 impl Plugin for EntityCountDiagnosticsPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, app: &mut Bevy) {
         app.register_diagnostic(
             Diagnostic::new(Self::ENTITY_COUNT).with_max_history_length(self.max_history_length),
         )

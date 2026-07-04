@@ -8,7 +8,7 @@ use std::f32::consts::PI;
 const GLTF_PATH: &str = "models/animated/MorphStressTest.gltf";
 
 fn main() {
-    App::new()
+    Bevy::new()
         .add_plugins(DefaultPlugins)
         .insert_resource(GlobalAmbientLight {
             brightness: 150.0,
