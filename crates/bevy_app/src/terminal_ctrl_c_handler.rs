@@ -64,7 +64,7 @@ impl TerminalCtrlCHandlerPlugin {
 }
 
 impl Plugin for TerminalCtrlCHandlerPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let result = ctrlc::try_set_handler(move || {
             Self::gracefully_exit();
         });
@@ -76,6 +76,6 @@ impl Plugin for TerminalCtrlCHandlerPlugin {
             Err(err) => log::warn!("Failed to set `Ctrl+C` handler: {err}"),
         }
 
-        app.add_systems(Update, TerminalCtrlCHandlerPlugin::exit_on_flag);
+        bevy.main_mut().add_systems(Update, TerminalCtrlCHandlerPlugin::exit_on_flag);
     }
 }

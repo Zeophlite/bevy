@@ -380,7 +380,8 @@ pub(crate) fn acquire_focus(
 pub struct TabNavigationPlugin;
 
 impl Plugin for TabNavigationPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(Startup, setup_tab_navigation);
         app.add_observer(acquire_focus);
         #[cfg(feature = "bevy_picking")]

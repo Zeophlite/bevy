@@ -96,7 +96,7 @@ use self::resources::{
 pub struct AtmospherePlugin;
 
 impl Plugin for AtmospherePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "types.wgsl");
         load_shader_library!(app, "functions.wgsl");
         load_shader_library!(app, "bruneton_functions.wgsl");
@@ -117,13 +117,13 @@ impl Plugin for AtmospherePlugin {
         ))
         .add_systems(Update, prepare_atmosphere_probe_components);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(ExtractSchedule, extract_atmosphere);
         }
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

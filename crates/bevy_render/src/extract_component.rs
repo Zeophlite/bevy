@@ -81,10 +81,11 @@ impl<C, F> ExtractComponentPlugin<C, F> {
 }
 
 impl<C: ExtractComponent<F>, F: 'static + Send + Sync> Plugin for ExtractComponentPlugin<C, F> {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins(SyncComponentPlugin::<C, F>::default());
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             if self.only_extract_visible {
                 render_app.add_systems(ExtractSchedule, extract_visible_components::<C, F>);
             } else {

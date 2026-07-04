@@ -137,7 +137,8 @@ impl<C: Component + Clone + PartialEq> Default for PropagateSet<C> {
 impl<C: Component + Clone + PartialEq, F: QueryFilter + 'static, R: Relationship> Plugin
     for HierarchyPropagatePlugin<C, F, R>
 {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(
             self.schedule,
             (

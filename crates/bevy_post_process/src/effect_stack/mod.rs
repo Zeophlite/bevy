@@ -123,7 +123,7 @@ pub struct PostProcessingUniformBufferOffsets {
 }
 
 impl Plugin for EffectStackPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "chromatic_aberration.wgsl");
         load_shader_library!(app, "lens_distortion.wgsl");
         load_shader_library!(app, "vignette.wgsl");
@@ -148,7 +148,7 @@ impl Plugin for EffectStackPlugin {
             .add_plugins(ExtractComponentPlugin::<LensDistortion>::default())
             .add_plugins(ExtractComponentPlugin::<Vignette>::default());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

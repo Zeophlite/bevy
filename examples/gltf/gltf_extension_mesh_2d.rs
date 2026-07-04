@@ -67,7 +67,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 struct GltfToMesh2dPlugin;
 
 impl Plugin for GltfToMesh2dPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         #[cfg(target_family = "wasm")]
         bevy::tasks::block_on(async {
             app.world_mut()

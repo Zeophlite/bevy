@@ -132,7 +132,8 @@ fn modal_dialog_barrier_on_spawn(add: On<Add, ModalDialog>, mut commands: Comman
 pub struct ModalDialogPlugin;
 
 impl Plugin for ModalDialogPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(set_modal_dialog_tab_group_modal)
             .add_observer(modal_dialog_barrier_on_spawn)
             .add_observer(modal_dialog_barrier_on_click)

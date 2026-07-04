@@ -93,7 +93,8 @@ use bevy_reflect::{std_traits::ReflectDefault, Reflect};
 pub struct SyncWorldPlugin;
 
 impl Plugin for SyncWorldPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<PendingSyncEntity>();
         app.add_observer(
             |add: On<Add, SyncToRenderWorld>, mut pending: ResMut<PendingSyncEntity>| {

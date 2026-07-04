@@ -116,12 +116,13 @@ impl<A: ErasedRenderAsset, AFTER: ErasedRenderAssetDependency + 'static> Default
 impl<A: ErasedRenderAsset, AFTER: ErasedRenderAssetDependency + 'static> Plugin
     for ErasedRenderAssetPlugin<A, AFTER>
 {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<CachedExtractErasedRenderAssetSystemState<A>>();
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+    fn finish(&self, bevy: &mut Bevy) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<ExtractedAssets<A>>()
                 .init_resource::<ErasedRenderAssets<A::ErasedAsset>>()

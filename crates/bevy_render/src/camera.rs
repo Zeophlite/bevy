@@ -61,7 +61,9 @@ pub struct CameraMainPassTextureFormats(pub EntityHashMap<TextureFormat>);
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         app.register_required_components::<Camera, Msaa>()
             .register_required_components::<Camera, SyncToRenderWorld>()
             .register_required_components::<Camera3d, ColorGrading>()
@@ -82,7 +84,7 @@ impl Plugin for CameraPlugin {
             .register_component_hooks::<Camera>()
             .on_add(warn_on_no_render_graph);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<CameraMainPassTextureFormats>()
                 .init_resource::<SortedCameras>()

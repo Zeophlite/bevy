@@ -309,7 +309,8 @@ fn add_children_nodes(
 pub struct AccessKitPlugin;
 
 impl Plugin for AccessKitPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<WinitActionRequestHandlers>()
             .add_message::<ActionRequestWrapper>()
             .add_systems(

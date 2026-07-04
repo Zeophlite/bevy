@@ -82,7 +82,7 @@ impl Default for OrderIndependentTransparencySettings {
 /// and outputs the result to the screen.
 pub struct OrderIndependentTransparencyPlugin;
 impl Plugin for OrderIndependentTransparencyPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "oit_draw.wgsl");
 
         app.add_plugins((
@@ -91,7 +91,7 @@ impl Plugin for OrderIndependentTransparencyPlugin {
         ))
         .add_systems(Update, check_msaa);
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

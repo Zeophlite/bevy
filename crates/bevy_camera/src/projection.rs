@@ -17,7 +17,8 @@ use serde::{Deserialize, Serialize};
 pub struct CameraProjectionPlugin;
 
 impl Plugin for CameraProjectionPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(
             PostUpdate,
             crate::visibility::update_frusta

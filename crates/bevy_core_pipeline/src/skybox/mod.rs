@@ -34,7 +34,7 @@ use crate::core_3d::CORE_3D_DEPTH_FORMAT;
 pub struct SkyboxPlugin;
 
 impl Plugin for SkyboxPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "skybox.wgsl");
 
         app.add_plugins((
@@ -42,7 +42,7 @@ impl Plugin for SkyboxPlugin {
             UniformComponentPlugin::<SkyboxUniforms>::default(),
         ));
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

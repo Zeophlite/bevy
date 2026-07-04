@@ -84,12 +84,12 @@ impl Default for Fxaa {
 #[derive(Default)]
 pub struct FxaaPlugin;
 impl Plugin for FxaaPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "fxaa.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<Fxaa>::default());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

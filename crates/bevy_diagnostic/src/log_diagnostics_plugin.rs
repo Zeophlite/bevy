@@ -98,7 +98,8 @@ impl Default for LogDiagnosticsPlugin {
 }
 
 impl Plugin for LogDiagnosticsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.insert_resource(LogDiagnosticsState {
             timer: Timer::new(self.wait_duration, TimerMode::Repeating),
             filter: self.filter.clone(),

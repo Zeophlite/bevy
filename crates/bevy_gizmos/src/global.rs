@@ -16,7 +16,8 @@ static GLOBAL_GIZMO: Mutex<GizmoBuffer<DefaultGizmoConfigGroup, ()>> =
 pub struct GlobalGizmosPlugin;
 
 impl Plugin for GlobalGizmosPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(Last, flush_global_gizmos.before(GizmoMeshSystems));
     }
 }

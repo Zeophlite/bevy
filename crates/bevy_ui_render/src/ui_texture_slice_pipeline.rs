@@ -36,10 +36,10 @@ use bytemuck::{Pod, Zeroable};
 pub struct UiTextureSlicerPlugin;
 
 impl Plugin for UiTextureSlicerPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "ui_texture_slice.wgsl");
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .add_render_command::<TransparentUi, DrawUiTextureSlices>()
                 .init_resource::<ExtractedUiTextureSlices>()

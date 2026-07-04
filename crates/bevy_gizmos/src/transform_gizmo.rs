@@ -226,7 +226,8 @@ pub struct TransformGizmoMeshMarker {
 pub struct TransformGizmoPlugin;
 
 impl Plugin for TransformGizmoPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<TransformGizmoSettings>()
             .init_resource::<TransformGizmoState>()
             .register_type::<TransformGizmoFocus>()

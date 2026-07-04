@@ -39,8 +39,8 @@ impl<C> Default for UniformComponentPlugin<C> {
 }
 
 impl<C: Component + ShaderType + WriteInto + Clone> Plugin for UniformComponentPlugin<C> {
-    fn build(&self, app: &mut Bevy) {
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+    fn build(&self, bevy: &mut Bevy) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<ComponentUniforms<C>>()
                 .add_systems(

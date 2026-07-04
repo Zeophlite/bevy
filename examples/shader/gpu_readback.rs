@@ -42,8 +42,8 @@ fn main() {
 // We need a plugin to organize all the systems and render node required for this example
 struct GpuReadbackPlugin;
 impl Plugin for GpuReadbackPlugin {
-    fn build(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn build(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

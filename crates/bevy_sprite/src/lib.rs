@@ -67,7 +67,8 @@ use bevy_math::Vec2;
 pub struct SpritePlugin;
 
 impl Plugin for SpritePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         if !app.is_plugin_added::<TextureAtlasPlugin>() {
             app.add_plugins(TextureAtlasPlugin);
         }

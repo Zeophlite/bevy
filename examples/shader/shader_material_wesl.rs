@@ -38,7 +38,7 @@ pub struct CustomMaterialPlugin;
 struct UtilityShader(Handle<Shader>);
 
 impl Plugin for CustomMaterialPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let handle = app
             .world_mut()
             .resource_mut::<AssetServer>()

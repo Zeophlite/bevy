@@ -44,7 +44,7 @@ const BLOOM_TEXTURE_FORMAT: TextureFormat = TextureFormat::Rg11b10Ufloat;
 pub struct BloomPlugin;
 
 impl Plugin for BloomPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "bloom.wgsl");
 
         app.add_plugins((
@@ -52,7 +52,7 @@ impl Plugin for BloomPlugin {
             UniformComponentPlugin::<BloomUniforms>::default(),
         ));
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

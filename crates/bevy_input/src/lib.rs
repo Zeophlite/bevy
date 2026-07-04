@@ -108,7 +108,9 @@ pub struct InputSystems;
 impl Plugin for InputPlugin {
     #[expect(clippy::allow_attributes, reason = "this is only sometimes unused")]
     #[allow(unused, reason = "all features could be disabled")]
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         #[cfg(feature = "keyboard")]
         app.add_message::<KeyboardInput>()
             .add_message::<KeyboardFocusLost>()

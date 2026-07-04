@@ -66,7 +66,7 @@ use bevy::platform::{
 pub struct DelayedComponentPlugin;
 
 impl Plugin for DelayedComponentPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_systems(Update, tick_timers);
     }
 }

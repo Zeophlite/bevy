@@ -268,7 +268,8 @@ impl Traversal<AcquireFocus> for WindowTraversal {
 pub struct InputFocusPlugin;
 
 impl Plugin for InputFocusPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(PostStartup, set_initial_focus)
             .init_resource::<InputFocus>()
             .init_resource::<InputFocusVisible>()
@@ -287,7 +288,8 @@ impl Plugin for InputFocusPlugin {
 pub struct InputDispatchPlugin;
 
 impl Plugin for InputDispatchPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         #[cfg(not(any(feature = "keyboard", feature = "gamepad", feature = "mouse")))]
         let _ = app;
         #[cfg(any(feature = "keyboard", feature = "gamepad", feature = "mouse"))]

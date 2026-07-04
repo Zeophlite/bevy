@@ -371,7 +371,7 @@ pub trait LightProbeComponent: Send + Sync + Component + Sized {
 }
 
 impl Plugin for LightProbePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "light_probe.wgsl");
         load_shader_library!(app, "environment_map.wgsl");
         load_shader_library!(app, "irradiance_volume.wgsl");
@@ -381,7 +381,7 @@ impl Plugin for LightProbePlugin {
             ExtractInstancesPlugin::<EnvironmentMapIds>::new(),
         ));
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

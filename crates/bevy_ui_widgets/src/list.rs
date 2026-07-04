@@ -303,7 +303,8 @@ fn listbox_focus_lost(
 pub struct ListBoxPlugin;
 
 impl Plugin for ListBoxPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(listbox_on_key_input)
             .add_observer(listbox_on_row_click)
             .add_observer(listbox_focus_gained)

@@ -140,7 +140,8 @@ fn button_on_pointer_cancel(
 pub struct ButtonPlugin;
 
 impl Plugin for ButtonPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(button_on_key_event)
             .add_observer(button_on_pointer_down)
             .add_observer(button_on_pointer_up)

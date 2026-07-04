@@ -50,7 +50,7 @@ use bevy_pbr::{
 pub struct RenderDebugOverlayPlugin;
 
 impl Plugin for RenderDebugOverlayPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "debug_overlay.wgsl");
 
         app.register_type::<RenderDebugOverlay>()
@@ -63,7 +63,7 @@ impl Plugin for RenderDebugOverlayPlugin {
             ))
             .add_systems(bevy_app::Update, (handle_input, update_overlay).chain());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -73,8 +73,8 @@ impl Plugin for RenderDebugOverlayPlugin {
         );
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

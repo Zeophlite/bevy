@@ -39,7 +39,8 @@ use bevy_app::prelude::*;
 pub struct DiagnosticsPlugin;
 
 impl Plugin for DiagnosticsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<DiagnosticsStore>();
 
         #[cfg(feature = "sysinfo_plugin")]

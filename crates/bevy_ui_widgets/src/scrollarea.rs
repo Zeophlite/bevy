@@ -126,7 +126,8 @@ fn on_scroll_into_view(
 pub struct ScrollAreaPlugin;
 
 impl Plugin for ScrollAreaPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(scrollarea_on_scroll)
             .add_observer(on_scroll_into_view);
     }

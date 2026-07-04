@@ -1068,7 +1068,8 @@ pub use bevy_scene_macros::SceneComponent;
 pub struct ScenePlugin;
 
 impl Plugin for ScenePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<QueuedScenes>()
             .init_resource::<WaitingScenes>()
             .init_asset::<ScenePatch>()

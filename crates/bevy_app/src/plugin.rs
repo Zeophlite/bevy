@@ -94,8 +94,8 @@ pub trait Plugin: Downcast + Any + Send + Sync {
 impl_downcast!(Plugin);
 
 impl<T: Fn(&mut Bevy) + Send + Sync + 'static> Plugin for T {
-    fn build(&self, app: &mut Bevy) {
-        self(app);
+    fn build(&self, bevy: &mut Bevy) {
+        self(bevy);
     }
 }
 

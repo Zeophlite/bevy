@@ -36,7 +36,7 @@ pub use tile_orientation::*;
 pub struct TilemapChunkPlugin;
 
 impl Plugin for TilemapChunkPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.init_resource::<TilemapChunkMeshCache>()
             .add_systems(Update, update_tilemap_chunk_indices);
     }

@@ -125,7 +125,7 @@ impl Plugin for IgnoreAmbiguitiesPlugin {
         unused_variables,
         reason = "The `app` parameter is used only if a combination of crates that contain ambiguities with each other are enabled."
     )]
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         #[cfg(all(feature = "bevy_ui_widgets", feature = "bevy_sprite"))]
         if app.is_plugin_added::<bevy_ui_widgets::EditableTextInputPlugin>()
             && app.is_plugin_added::<bevy_sprite::SpritePlugin>()

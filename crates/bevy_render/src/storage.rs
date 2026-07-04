@@ -16,7 +16,8 @@ use wgpu::util::BufferInitDescriptor;
 pub struct StoragePlugin;
 
 impl Plugin for StoragePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins(RenderAssetPlugin::<GpuShaderBuffer>::default())
             .init_asset::<ShaderBuffer>()
             .register_asset_reflect::<ShaderBuffer>();

@@ -85,7 +85,7 @@ use bevy_gizmos::{
 pub struct GizmoRenderPlugin;
 
 impl Plugin for GizmoRenderPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         {
             use bevy_asset::embedded_asset;
             embedded_asset!(app, "lines.wgsl");
@@ -97,7 +97,7 @@ impl Plugin for GizmoRenderPlugin {
             .add_plugins(ExtractResourcePlugin::<LineGizmoEntities>::default())
             .init_resource::<LineGizmoEntities>();
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(RenderStartup, init_line_gizmo_uniform_bind_group_layout);
 
             render_app.add_systems(

@@ -12,7 +12,7 @@ use bevy_shader::ShaderRef;
 pub struct ColorMaterialPlugin;
 
 impl Plugin for ColorMaterialPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "color_material.wgsl");
 
         app.add_plugins(Material2dPlugin::<ColorMaterial>::default())

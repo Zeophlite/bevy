@@ -23,7 +23,7 @@ pub mod taa;
 pub struct AntiAliasPlugin;
 
 impl Plugin for AntiAliasPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_plugins((
             FxaaPlugin,
             SmaaPlugin,

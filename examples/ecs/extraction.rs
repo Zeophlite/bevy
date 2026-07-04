@@ -57,7 +57,7 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(Update, (set_time, trigger_extraction, display_state));
 
-    let Some(render_app) = app.get_app_mut(RenderApp) else {
+    let Some(render_app) = bevy.get_app_mut(RenderApp) else {
         return;
     };
 

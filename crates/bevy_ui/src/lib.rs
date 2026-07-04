@@ -140,7 +140,8 @@ struct AmbiguousWithText;
 struct AmbiguousWithUpdateText2dLayout;
 
 impl Plugin for UiPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<UiSurface>()
             .init_resource::<UiScale>()
             .init_resource::<UiStack>()
@@ -232,7 +233,7 @@ impl Plugin for UiPlugin {
     }
 }
 
-fn build_text_interop(app: &mut Bevy) {
+fn build_text_interop(app: &mut App) {
     app.add_systems(
         PostUpdate,
         (

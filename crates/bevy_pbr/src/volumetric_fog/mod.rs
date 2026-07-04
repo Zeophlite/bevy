@@ -63,7 +63,7 @@ pub struct FogAssets {
 }
 
 impl Plugin for VolumetricFogPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "volumetric_fog.wgsl");
 
         let mut meshes = app.world_mut().resource_mut::<Assets<Mesh>>();
@@ -72,7 +72,7 @@ impl Plugin for VolumetricFogPlugin {
 
         app.add_plugins(SyncComponentPlugin::<FogVolume, Self>::default());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

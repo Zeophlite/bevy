@@ -330,7 +330,8 @@ impl AppExtStates for Bevy {
 pub struct StatesPlugin;
 
 impl Plugin for StatesPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         let mut schedule = app.world_mut().resource_mut::<MainScheduleOrder>();
         schedule.insert_after(PreUpdate, StateTransition);
         schedule.insert_startup_before(PreStartup, StateTransition);

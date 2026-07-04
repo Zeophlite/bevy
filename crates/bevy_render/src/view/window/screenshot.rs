@@ -406,7 +406,8 @@ fn prepare_screenshot_state(
 pub struct ScreenshotPlugin;
 
 impl Plugin for ScreenshotPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "screenshot.wgsl");
 
         let (tx, rx) = std::sync::mpsc::channel();
@@ -421,7 +422,7 @@ impl Plugin for ScreenshotPlugin {
             )
             .add_systems(Update, trigger_screenshots);
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

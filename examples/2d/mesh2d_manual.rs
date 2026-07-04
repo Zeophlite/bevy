@@ -297,7 +297,7 @@ struct ColoredMesh2dShader(Handle<Shader>);
 pub struct RenderColoredMesh2dInstances(MainEntityHashMap<RenderMesh2dInstance>);
 
 impl Plugin for ColoredMesh2dPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         // Load our custom shader
         let mut shaders = app.world_mut().resource_mut::<Assets<Shader>>();
         // Here, we construct and add the shader asset manually. There are many ways to load this
@@ -307,7 +307,7 @@ impl Plugin for ColoredMesh2dPlugin {
         app.add_plugins(SyncComponentPlugin::<ColoredMesh2d>::default());
 
         // Register our custom draw function, and add our render systems
-        app.get_app_mut(RenderApp)
+        bevy.get_app_mut(RenderApp)
             .unwrap()
             .insert_resource(ColoredMesh2dShader(shader))
             .add_render_command::<Transparent2d, DrawColoredMesh2d>()

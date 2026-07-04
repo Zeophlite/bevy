@@ -214,7 +214,8 @@ fn on_label_removed(mut world: DeferredWorld, HookContext { entity, .. }: HookCo
 pub(crate) struct AccessibilityPlugin;
 
 impl Plugin for AccessibilityPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(
             PostUpdate,
             (

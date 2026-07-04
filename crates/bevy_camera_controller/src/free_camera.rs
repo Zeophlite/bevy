@@ -41,7 +41,7 @@ use core::{f32::consts::*, fmt};
 pub struct FreeCameraPlugin;
 
 impl Plugin for FreeCameraPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         // This ordering is required so that both fixed update and update systems can see the results correctly
         app.add_systems(
             RunFixedMainLoop,

@@ -456,7 +456,7 @@ fn set_checkbox_styles(
 pub struct CheckboxPlugin;
 
 impl Plugin for CheckboxPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (update_checkbox_styles, update_checkbox_styles_remove).in_set(PickingSystems::Last),

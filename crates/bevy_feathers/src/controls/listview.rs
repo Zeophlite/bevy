@@ -323,7 +323,7 @@ fn highlight_active(
 pub struct ListViewPlugin;
 
 impl Plugin for ListViewPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (update_listrow_styles, update_listrow_styles_remove).in_set(PickingSystems::Last),

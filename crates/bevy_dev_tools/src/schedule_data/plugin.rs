@@ -56,7 +56,7 @@ impl SerializeSchedulesPlugin {
 }
 
 impl Plugin for SerializeSchedulesPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.init_resource::<SerializeSchedulesFilePath>()
             .add_systems(
                 self.schedule,

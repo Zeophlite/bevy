@@ -33,7 +33,7 @@ use tracing::warn;
 pub struct SolariLightingPlugin;
 
 impl Plugin for SolariLightingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "gbuffer_utils.wgsl");
         load_shader_library!(app, "realtime_bindings.wgsl");
         load_shader_library!(app, "presample_light_tiles.wgsl");
@@ -49,8 +49,8 @@ impl Plugin for SolariLightingPlugin {
         app.insert_resource(DefaultOpaqueRendererMethod::deferred());
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let render_app = app.app_mut(RenderApp);
+    fn finish(&self, bevy: &mut Bevy) {
+        let render_app = bevy.app_mut(RenderApp);
 
         let render_device = render_app.world().resource::<RenderDevice>();
         let features = render_device.features();

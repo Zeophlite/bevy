@@ -25,7 +25,7 @@ use bevy_shader::load_shader_library;
 pub struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "gaussian_blur.wgsl");
 
         app.add_plugins((

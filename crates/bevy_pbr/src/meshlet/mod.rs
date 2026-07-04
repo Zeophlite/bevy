@@ -154,7 +154,7 @@ impl Plugin for MeshletPlugin {
         app.init_asset::<MeshletMesh>()
             .register_asset_loader(MeshletMeshLoader);
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

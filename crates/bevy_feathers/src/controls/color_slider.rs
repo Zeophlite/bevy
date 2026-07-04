@@ -493,7 +493,7 @@ fn update_track_color(
 pub struct ColorSliderPlugin;
 
 impl Plugin for ColorSliderPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (update_slider_pos, update_track_color).in_set(PickingSystems::Last),

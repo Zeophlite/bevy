@@ -43,7 +43,7 @@ impl<M: UiMaterial> Plugin for UiMaterialPlugin<M>
 where
     M::Data: PartialEq + Eq + Hash + Clone,
 {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "ui_vertex_output.wgsl");
 
         embedded_asset!(app, "ui_material.wgsl");
@@ -52,7 +52,7 @@ where
             .register_type::<MaterialNode<M>>()
             .add_plugins(RenderAssetPlugin::<PreparedUiMaterial<M>, GpuImage>::default());
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .add_render_command::<TransparentUi, DrawUiMaterial<M>>()
                 .init_resource::<ExtractedUiMaterialNodes<M>>()

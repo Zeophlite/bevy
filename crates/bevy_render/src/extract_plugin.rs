@@ -29,7 +29,8 @@ impl Default for ExtractPlugin {
 }
 
 impl Plugin for ExtractPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins(SyncWorldPlugin);
         app.init_resource::<ScratchMainWorld>();
 
@@ -72,7 +73,7 @@ impl Plugin for ExtractPlugin {
             extract(main_world, render_world);
         });
 
-        app.insert_app(RenderApp, render_app);
+        bevy.insert_app(RenderApp, render_app);
     }
 }
 
@@ -177,7 +178,7 @@ mod test {
             commands.spawn((RenderComponent, RenderComponentSeparate));
         });
 
-        let render_app = app.get_app_mut(RenderApp).unwrap();
+        let render_app = bevy.get_app_mut(RenderApp).unwrap();
 
         // Normally RenderPlugin sets the RenderRecovery schedule as update, but for
         // testing we just use the Render schedule directly.
@@ -196,7 +197,7 @@ mod test {
 
         // Check that all components have been extracted
         {
-            let render_app = app.get_app_mut(RenderApp).unwrap();
+            let render_app = bevy.get_app_mut(RenderApp).unwrap();
             render_app
                 .world_mut()
                 .run_system_cached(
@@ -231,7 +232,7 @@ mod test {
 
         // Check that the extracted components have been removed
         {
-            let render_app = app.get_app_mut(RenderApp).unwrap();
+            let render_app = bevy.get_app_mut(RenderApp).unwrap();
             render_app
                 .world_mut()
                 .run_system_cached(

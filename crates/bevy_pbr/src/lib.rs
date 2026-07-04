@@ -187,7 +187,7 @@ pub struct DfgLut {
 }
 
 impl Plugin for PbrPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "render/pbr_types.wgsl");
         load_shader_library!(app, "render/pbr_bindings.wgsl");
         load_shader_library!(app, "render/utils.wgsl");
@@ -298,7 +298,7 @@ impl Plugin for PbrPlugin {
             #[cfg(not(feature = "bluenoise_texture"))]
             let handle = { images.add(stbn_placeholder()) };
 
-            if let Some(render_app) = app.get_app_mut(RenderApp) {
+            if let Some(render_app) = bevy.get_app_mut(RenderApp) {
                 render_app
                     .world_mut()
                     .insert_resource(Bluenoise { texture: handle });
@@ -329,7 +329,7 @@ impl Plugin for PbrPlugin {
             let handle = images.add(area_light_luts_placeholder());
 
             let area_light_luts = AreaLightLuts { image: handle };
-            if let Some(render_app) = app.get_app_mut(RenderApp) {
+            if let Some(render_app) = bevy.get_app_mut(RenderApp) {
                 render_app.world_mut().insert_resource(area_light_luts);
             }
         }
@@ -354,12 +354,12 @@ impl Plugin for PbrPlugin {
             #[cfg(not(feature = "dfg_lut"))]
             let texture = Handle::default();
 
-            if let Some(render_app) = app.get_app_mut(RenderApp) {
+            if let Some(render_app) = bevy.get_app_mut(RenderApp) {
                 render_app.world_mut().insert_resource(DfgLut { texture });
             }
         }
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -444,8 +444,8 @@ impl Plugin for PbrPlugin {
         );
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

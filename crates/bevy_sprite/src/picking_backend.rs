@@ -78,7 +78,8 @@ impl Default for SpritePickingSettings {
 pub struct SpritePickingPlugin;
 
 impl Plugin for SpritePickingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<SpritePickingSettings>()
             .add_systems(PreUpdate, sprite_picking.in_set(PickingSystems::Backend));
     }

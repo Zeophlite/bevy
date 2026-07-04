@@ -107,9 +107,9 @@ impl ExtractComponent for InstanceMaterialData {
 struct CustomMaterialPlugin;
 
 impl Plugin for CustomMaterialPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_plugins(ExtractComponentPlugin::<InstanceMaterialData>::default());
-        app.app_mut(RenderApp)
+        bevy.app_mut(RenderApp)
             .add_render_command::<Transparent3d, DrawCustom>()
             .init_resource::<SpecializedMeshPipelines<CustomPipeline>>()
             .add_systems(

@@ -39,7 +39,7 @@ fn main() {
 struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_plugins((
             // The settings will be a component that lives in the main world but will
             // be extracted to the render world every frame.
@@ -55,7 +55,7 @@ impl Plugin for PostProcessPlugin {
         ));
 
         // We need to get the render app from the main app
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

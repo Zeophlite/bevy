@@ -493,7 +493,8 @@ pub enum VisibilitySystems {
 pub struct VisibilityPlugin;
 
 impl Plugin for VisibilityPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         use VisibilitySystems::*;
 
         app.add_plugins(ValidateParentHasComponentPlugin::<InheritedVisibility>::default())

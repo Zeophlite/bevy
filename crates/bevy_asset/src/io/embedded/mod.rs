@@ -17,7 +17,7 @@ use crate::io::{
 };
 use crate::AssetServer;
 use alloc::boxed::Box;
-use bevy_app::Bevy;
+use bevy_app::App;
 use bevy_ecs::{resource::Resource, world::World};
 #[cfg(feature = "embedded_watcher")]
 use bevy_platform::sync::{Arc, PoisonError, RwLock};
@@ -158,7 +158,7 @@ pub trait GetAssetServer {
     fn get_asset_server(&self) -> &AssetServer;
 }
 
-impl GetAssetServer for Bevy {
+impl GetAssetServer for App {
     fn get_asset_server(&self) -> &AssetServer {
         self.world().get_asset_server()
     }

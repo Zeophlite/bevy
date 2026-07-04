@@ -27,12 +27,12 @@ use tracing::warn;
 pub struct PathtracingPlugin;
 
 impl Plugin for PathtracingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "pathtracer.wgsl");
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let render_app = app.app_mut(RenderApp);
+    fn finish(&self, bevy: &mut Bevy) {
+        let render_app = bevy.app_mut(RenderApp);
 
         let render_device = render_app.world().resource::<RenderDevice>();
         let features = render_device.features();

@@ -245,7 +245,7 @@ fn main() {
     // Because `MipGenerationJobs` is part of the render app, we need to add the
     // associated systems to that app, not the main one.
 
-    let render_app = app.get_app_mut(RenderApp).expect("Need a render app");
+    let render_app = bevy.get_app_mut(RenderApp).expect("Need a render app");
 
     render_app.add_systems(Core2d, generate_mips_for_example);
 

@@ -19,7 +19,7 @@ use bevy_ecs::{
         InternedSystemSet, ScheduleBuildSettings, ScheduleCleanupPolicy, ScheduleError,
         ScheduleLabel,
     },
-    system::{ScheduleSystem, SystemId, SystemInput},
+    system::{SystemId, SystemInput},
 };
 use bevy_platform::collections::HashMap;
 #[cfg(feature = "bevy_reflect")]
@@ -107,8 +107,10 @@ impl Debug for Bevy {
 
 impl Default for Bevy {
     fn default() -> Self {
-        let mut app = Bevy::empty();
-        app.apps.main.update_schedule = Some(Main.intern());
+        let mut bevy = Bevy::empty();
+        bevy.apps.main.update_schedule = Some(Main.intern());
+
+        let app = bevy.main_mut();
 
         #[cfg(feature = "bevy_reflect")]
         {
@@ -135,7 +137,7 @@ impl Default for Bevy {
         );
         app.add_message::<AppExit>();
 
-        app
+        bevy
     }
 }
 
@@ -305,32 +307,6 @@ impl Bevy {
     /// Returns `true` if any of the sub-apps are building plugins.
     pub(crate) fn is_building_plugins(&self) -> bool {
         self.apps.iter().any(App::is_building_plugins)
-    }
-
-    /// Adds one or more systems to the given schedule in this app's [`Schedules`].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use bevy_app::prelude::*;
-    /// # use bevy_ecs::prelude::*;
-    /// #
-    /// # let mut app = App::new();
-    /// # fn system_a() {}
-    /// # fn system_b() {}
-    /// # fn system_c() {}
-    /// # fn should_run() -> bool { true }
-    /// #
-    /// app.add_systems(Update, (system_a, system_b, system_c));
-    /// app.add_systems(Update, (system_a, system_b).run_if(should_run));
-    /// ```
-    pub fn add_systems<M>(
-        &mut self,
-        schedule: impl ScheduleLabel,
-        systems: impl IntoScheduleConfigs<ScheduleSystem, M>,
-    ) -> &mut Self {
-        self.main_mut().add_systems(schedule, systems);
-        self
     }
 
     /// Removes all systems in a [`SystemSet`]. This will cause the schedule to be rebuilt when
@@ -1670,7 +1646,7 @@ mod tests {
     impl Plugin for PluginE {
         fn build(&self, _app: &mut Bevy) {}
 
-        fn finish(&self, app: &mut Bevy) {
+        fn finish(&self, bevy: &mut Bevy) {
             if app.is_plugin_added::<PluginA>() {
                 panic!("cannot run if PluginA is already registered");
             }
@@ -1682,7 +1658,7 @@ mod tests {
     impl Plugin for PluginF {
         fn build(&self, _app: &mut Bevy) {}
 
-        fn finish(&self, app: &mut Bevy) {
+        fn finish(&self, bevy: &mut Bevy) {
             // Ensure other plugins are available during finish
             assert_eq!(
                 app.is_plugin_added::<PluginA>(),
@@ -1690,7 +1666,7 @@ mod tests {
             );
         }
 
-        fn cleanup(&self, app: &mut Bevy) {
+        fn cleanup(&self, bevy: &mut Bevy) {
             // Ensure other plugins are available during finish
             assert_eq!(
                 app.is_plugin_added::<PluginA>(),
@@ -1704,7 +1680,7 @@ mod tests {
     impl Plugin for PluginG {
         fn build(&self, _app: &mut Bevy) {}
 
-        fn finish(&self, app: &mut Bevy) {
+        fn finish(&self, bevy: &mut Bevy) {
             app.add_plugins(PluginB);
         }
     }
@@ -1739,7 +1715,7 @@ mod tests {
             fn build(&self, _: &mut Bevy) {}
         }
         impl Plugin for PluginRun {
-            fn build(&self, app: &mut Bevy) {
+            fn build(&self, bevy: &mut Bevy) {
                 app.add_plugins(InnerPlugin).run();
             }
         }
@@ -2067,7 +2043,7 @@ mod tests {
         pub struct Foo;
 
         impl Plugin for Foo {
-            fn build(&self, app: &mut Bevy) {
+            fn build(&self, bevy: &mut Bevy) {
                 assert!(!app.is_plugin_added::<Self>());
             }
         }

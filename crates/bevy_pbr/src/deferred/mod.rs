@@ -90,7 +90,7 @@ impl Default for PbrDeferredLightingDepthId {
 }
 
 impl Plugin for DeferredPbrLightingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_plugins((
             ExtractComponentPlugin::<PbrDeferredLightingDepthId>::default(),
             UniformComponentPlugin::<PbrDeferredLightingDepthId>::default(),
@@ -99,7 +99,7 @@ impl Plugin for DeferredPbrLightingPlugin {
 
         embedded_asset!(app, "deferred_lighting.wgsl");
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

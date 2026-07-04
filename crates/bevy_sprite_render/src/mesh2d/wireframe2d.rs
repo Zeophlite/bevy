@@ -78,7 +78,7 @@ impl Wireframe2dPlugin {
 }
 
 impl Plugin for Wireframe2dPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "wireframe2d.wgsl");
 
         app.add_plugins((
@@ -107,7 +107,7 @@ impl Plugin for Wireframe2dPlugin {
                 .run_if(resource_exists::<Wireframe2dConfig>),
         );
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

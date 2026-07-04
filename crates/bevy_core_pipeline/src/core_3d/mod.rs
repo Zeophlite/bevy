@@ -100,7 +100,7 @@ use crate::{
 pub struct Core3dPlugin;
 
 impl Plugin for Core3dPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.register_required_components_with::<Camera3d, DebandDither>(|| DebandDither::Enabled)
             .register_required_components_with::<Camera3d, CameraRenderGraph>(|| {
                 CameraRenderGraph::new(Core3d)
@@ -109,7 +109,7 @@ impl Plugin for Core3dPlugin {
             .add_plugins((SkyboxPlugin, ExtractComponentPlugin::<Camera3d>::default()))
             .add_systems(PostUpdate, check_msaa);
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

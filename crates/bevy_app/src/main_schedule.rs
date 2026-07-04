@@ -309,7 +309,9 @@ impl Main {
 pub struct MainSchedulePlugin;
 
 impl Plugin for MainSchedulePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         // simple "facilitator" schedules benefit from simpler single threaded scheduling
         let mut main_schedule = Schedule::new(Main);
         main_schedule.set_executor(SingleThreadedExecutor::new());

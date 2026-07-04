@@ -205,7 +205,7 @@ fn set_text_input_styles(
 pub struct TextInputPlugin;
 
 impl Plugin for TextInputPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (

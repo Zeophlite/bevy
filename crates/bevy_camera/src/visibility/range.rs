@@ -29,7 +29,8 @@ use crate::{camera::Camera, primitives::Aabb, visibility::NoCpuCulling, ShadowLo
 pub struct VisibilityRangePlugin;
 
 impl Plugin for VisibilityRangePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<VisibleEntityRanges>().add_systems(
             PostUpdate,
             check_visibility_ranges

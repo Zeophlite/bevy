@@ -78,7 +78,7 @@ pub mod prelude {
     };
 }
 
-use bevy_app::{Bevy, FixedFirst, FixedLast, Last, Plugin, RunFixedMainLoop};
+use bevy_app::{App, Bevy, FixedFirst, FixedLast, Last, Plugin, RunFixedMainLoop};
 use bevy_asset::{Asset, AssetApp, Assets, Handle};
 use bevy_color::{Color, Oklcha};
 use bevy_ecs::{
@@ -105,7 +105,9 @@ use crate::skinned_mesh_bounds::SkinnedMeshBoundsGizmoPlugin;
 pub struct GizmoPlugin;
 
 impl Plugin for GizmoPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         app.init_asset::<GizmoAsset>()
             .init_resource::<GizmoHandles>()
             // We insert the Resource GizmoConfigStore into the world implicitly here if it does not exist.
@@ -139,7 +141,7 @@ pub trait AppGizmoBuilder {
     ) -> &mut Self;
 }
 
-impl AppGizmoBuilder for Bevy {
+impl AppGizmoBuilder for App {
     fn init_gizmo_group<Config: GizmoConfigGroup>(&mut self) -> &mut Self {
         if self.world().contains_resource::<GizmoStorage<Config, ()>>() {
             return self;

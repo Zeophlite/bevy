@@ -48,8 +48,8 @@ fn main() {
 // We need a plugin to organize all the systems and render node required for this example
 struct ComputeShaderMeshGeneratorPlugin;
 impl Plugin for ComputeShaderMeshGeneratorPlugin {
-    fn build(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn build(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -59,8 +59,8 @@ impl Plugin for ComputeShaderMeshGeneratorPlugin {
             .add_systems(Render, prepare_chunks)
             .add_systems(RenderGraph, compute_mesh.before(camera_driver));
     }
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

@@ -327,7 +327,7 @@ fn set_button_styles(
 pub struct ButtonPlugin;
 
 impl Plugin for ButtonPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (update_button_styles, update_button_styles_remove).in_set(PickingSystems::Last),

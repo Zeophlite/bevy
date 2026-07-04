@@ -434,7 +434,7 @@ fn set_radio_styles(
 pub struct RadioPlugin;
 
 impl Plugin for RadioPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             (update_radio_styles, update_radio_styles_remove).in_set(PickingSystems::Last),

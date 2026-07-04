@@ -66,7 +66,7 @@ impl fmt::Display for SceneHandle {
 pub struct SceneViewerPlugin;
 
 impl Plugin for SceneViewerPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.init_resource::<CameraTracker>()
             .add_systems(PreUpdate, scene_load_check)
             .add_systems(

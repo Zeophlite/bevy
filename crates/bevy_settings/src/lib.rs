@@ -122,7 +122,7 @@ impl SettingsPlugin {
 }
 
 impl Plugin for SettingsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let app_name = self.app_name.clone();
         let world = app.world();
         let last_save = world.read_change_tick();

@@ -150,7 +150,7 @@ fn set_toggle_styles(
 pub struct DisclosureTogglePlugin;
 
 impl Plugin for DisclosureTogglePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_systems(
             PreUpdate,
             (update_toggle_styles, update_toggle_styles_remove).in_set(PickingSystems::Last),

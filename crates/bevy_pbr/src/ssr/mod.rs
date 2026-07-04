@@ -191,13 +191,13 @@ pub struct ScreenSpaceReflectionsPipelineKey {
 }
 
 impl Plugin for ScreenSpaceReflectionsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "ssr.wgsl");
         load_shader_library!(app, "raymarch.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<ScreenSpaceReflections>::default());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -26,13 +26,14 @@ use bevy_log::warn;
 pub struct TexturePlugin;
 
 impl Plugin for TexturePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins((
             RenderAssetPlugin::<GpuImage>::default(),
             ExtractResourcePlugin::<ManualTextureViews>::default(),
         ))
         .init_resource::<ManualTextureViews>();
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<ManualTextureViews>()
                 .init_gpu_resource::<TextureCache>()
@@ -44,7 +45,8 @@ impl Plugin for TexturePlugin {
         }
     }
 
-    fn finish(&self, app: &mut Bevy) {
+    fn finish(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         if !ImageLoader::SUPPORTED_FORMATS.is_empty() {
             let supported_compressed_formats = if let Some(resource) =
                 app.world().get_resource::<CompressedImageFormatSupport>()
@@ -62,7 +64,7 @@ impl Plugin for TexturePlugin {
             .default_sampler
             .clone();
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.insert_resource(DefaultImageSamplerDescriptor(default_sampler.clone()));
             render_app.add_systems(
                 RenderStartup,

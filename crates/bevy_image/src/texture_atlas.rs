@@ -16,7 +16,9 @@ use crate::Image;
 pub struct TextureAtlasPlugin;
 
 impl Plugin for TextureAtlasPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         app.init_asset::<TextureAtlasLayout>();
 
         #[cfg(feature = "bevy_reflect")]

@@ -65,7 +65,7 @@ use tracing::error;
 pub struct Mesh2dRenderPlugin;
 
 impl Plugin for Mesh2dRenderPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         load_shader_library!(app, "mesh2d_vertex_output.wgsl");
         load_shader_library!(app, "mesh2d_vertex_input.wgsl");
         load_shader_library!(app, "mesh2d_view_types.wgsl");
@@ -79,7 +79,7 @@ impl Plugin for Mesh2dRenderPlugin {
         // information, so we will load it in a system.
         embedded_asset!(app, "mesh2d_bindings.wgsl");
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<Mesh2dBindGroup>()
                 .init_resource::<ViewKeyCache>()

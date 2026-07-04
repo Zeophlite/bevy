@@ -43,7 +43,8 @@ impl<C: Component> ValidateParentHasComponentPlugin<C> {
 }
 
 impl<C: Component> Plugin for ValidateParentHasComponentPlugin<C> {
-    fn build(&self, app: &mut crate::Bevy) {
+    fn build(&self, bevy: &mut crate::Bevy) {
+        let app = bevy.main_mut();
         app.add_message::<CheckParentHasComponent<C>>()
             .add_observer(validate_parent_has_component::<C>)
             .add_systems(

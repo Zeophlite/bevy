@@ -470,7 +470,8 @@ fn menubutton_on_key_event(
 pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(Update, (menu_acquire_focus, menu_on_lose_focus).chain())
             .add_observer(menu_on_key_event)
             .add_observer(menu_item_on_pointer_down)

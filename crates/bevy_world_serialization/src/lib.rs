@@ -56,7 +56,8 @@ pub struct WorldSerializationPlugin;
 
 #[cfg(feature = "serialize")]
 impl Plugin for WorldSerializationPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_asset::<DynamicWorld>()
             .init_asset::<WorldAsset>()
             .init_asset_loader::<WorldAssetLoader>()

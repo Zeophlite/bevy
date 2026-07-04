@@ -80,7 +80,7 @@ impl TransformGizmoMaterials {
 pub struct TransformGizmoRenderPlugin;
 
 impl Plugin for TransformGizmoRenderPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_systems(
             Startup,
             spawn_gizmo_meshes.run_if(

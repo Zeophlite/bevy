@@ -724,7 +724,8 @@ pub fn slider_self_update(value_change: On<ValueChange<f32>>, mut commands: Comm
 pub struct SliderPlugin;
 
 impl Plugin for SliderPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(slider_on_pointer_down)
             .add_observer(slider_on_pointer_up)
             .add_observer(slider_on_pointer_cancel)

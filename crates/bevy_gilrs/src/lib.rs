@@ -88,7 +88,8 @@ pub struct GilrsPlugin;
 pub struct RumbleSystems;
 
 impl Plugin for GilrsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         match GilrsBuilder::new()
             .with_default_filters(false)
             .set_update_state(false)

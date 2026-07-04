@@ -63,7 +63,7 @@ pub mod tokens;
 pub struct FeathersCorePlugin;
 
 impl Plugin for FeathersCorePlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.init_resource::<UiTheme>();
 
         // Embedded font

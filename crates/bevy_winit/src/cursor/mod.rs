@@ -21,7 +21,8 @@ use winit::event_loop::ActiveEventLoop;
 pub(crate) struct WinitCursorPlugin;
 
 impl Plugin for WinitCursorPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         #[cfg(feature = "custom_cursor")]
         {
             if !app.is_plugin_added::<bevy_image::TextureAtlasPlugin>() {

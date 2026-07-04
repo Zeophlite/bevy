@@ -303,7 +303,7 @@ impl Default for LogPlugin {
 }
 
 impl Plugin for LogPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         #[cfg(feature = "trace")]
         {
             let old_handler = std::panic::take_hook();
@@ -320,7 +320,7 @@ impl Plugin for LogPlugin {
         let subscriber = Registry::default();
 
         // add optional layer provided by user
-        let subscriber = subscriber.with((self.custom_layer)(app));
+        let subscriber = subscriber.with((self.custom_layer)(bevy));
 
         let subscriber = subscriber.with(self.build_filter_layer());
 
@@ -360,7 +360,7 @@ impl Plugin for LogPlugin {
                 None
             };
 
-            let fmt_layer = (self.fmt_layer)(app).unwrap_or_else(|| {
+            let fmt_layer = (self.fmt_layer)(bevy).unwrap_or_else(|| {
                 // note: the implementation of `Default` reads from the env var NO_COLOR
                 // to decide whether to use ANSI color codes, which is common convention
                 // https://no-color.org/

@@ -130,6 +130,14 @@ impl App {
         &mut self.world
     }
 
+    /// A
+    pub fn register_required_components<T: Component, R: Component + Default>(
+        &mut self,
+    ) -> &mut Self {
+        self.world_mut().register_required_components::<T, R>();
+        self
+    }
+
     /// Runs the default schedule.
     ///
     /// Does not clear internal trackers used for change detection.
@@ -211,7 +219,23 @@ impl App {
         self
     }
 
-    /// See [`App::add_systems`].
+    /// Adds one or more systems to the given schedule in this app's [`Schedules`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// #
+    /// # let mut app = App::new();
+    /// # fn system_a() {}
+    /// # fn system_b() {}
+    /// # fn system_c() {}
+    /// # fn should_run() -> bool { true }
+    /// #
+    /// app.add_systems(Update, (system_a, system_b, system_c));
+    /// app.add_systems(Update, (system_a, system_b).run_if(should_run));
+    /// ```
     pub fn add_systems<M>(
         &mut self,
         schedule: impl ScheduleLabel,

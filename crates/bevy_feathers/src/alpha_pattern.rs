@@ -56,7 +56,7 @@ fn on_add_alpha_pattern(
 pub struct AlphaPatternPlugin;
 
 impl Plugin for AlphaPatternPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_observer(on_add_alpha_pattern);
     }
 }

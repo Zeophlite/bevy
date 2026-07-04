@@ -28,10 +28,11 @@ use screenshot::ScreenshotPlugin;
 pub struct WindowRenderPlugin;
 
 impl Plugin for WindowRenderPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins(ScreenshotPlugin);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<ExtractedWindows>()
                 .init_gpu_resource::<WindowSurfaces>()

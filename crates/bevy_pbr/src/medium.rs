@@ -24,10 +24,10 @@ use smallvec::SmallVec;
 pub struct ScatteringMediumPlugin;
 
 impl Plugin for ScatteringMediumPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_plugins(RenderAssetPlugin::<GpuScatteringMedium>::default());
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(RenderStartup, init_scattering_medium_sampler);
         }
     }

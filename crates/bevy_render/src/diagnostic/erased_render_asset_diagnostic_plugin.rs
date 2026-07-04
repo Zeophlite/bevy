@@ -33,14 +33,16 @@ impl<A: ErasedRenderAsset> ErasedRenderAssetDiagnosticPlugin<A> {
 }
 
 impl<A: ErasedRenderAsset> Plugin for ErasedRenderAssetDiagnosticPlugin<A> {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
+
         app.register_diagnostic(
             Diagnostic::new(Self::render_asset_diagnostic_path()).with_suffix(self.suffix),
         )
         .init_resource::<ErasedRenderAssetMeasurements<A>>()
         .add_systems(PreUpdate, add_erased_render_asset_measurement::<A>);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(ExtractSchedule, measure_erased_render_asset::<A>);
         }
     }

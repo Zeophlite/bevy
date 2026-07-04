@@ -123,16 +123,17 @@ impl Plugin for PipelinedRenderingPlugin {
     }
 
     // Sets up the render thread and inserts resources into the main app used for controlling the render thread.
-    fn cleanup(&self, app: &mut Bevy) {
+    fn cleanup(&self, bevy: &mut Bevy) {
         // skip setting up when headless
-        if app.get_app(RenderExtractApp).is_none() {
+        if bevy.get_app(RenderExtractApp).is_none() {
             return;
         }
+        let app = bevy.main_mut();
 
         let (app_to_render_sender, app_to_render_receiver) = async_channel::bounded::<App>(1);
         let (render_to_app_sender, render_to_app_receiver) = async_channel::bounded::<App>(1);
 
-        let mut render_app = app
+        let mut render_app = bevy
             .remove_app(RenderApp)
             .expect("Unable to get RenderApp. Another plugin may have removed the RenderApp before PipelinedRenderingPlugin");
 

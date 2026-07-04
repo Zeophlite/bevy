@@ -23,7 +23,7 @@ use core::hash::Hash;
 pub struct SpriteMaterialPlugin;
 
 impl Plugin for SpriteMaterialPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         embedded_asset!(app, "sprite_material.wgsl");
 
         app.add_plugins(Material2dPlugin::<SpriteMaterial>::default())

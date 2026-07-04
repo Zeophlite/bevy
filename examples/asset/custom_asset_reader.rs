@@ -39,7 +39,7 @@ impl AssetReader for CustomAssetReader {
 struct CustomAssetReaderPlugin;
 
 impl Plugin for CustomAssetReaderPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.register_asset_source(
             AssetSourceId::Default,
             AssetSourceBuilder::new(|| {

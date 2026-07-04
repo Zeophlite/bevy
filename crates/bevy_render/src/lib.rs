@@ -347,7 +347,8 @@ pub struct RenderApp;
 
 impl Plugin for RenderPlugin {
     /// Initializes the renderer, sets up the [`RenderSystems`] and creates the rendering sub-app.
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_asset::<Shader>()
             .init_asset_loader::<ShaderLoader>();
         load_shader_library!(app, "utils.wgsl");
@@ -387,7 +388,7 @@ impl Plugin for RenderPlugin {
         let asset_server = app.world().resource::<AssetServer>().clone();
         app.init_resource::<RenderAssetBytesPerFrame>()
             .init_resource::<RenderErrorHandler>();
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.init_resource::<RenderScheduleOrder>();
             render_app.init_resource::<RenderAssetBytesPerFrameLimiter>();
             render_app.init_gpu_resource::<renderer::PendingCommandBuffers>();
@@ -450,11 +451,12 @@ impl Plugin for RenderPlugin {
             .unwrap_or(true)
     }
 
-    fn finish(&self, app: &mut Bevy) {
+    fn finish(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         if let Some(future_render_resources) =
             app.world_mut().remove_resource::<FutureRenderResources>()
         {
-            let bevy_app::Apps { main, apps } = app.apps_mut();
+            let bevy_app::Apps { main, apps } = bevy.apps_mut();
             let render = apps.get_mut(&RenderApp.intern()).unwrap();
             let render_resources = future_render_resources.0.lock().unwrap().take().unwrap();
 

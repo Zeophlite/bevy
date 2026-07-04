@@ -186,7 +186,7 @@ fn handle_inputs(
 
 pub struct AnimationManipulationPlugin;
 impl Plugin for AnimationManipulationPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_systems(Update, (handle_inputs, assign_clips));
     }
 }

@@ -202,10 +202,10 @@ fn setup(
 /// Plugin for Render world part of work
 pub struct ImageCopyPlugin;
 impl Plugin for ImageCopyPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let (s, r) = crossbeam_channel::unbounded();
 
-        let render_app = app
+        let render_app = bevy
             .insert_resource(MainWorldReceiver(r))
             .app_mut(RenderApp);
 
@@ -265,7 +265,7 @@ fn setup_render_target(
 /// Setups image saver
 pub struct CaptureFramePlugin;
 impl Plugin for CaptureFramePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         info!("Adding CaptureFramePlugin");
         app.add_systems(PostUpdate, update);
     }

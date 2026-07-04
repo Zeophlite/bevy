@@ -102,8 +102,8 @@ pub struct EnvironmentMapGenerationPlugin;
 
 impl Plugin for EnvironmentMapGenerationPlugin {
     fn build(&self, _: &mut Bevy) {}
-    fn finish(&self, app: &mut Bevy) {
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+    fn finish(&self, bevy: &mut Bevy) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             let adapter = render_app.world().resource::<RenderAdapter>();
             let device = render_app.world().resource::<RenderDevice>();
 
@@ -131,7 +131,7 @@ impl Plugin for EnvironmentMapGenerationPlugin {
         app.add_plugins(SyncComponentPlugin::<GeneratedEnvironmentMapLight, Self>::default())
             .add_systems(Update, generate_environment_map_light);
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -61,7 +61,7 @@ mod custom_transitions {
     pub struct IdentityTransitionsPlugin<S: States>(PhantomData<S>);
 
     impl<S: States> Plugin for IdentityTransitionsPlugin<S> {
-        fn build(&self, app: &mut Bevy) {
+        fn build(&self, bevy: &mut Bevy) {
             app.add_systems(
                 StateTransition,
                 // The internals can generate at most one transition event of specific type per frame.

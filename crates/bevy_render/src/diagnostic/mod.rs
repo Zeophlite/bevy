@@ -64,18 +64,19 @@ use crate::renderer::RenderDevice;
 pub struct RenderDiagnosticsPlugin;
 
 impl Plugin for RenderDiagnosticsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         let render_diagnostics_mutex = RenderDiagnosticsMutex::default();
         app.insert_resource(render_diagnostics_mutex.clone())
             .add_systems(PreUpdate, sync_diagnostics);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.insert_resource(render_diagnostics_mutex);
         }
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -25,7 +25,8 @@ use crate::{
 pub struct AabbGizmoPlugin;
 
 impl Plugin for AabbGizmoPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         app.init_gizmo_group::<AabbGizmoConfigGroup>().add_systems(
             PostUpdate,
             (

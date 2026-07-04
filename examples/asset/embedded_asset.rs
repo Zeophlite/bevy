@@ -22,7 +22,7 @@ fn main() {
 struct EmbeddedAssetPlugin;
 
 impl Plugin for EmbeddedAssetPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         // We get to choose some prefix relative to the workspace root which
         // will be ignored in "embedded://" asset paths.
         let omit_prefix = "examples/asset";

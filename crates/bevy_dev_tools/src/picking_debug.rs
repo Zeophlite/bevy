@@ -81,7 +81,7 @@ impl DebugPickingMode {
 pub struct DebugPickingPlugin;
 
 impl Plugin for DebugPickingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.init_resource::<DebugPickingMode>()
             .add_systems(
                 PreUpdate,

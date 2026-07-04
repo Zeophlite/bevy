@@ -29,14 +29,15 @@ impl<A: RenderAsset> RenderAssetDiagnosticPlugin<A> {
 }
 
 impl<A: RenderAsset> Plugin for RenderAssetDiagnosticPlugin<A> {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         app.register_diagnostic(
             Diagnostic::new(Self::render_asset_diagnostic_path()).with_suffix(self.suffix),
         )
         .init_resource::<RenderAssetMeasurements<A>>()
         .add_systems(PreUpdate, add_render_asset_measurement::<A>);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(ExtractSchedule, measure_render_asset::<A>);
         }
     }

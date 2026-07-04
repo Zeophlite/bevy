@@ -30,7 +30,8 @@ use crate::{
 pub struct SkinnedMeshBoundsGizmoPlugin;
 
 impl Plugin for SkinnedMeshBoundsGizmoPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         app.init_gizmo_group::<SkinnedMeshBoundsGizmoConfigGroup>()
             .add_systems(
                 PostUpdate,

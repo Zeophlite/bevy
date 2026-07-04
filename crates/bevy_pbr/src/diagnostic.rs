@@ -50,7 +50,7 @@ impl<M: Material> MaterialAllocatorDiagnosticPlugin<M> {
 }
 
 impl<M: Material> Plugin for MaterialAllocatorDiagnosticPlugin<M> {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.register_diagnostic(
             Diagnostic::new(Self::slabs_diagnostic_path()).with_suffix(" slabs"),
         )
@@ -63,7 +63,7 @@ impl<M: Material> Plugin for MaterialAllocatorDiagnosticPlugin<M> {
         .init_resource::<MaterialAllocatorMeasurements<M>>()
         .add_systems(PreUpdate, add_material_allocator_measurement::<M>);
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(ExtractSchedule, measure_allocator::<M>);
         }
     }

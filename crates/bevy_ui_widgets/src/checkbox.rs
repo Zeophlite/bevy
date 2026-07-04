@@ -256,7 +256,8 @@ fn checkbox_on_toggle_checked(
 pub struct CheckboxPlugin;
 
 impl Plugin for CheckboxPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(checkbox_on_key_input)
             .add_observer(checkbox_on_pointer_click)
             .add_observer(checkbox_on_pointer_down)

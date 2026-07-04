@@ -64,7 +64,9 @@ pub struct TimePlugin;
 pub struct TimeSystems;
 
 impl Plugin for TimePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         app.init_resource::<Time>()
             .init_resource::<Time<Real>>()
             .init_resource::<Time<Virtual>>()

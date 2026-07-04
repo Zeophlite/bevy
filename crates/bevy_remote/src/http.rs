@@ -133,7 +133,7 @@ impl Default for RemoteHttpPlugin {
 }
 
 impl Plugin for RemoteHttpPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.insert_resource(HostAddress(self.address))
             .insert_resource(HostPort(self.port))
             .insert_resource(HostHeaders(self.headers.clone()))
@@ -143,7 +143,7 @@ impl Plugin for RemoteHttpPlugin {
         {
             use bevy_ecs::schedule::common_conditions::run_once;
 
-            let Some(render_app) = app.get_app_mut(RenderApp) else {
+            let Some(render_app) = bevy.get_app_mut(RenderApp) else {
                 return;
             };
 

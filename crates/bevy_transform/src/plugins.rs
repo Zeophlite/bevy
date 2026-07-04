@@ -20,7 +20,9 @@ pub enum TransformSystems {
 pub struct TransformPlugin;
 
 impl Plugin for TransformPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         app.add_plugins(ValidateParentHasComponentPlugin::<GlobalTransform>::default())
             .init_resource::<StaticTransformOptimizations>()
             // add transform systems to startup so the first update is "correct"

@@ -213,7 +213,7 @@ use alloc::{
     sync::Arc,
     vec::Vec,
 };
-use bevy_app::{Bevy, Plugin, PostUpdate, PreUpdate};
+use bevy_app::{App, Bevy, Plugin, PostUpdate, PreUpdate};
 use bevy_ecs::{prelude::Component, schedule::common_conditions::resource_exists};
 use bevy_ecs::{
     reflect::AppTypeRegistry,
@@ -350,7 +350,8 @@ impl AssetPlugin {
 }
 
 impl Plugin for AssetPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         let embedded = EmbeddedAssetRegistry::default();
         {
             let mut sources = app
@@ -606,7 +607,7 @@ pub trait AssetApp {
     fn preregister_asset_loader<L: AssetLoader>(&mut self, extensions: &[&str]) -> &mut Self;
 }
 
-impl AssetApp for Bevy {
+impl AssetApp for App {
     fn register_asset_loader<L: AssetLoader>(&mut self, loader: L) -> &mut Self {
         self.world()
             .resource::<AssetServer>()

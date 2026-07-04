@@ -103,11 +103,11 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
 // which is called after rendering resources are initialized.
 struct CustomRenderedMeshPipelinePlugin;
 impl Plugin for CustomRenderedMeshPipelinePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_plugins(ExtractComponentPlugin::<CustomRenderedEntity>::default());
 
         // We make sure to add these to the render app, not the main app.
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

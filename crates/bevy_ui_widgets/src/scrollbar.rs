@@ -461,7 +461,8 @@ pub(crate) fn update_scrollbar_thumb(
 pub struct ScrollbarPlugin;
 
 impl Plugin for ScrollbarPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_observer(scrollbar_on_pointer_down)
             .add_observer(scrollbar_on_drag_start)
             .add_observer(scrollbar_on_drag_end)

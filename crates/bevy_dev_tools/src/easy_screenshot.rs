@@ -47,7 +47,7 @@ impl Default for EasyScreenshotPlugin {
 }
 
 impl Plugin for EasyScreenshotPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let format = self.format;
         app.add_systems(
             Update,
@@ -181,7 +181,7 @@ impl Plugin for EasyScreenRecordPlugin {
         target_os = "windows",
         expect(unused_variables, reason = "not working on windows")
     )]
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         #[cfg(target_os = "windows")]
         {
             tracing::warn!("Screen recording is not currently supported on Windows: see https://github.com/bevyengine/bevy/issues/22132");
@@ -367,7 +367,7 @@ pub struct CameraMovement {
 }
 
 impl Plugin for EasyCameraMovementPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let decay_rate = self.decay_rate;
         app.add_systems(
             PostUpdate,

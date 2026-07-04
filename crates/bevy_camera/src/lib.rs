@@ -18,7 +18,8 @@ use bevy_app::{Bevy, Plugin};
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<ClearColor>().add_plugins((
             CameraProjectionPlugin,
             visibility::VisibilityPlugin,

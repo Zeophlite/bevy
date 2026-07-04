@@ -50,7 +50,9 @@ impl Default for GpuReadbackPlugin {
 }
 
 impl Plugin for GpuReadbackPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         app.add_plugins(ExtractComponentPlugin::<Readback>::default())
             .register_type::<ReadbackOnce>()
             .add_systems(
@@ -58,7 +60,7 @@ impl Plugin for GpuReadbackPlugin {
                 cleanup_readback_once.after(bevy_ecs::message::MessageUpdateSystems),
             );
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_resource::<GpuReadbackBufferPool>()
                 .init_resource::<GpuReadbacks>()

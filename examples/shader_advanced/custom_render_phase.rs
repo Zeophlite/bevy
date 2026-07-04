@@ -116,13 +116,13 @@ struct DrawStencil;
 
 struct MeshStencilPhasePlugin;
 impl Plugin for MeshStencilPhasePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_plugins((
             ExtractComponentPlugin::<DrawStencil>::default(),
             SortedRenderPhasePlugin::<Stencil3d, MeshPipeline>::new(RenderDebugFlags::default()),
         ));
         // We need to get the render app from the main app
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

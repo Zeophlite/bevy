@@ -49,7 +49,7 @@ pub const CORE_2D_DEPTH_FORMAT: TextureFormat = TextureFormat::Depth32Float;
 pub struct Core2dPlugin;
 
 impl Plugin for Core2dPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.register_required_components::<Camera2d, DebandDither>()
             .register_required_components_with::<Camera2d, CameraRenderGraph>(|| {
                 CameraRenderGraph::new(Core2d)
@@ -57,7 +57,7 @@ impl Plugin for Core2dPlugin {
             .register_required_components_with::<Camera2d, Tonemapping>(|| Tonemapping::None)
             .add_plugins(ExtractComponentPlugin::<Camera2d>::default());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
         render_app

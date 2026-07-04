@@ -155,7 +155,7 @@ fn update_swatch_color(
 pub struct ColorSwatchPlugin;
 
 impl Plugin for ColorSwatchPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(PostUpdate, update_swatch_color);
     }
 }

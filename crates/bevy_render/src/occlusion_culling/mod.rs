@@ -17,7 +17,8 @@ use crate::{extract_component::ExtractComponent, render_resource::TextureView};
 pub struct OcclusionCullingPlugin;
 
 impl Plugin for OcclusionCullingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "mesh_preprocess_types.wgsl");
     }
 }

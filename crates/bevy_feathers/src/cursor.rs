@@ -122,7 +122,7 @@ pub(crate) fn update_cursor(
 pub struct CursorIconPlugin;
 
 impl Plugin for CursorIconPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         if app.world().get_resource::<DefaultCursor>().is_none() {
             app.init_resource::<DefaultCursor>();
             app.init_resource::<OverrideCursor>();

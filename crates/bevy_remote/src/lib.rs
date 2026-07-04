@@ -803,7 +803,7 @@ impl Default for RemotePlugin {
 }
 
 impl Plugin for RemotePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let mut remote_methods = RemoteMethods::new();
 
         let plugin_methods = &mut *self.methods.write().unwrap();
@@ -857,7 +857,7 @@ impl Plugin for RemotePlugin {
         {
             use bevy_ecs::schedule::common_conditions::run_once;
 
-            let Some(render_app) = app.get_app_mut(RenderApp) else {
+            let Some(render_app) = bevy.get_app_mut(RenderApp) else {
                 return;
             };
 

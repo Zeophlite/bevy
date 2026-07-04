@@ -48,7 +48,7 @@ fn main() {
 struct ImageMaterialPlugin;
 
 impl Plugin for ImageMaterialPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.init_asset::<ImageMaterial>()
             .add_plugins(ErasedRenderAssetPlugin::<ImageMaterial>::default())
             .add_systems(
@@ -57,7 +57,7 @@ impl Plugin for ImageMaterialPlugin {
             )
             .init_resource::<EntitiesNeedingSpecialization<ImageMaterial>>();
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

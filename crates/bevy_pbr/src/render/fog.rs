@@ -125,12 +125,12 @@ pub struct ViewFogUniformOffset {
 pub struct FogPlugin;
 
 impl Plugin for FogPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "fog.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<DistanceFog>::default());
 
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<FogMeta>()
                 .add_systems(Render, prepare_fog.in_set(RenderSystems::PrepareResources));

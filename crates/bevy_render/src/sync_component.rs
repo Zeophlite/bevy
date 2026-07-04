@@ -46,7 +46,8 @@ pub trait SyncComponent<F = ()>: Component {
 }
 
 impl<C: SyncComponent<F>, F: Send + Sync + 'static> Plugin for SyncComponentPlugin<C, F> {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.register_required_components::<C, SyncToRenderWorld>();
 
         app.world_mut()

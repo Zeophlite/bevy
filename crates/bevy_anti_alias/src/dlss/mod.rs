@@ -132,14 +132,16 @@ impl Plugin for DlssInitPlugin {
 pub struct DlssPlugin;
 
 impl Plugin for DlssPlugin {
-    fn build(&self, app: &mut App) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.register_type::<Dlss<DlssSuperResolutionFeature>>()
             .register_type::<Dlss<DlssRayReconstructionFeature>>();
     }
 
-    fn finish(&self, app: &mut App) {
+    fn finish(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         let (super_resolution_supported, ray_reconstruction_supported) = {
-            let features = app
+            let features = bevy
                 .app_mut(RenderApp)
                 .world()
                 .resource::<AdditionalVulkanFeatures>();
@@ -153,7 +155,7 @@ impl Plugin for DlssPlugin {
         }
 
         let wgpu_device = {
-            let render_world = app.app(RenderApp).world();
+            let render_world = bevy.app(RenderApp).world();
             let render_device = render_world.resource::<RenderDevice>().wgpu_device();
             render_device.clone()
         };
@@ -170,7 +172,7 @@ impl Plugin for DlssPlugin {
             app.insert_resource(DlssRayReconstructionSupported);
         }
 
-        app.app_mut(RenderApp)
+        bevy.app_mut(RenderApp)
             .insert_resource(DlssSdk(dlss_sdk.unwrap()))
             .add_systems(
                 ExtractSchedule,
@@ -189,7 +191,7 @@ impl Plugin for DlssPlugin {
                     .before(prepare_view_targets),
             );
 
-        app.app_mut(RenderApp).add_systems(
+        bevy.app_mut(RenderApp).add_systems(
             Core3d,
             (node::dlss_super_resolution, node::dlss_ray_reconstruction)
                 .chain()

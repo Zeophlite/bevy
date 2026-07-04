@@ -122,7 +122,7 @@ const Z_SLICING_WORKGROUP_SIZE: u32 = 64;
 pub struct GpuClusteringPlugin;
 
 impl Plugin for GpuClusteringPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "cluster.wgsl");
         embedded_asset!(app, "cluster_z_slice.wgsl");
         embedded_asset!(app, "cluster_raster.wgsl");
@@ -134,8 +134,8 @@ impl Plugin for GpuClusteringPlugin {
         >::default());
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

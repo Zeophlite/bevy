@@ -38,7 +38,8 @@ use crate::mesh::morph::RenderMorphTargetAllocator;
 pub struct MeshRenderAssetPlugin;
 
 impl Plugin for MeshRenderAssetPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "mesh_metadata_types.wgsl");
 
         app
@@ -46,7 +47,7 @@ impl Plugin for MeshRenderAssetPlugin {
             .add_plugins(RenderAssetPlugin::<RenderMesh, GpuImage>::default())
             .add_plugins(MeshAllocatorPlugin);
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -60,7 +61,8 @@ impl Plugin for MeshRenderAssetPlugin {
             );
     }
 
-    fn finish(&self, app: &mut Bevy) {
+    fn finish(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         let mut mesh_assets = app.world_mut().resource_mut::<Assets<Mesh>>();
         let handle = mesh_assets.add(
             Mesh::new(PrimitiveTopology::PointList, RenderAssetUsages::all())
@@ -72,7 +74,7 @@ impl Plugin for MeshRenderAssetPlugin {
                 .compressed_mesh(MeshAttributeCompressionFlags::COMPRESS_POSITION, false),
         );
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

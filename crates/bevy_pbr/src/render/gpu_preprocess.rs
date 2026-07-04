@@ -395,15 +395,15 @@ type WithAnyPrepass = Or<(
 )>;
 
 impl Plugin for GpuMeshPreprocessPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "mesh_preprocess.wgsl");
         embedded_asset!(app, "reset_indirect_batch_sets.wgsl");
         embedded_asset!(app, "build_indirect_params.wgsl");
         embedded_asset!(app, "unpack_bins.wgsl");
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

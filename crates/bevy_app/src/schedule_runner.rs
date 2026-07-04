@@ -71,9 +71,9 @@ impl ScheduleRunnerPlugin {
 }
 
 impl Plugin for ScheduleRunnerPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         let run_mode = self.run_mode;
-        app.set_runner(move |mut app: Bevy| {
+        bevy.set_runner(move |mut app: Bevy| {
             let plugins_state = app.plugins_state();
             if plugins_state != PluginsState::Cleaned {
                 while app.plugins_state() == PluginsState::Adding {

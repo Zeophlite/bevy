@@ -14,9 +14,10 @@ use bevy_time::Time;
 pub struct GlobalsPlugin;
 
 impl Plugin for GlobalsPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "globals.wgsl");
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app
                 .init_gpu_resource::<GlobalsBuffer>()
                 .init_resource::<Time>()

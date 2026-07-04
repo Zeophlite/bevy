@@ -220,7 +220,8 @@ fn dialog_drag(
 pub struct DialogPlugin;
 
 impl Plugin for DialogPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<DialogStack>()
             .add_observer(register_dialog)
             .add_observer(deregister_dialog)

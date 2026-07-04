@@ -1278,7 +1278,8 @@ pub fn animate_targets(
 pub struct AnimationPlugin;
 
 impl Plugin for AnimationPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_asset::<AnimationClip>()
             .init_asset::<AnimationGraph>()
             .init_asset_loader::<AnimationGraphAssetLoader>()

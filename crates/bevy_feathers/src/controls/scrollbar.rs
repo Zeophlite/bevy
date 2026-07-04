@@ -92,7 +92,7 @@ fn update_scrollbar_thumb_styles(
 pub struct ScrollbarPlugin;
 
 impl Plugin for ScrollbarPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PreUpdate,
             update_scrollbar_thumb_styles.in_set(PickingSystems::Last),

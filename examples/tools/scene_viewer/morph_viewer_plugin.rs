@@ -292,7 +292,7 @@ fn detect_morphs(
 pub struct MorphViewerPlugin;
 
 impl Plugin for MorphViewerPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         app.add_systems(
             Update,
             (

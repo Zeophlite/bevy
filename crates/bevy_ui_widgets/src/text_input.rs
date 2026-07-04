@@ -486,7 +486,8 @@ pub enum ImeSystems {
 pub struct EditableTextInputPlugin;
 
 impl Plugin for EditableTextInputPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<QueuedSelectAll>()
             .add_observer(on_focused_keyboard_input)
             .add_observer(on_pointer_drag)

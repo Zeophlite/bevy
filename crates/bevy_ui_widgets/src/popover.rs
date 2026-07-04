@@ -309,7 +309,8 @@ fn translate_ui_children_recursive(
 pub struct PopoverPlugin;
 
 impl Plugin for PopoverPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(
             PostUpdate,
             position_popover

@@ -45,12 +45,13 @@ use crate::{
 pub struct SparseBufferPlugin;
 
 impl Plugin for SparseBufferPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "sparse_buffer_update.wgsl");
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -366,7 +366,8 @@ impl Default for PickingSettings {
 pub struct PickingPlugin;
 
 impl Plugin for PickingPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<PickingSettings>()
             .init_resource::<pointer::PointerMap>()
             .init_resource::<backend::ray::RayMap>()
@@ -417,9 +418,11 @@ impl Plugin for PickingPlugin {
 pub struct InteractionPlugin;
 
 impl Plugin for InteractionPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         use events::*;
         use hover::{generate_hovermap, update_interactions};
+
+        let app = bevy.main_mut();
 
         app.init_resource::<hover::HoverMap>()
             .init_resource::<hover::PreviousHoverMap>()

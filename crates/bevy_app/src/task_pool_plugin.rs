@@ -30,12 +30,12 @@ pub struct TaskPoolPlugin {
 }
 
 impl Plugin for TaskPoolPlugin {
-    fn build(&self, _app: &mut Bevy) {
+    fn build(&self, _bevy: &mut Bevy) {
         // Setup the default bevy task pools
         self.task_pool_options.create_default_pools();
 
         #[cfg(not(all(target_arch = "wasm32", feature = "web")))]
-        _app.add_systems(Last, tick_global_task_pools);
+        _bevy.main_mut().add_systems(Last, tick_global_task_pools);
     }
 }
 

@@ -1513,8 +1513,8 @@ where
     BPI: BinnedPhaseItem,
     GFBD: GetFullBatchData + Sync + Send + 'static,
 {
-    fn build(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn build(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -1634,8 +1634,8 @@ where
     SPI: SortedPhaseItem + CachedRenderPipelinePhaseItem,
     GFBD: GetFullBatchData + Sync + Send + 'static,
 {
-    fn build(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn build(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

@@ -65,7 +65,7 @@ pub struct WebAssetPlugin {
 }
 
 impl Plugin for WebAssetPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         if !self.silence_startup_warning {
             warn!("WebAssetPlugin is potentially insecure! Make sure to verify asset URLs are safe to load before loading them. \
             If you promise you know what you're doing, you can silence this warning by setting silence_startup_warning: true \

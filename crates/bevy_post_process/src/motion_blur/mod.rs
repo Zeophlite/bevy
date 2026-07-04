@@ -148,7 +148,7 @@ pub struct MotionBlurUniform {
 #[derive(Default)]
 pub struct MotionBlurPlugin;
 impl Plugin for MotionBlurPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "motion_blur.wgsl");
 
         app.add_plugins((
@@ -156,7 +156,7 @@ impl Plugin for MotionBlurPlugin {
             UniformComponentPlugin::<MotionBlurUniform>::default(),
         ));
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

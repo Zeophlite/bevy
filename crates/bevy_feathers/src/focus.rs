@@ -91,7 +91,7 @@ fn manage_focus_indicators(
 pub struct FocusOutlinesPlugin;
 
 impl Plugin for FocusOutlinesPlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         app.add_systems(
             PostUpdate,
             manage_focus_indicators.in_set(UiSystems::Content),

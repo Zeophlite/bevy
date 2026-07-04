@@ -252,7 +252,7 @@ pub struct DownsamplingConstants {
 pub struct MipGenerationPlugin;
 
 impl Plugin for MipGenerationPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "experimental/downsample_depth.wgsl");
         embedded_asset!(app, "downsample.wgsl");
 
@@ -283,7 +283,7 @@ impl Plugin for MipGenerationPlugin {
         };
         app.insert_resource(downsample_shaders.clone());
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 
@@ -327,8 +327,8 @@ impl Plugin for MipGenerationPlugin {
             );
     }
 
-    fn finish(&self, app: &mut Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

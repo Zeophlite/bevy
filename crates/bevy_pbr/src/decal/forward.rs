@@ -26,7 +26,7 @@ use bevy_shader::load_shader_library;
 pub struct ForwardDecalPlugin;
 
 impl Plugin for ForwardDecalPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         load_shader_library!(app, "forward_decal.wgsl");
 
         let mesh = app.world_mut().resource_mut::<Assets<Mesh>>().add(

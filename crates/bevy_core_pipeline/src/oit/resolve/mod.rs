@@ -37,12 +37,12 @@ pub const OIT_REQUIRED_STORAGE_BUFFERS: u32 = 3;
 /// Plugin needed to resolve the Order Independent Transparency (OIT) buffer to the screen.
 pub struct OitResolvePlugin;
 impl Plugin for OitResolvePlugin {
-    fn build(&self, app: &mut bevy_app::Bevy) {
+    fn build(&self, bevy: &mut bevy_app::Bevy) {
         embedded_asset!(app, "oit_resolve.wgsl");
     }
 
-    fn finish(&self, app: &mut bevy_app::Bevy) {
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+    fn finish(&self, bevy: &mut bevy_app::Bevy) {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

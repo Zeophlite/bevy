@@ -41,8 +41,8 @@ impl<R: ExtractResource<F>, F> Default for ExtractResourcePlugin<R, F> {
 impl<R: ExtractResource<F, Mutability = Mutable>, F: 'static + Send + Sync> Plugin
     for ExtractResourcePlugin<R, F>
 {
-    fn build(&self, app: &mut Bevy) {
-        if let Some(render_app) = app.get_app_mut(RenderApp) {
+    fn build(&self, bevy: &mut Bevy) {
+        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
             render_app.add_systems(ExtractSchedule, extract_resource::<R, F>);
         } else {
             once!(bevy_log::error!(

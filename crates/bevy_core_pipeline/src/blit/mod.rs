@@ -18,10 +18,10 @@ use bevy_utils::default;
 pub struct BlitPlugin;
 
 impl Plugin for BlitPlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
         embedded_asset!(app, "blit.wgsl");
 
-        let Some(render_app) = app.get_app_mut(RenderApp) else {
+        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;
         };
 

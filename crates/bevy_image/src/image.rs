@@ -205,7 +205,9 @@ impl ImagePlugin {
 }
 
 impl Plugin for ImagePlugin {
-    fn build(&self, app: &mut Bevy) {
+    fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
+
         #[cfg(feature = "exr")]
         app.init_asset_loader::<crate::ExrTextureLoader>();
 
