@@ -38,6 +38,7 @@ pub const OIT_REQUIRED_STORAGE_BUFFERS: u32 = 3;
 pub struct OitResolvePlugin;
 impl Plugin for OitResolvePlugin {
     fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "oit_resolve.wgsl");
     }
 

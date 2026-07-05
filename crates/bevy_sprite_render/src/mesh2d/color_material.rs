@@ -13,6 +13,7 @@ pub struct ColorMaterialPlugin;
 
 impl Plugin for ColorMaterialPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "color_material.wgsl");
 
         app.add_plugins(Material2dPlugin::<ColorMaterial>::default())

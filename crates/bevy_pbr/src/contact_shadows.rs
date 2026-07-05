@@ -99,6 +99,7 @@ pub struct ContactShadowsBuffer(pub DynamicUniformBuffer<ContactShadowsUniform>)
 
 impl Plugin for ContactShadowsPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.register_type::<ContactShadows>()
             .add_plugins(ExtractComponentPlugin::<ContactShadows>::default());
 

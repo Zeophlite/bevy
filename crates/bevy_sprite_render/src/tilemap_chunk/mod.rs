@@ -37,6 +37,7 @@ pub struct TilemapChunkPlugin;
 
 impl Plugin for TilemapChunkPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_resource::<TilemapChunkMeshCache>()
             .add_systems(Update, update_tilemap_chunk_indices);
     }

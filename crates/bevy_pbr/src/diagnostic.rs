@@ -51,6 +51,7 @@ impl<M: Material> MaterialAllocatorDiagnosticPlugin<M> {
 
 impl<M: Material> Plugin for MaterialAllocatorDiagnosticPlugin<M> {
     fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         app.register_diagnostic(
             Diagnostic::new(Self::slabs_diagnostic_path()).with_suffix(" slabs"),
         )

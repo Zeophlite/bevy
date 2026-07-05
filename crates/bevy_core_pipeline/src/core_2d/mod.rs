@@ -50,6 +50,7 @@ pub struct Core2dPlugin;
 
 impl Plugin for Core2dPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.register_required_components::<Camera2d, DebandDither>()
             .register_required_components_with::<Camera2d, CameraRenderGraph>(|| {
                 CameraRenderGraph::new(Core2d)

@@ -24,6 +24,7 @@ pub struct AntiAliasPlugin;
 
 impl Plugin for AntiAliasPlugin {
     fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins((
             FxaaPlugin,
             SmaaPlugin,

@@ -396,6 +396,7 @@ type WithAnyPrepass = Or<(
 
 impl Plugin for GpuMeshPreprocessPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "mesh_preprocess.wgsl");
         embedded_asset!(app, "reset_indirect_batch_sets.wgsl");
         embedded_asset!(app, "build_indirect_params.wgsl");

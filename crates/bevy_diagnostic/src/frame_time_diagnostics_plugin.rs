@@ -38,25 +38,25 @@ impl FrameTimeDiagnosticsPlugin {
 impl Plugin for FrameTimeDiagnosticsPlugin {
     fn build(&self, bevy: &mut Bevy) {
         bevy.main_mut()
-        .register_diagnostic(
-            Diagnostic::new(Self::FRAME_TIME)
-                .with_suffix("ms")
-                .with_max_history_length(self.max_history_length)
-                .with_smoothing_factor(self.smoothing_factor),
-        )
-        .register_diagnostic(
-            Diagnostic::new(Self::FPS)
-                .with_max_history_length(self.max_history_length)
-                .with_smoothing_factor(self.smoothing_factor),
-        )
-        // An average frame count would be nonsensical, so we set the max history length
-        // to zero and disable smoothing.
-        .register_diagnostic(
-            Diagnostic::new(Self::FRAME_COUNT)
-                .with_smoothing_factor(0.0)
-                .with_max_history_length(0),
-        )
-        .add_systems(Update, Self::diagnostic_system);
+            .register_diagnostic(
+                Diagnostic::new(Self::FRAME_TIME)
+                    .with_suffix("ms")
+                    .with_max_history_length(self.max_history_length)
+                    .with_smoothing_factor(self.smoothing_factor),
+            )
+            .register_diagnostic(
+                Diagnostic::new(Self::FPS)
+                    .with_max_history_length(self.max_history_length)
+                    .with_smoothing_factor(self.smoothing_factor),
+            )
+            // An average frame count would be nonsensical, so we set the max history length
+            // to zero and disable smoothing.
+            .register_diagnostic(
+                Diagnostic::new(Self::FRAME_COUNT)
+                    .with_smoothing_factor(0.0)
+                    .with_max_history_length(0),
+            )
+            .add_systems(Update, Self::diagnostic_system);
     }
 }
 

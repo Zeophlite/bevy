@@ -43,6 +43,7 @@ pub struct TonemappingPlugin;
 
 impl Plugin for TonemappingPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "tonemapping_shared.wgsl");
         load_shader_library!(app, "lut_bindings.wgsl");
 

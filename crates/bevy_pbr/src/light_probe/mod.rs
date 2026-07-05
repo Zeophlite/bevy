@@ -372,6 +372,7 @@ pub trait LightProbeComponent: Send + Sync + Component + Sized {
 
 impl Plugin for LightProbePlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "light_probe.wgsl");
         load_shader_library!(app, "environment_map.wgsl");
         load_shader_library!(app, "irradiance_volume.wgsl");

@@ -46,6 +46,7 @@ pub struct CorePipelinePlugin;
 
 impl Plugin for CorePipelinePlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "fullscreen_vertex_shader/fullscreen.wgsl");
 
         app.add_plugins((Core2dPlugin, Core3dPlugin, CopyDeferredLightingIdPlugin))

@@ -194,6 +194,7 @@ enum DofPass {
 
 impl Plugin for DepthOfFieldPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "dof.wgsl");
 
         app.add_plugins(UniformComponentPlugin::<DepthOfFieldUniform>::default());

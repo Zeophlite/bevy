@@ -188,6 +188,8 @@ pub struct DfgLut {
 
 impl Plugin for PbrPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let (app, mut maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+
         load_shader_library!(app, "render/pbr_types.wgsl");
         load_shader_library!(app, "render/pbr_bindings.wgsl");
         load_shader_library!(app, "render/utils.wgsl");
@@ -274,8 +276,8 @@ impl Plugin for PbrPlugin {
             )
             .unwrap();
 
-        let has_bluenoise = app
-            .get_app(RenderApp)
+        let has_bluenoise = maybe_render_app
+            .as_mut()
             .is_some_and(|render_app| render_app.world().is_resource_added::<Bluenoise>());
 
         if !has_bluenoise {
@@ -298,15 +300,15 @@ impl Plugin for PbrPlugin {
             #[cfg(not(feature = "bluenoise_texture"))]
             let handle = { images.add(stbn_placeholder()) };
 
-            if let Some(render_app) = bevy.get_app_mut(RenderApp) {
+            maybe_render_app.as_mut().map(|render_app| {
                 render_app
                     .world_mut()
-                    .insert_resource(Bluenoise { texture: handle });
-            }
+                    .insert_resource(Bluenoise { texture: handle })
+            });
         }
 
-        let has_area_light_luts = app
-            .get_app(RenderApp)
+        let has_area_light_luts = maybe_render_app
+            .as_mut()
             .is_some_and(|render_app| render_app.world().is_resource_added::<AreaLightLuts>());
 
         if !has_area_light_luts {
@@ -329,13 +331,13 @@ impl Plugin for PbrPlugin {
             let handle = images.add(area_light_luts_placeholder());
 
             let area_light_luts = AreaLightLuts { image: handle };
-            if let Some(render_app) = bevy.get_app_mut(RenderApp) {
-                render_app.world_mut().insert_resource(area_light_luts);
-            }
+            maybe_render_app
+                .as_mut()
+                .map(|render_app| render_app.world_mut().insert_resource(area_light_luts));
         }
 
-        let has_dfg_lut = app
-            .get_app(RenderApp)
+        let has_dfg_lut = maybe_render_app
+            .as_mut()
             .is_some_and(|render_app| render_app.world().is_resource_added::<DfgLut>());
 
         if !has_dfg_lut {
@@ -354,12 +356,12 @@ impl Plugin for PbrPlugin {
             #[cfg(not(feature = "dfg_lut"))]
             let texture = Handle::default();
 
-            if let Some(render_app) = bevy.get_app_mut(RenderApp) {
-                render_app.world_mut().insert_resource(DfgLut { texture });
-            }
+            maybe_render_app
+                .as_mut()
+                .map(|render_app| render_app.world_mut().insert_resource(DfgLut { texture }));
         }
 
-        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
+        let Some(render_app) = maybe_render_app else {
             return;
         };
 
@@ -445,7 +447,9 @@ impl Plugin for PbrPlugin {
     }
 
     fn finish(&self, bevy: &mut Bevy) {
-        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
+        let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+
+        let Some(render_app) = maybe_render_app else {
             return;
         };
 

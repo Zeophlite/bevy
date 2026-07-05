@@ -75,6 +75,7 @@ pub struct PrepassPipelinePlugin;
 
 impl Plugin for PrepassPipelinePlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "prepass.wgsl");
 
         load_shader_library!(app, "prepass_bindings.wgsl");
@@ -119,6 +120,7 @@ impl PrepassPlugin {
 
 impl Plugin for PrepassPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         let no_prepass_plugin_loaded = app
             .world()
             .get_resource::<AnyPrepassPluginLoaded>()

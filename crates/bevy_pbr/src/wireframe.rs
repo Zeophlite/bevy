@@ -86,6 +86,7 @@ impl WireframePlugin {
 
 impl Plugin for WireframePlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "render/wireframe.wgsl");
 
         app.add_plugins((

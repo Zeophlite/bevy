@@ -159,6 +159,7 @@ impl Default for DecalsBuffer {
 
 impl Plugin for ClusteredDecalPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "clustered.wgsl");
 
         app.add_plugins(SyncComponentPlugin::<ClusteredDecal, Self>::default());

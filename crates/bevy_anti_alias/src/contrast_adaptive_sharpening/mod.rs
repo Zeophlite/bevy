@@ -104,6 +104,7 @@ pub struct CasPlugin;
 
 impl Plugin for CasPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "robust_contrast_adaptive_sharpening.wgsl");
 
         app.add_plugins((

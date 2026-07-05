@@ -1,5 +1,5 @@
 use crate::{
-    bevy::{Bevy, AppExit},
+    bevy::{AppExit, Bevy},
     plugin::Plugin,
     PluginsState,
 };

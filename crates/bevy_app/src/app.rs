@@ -1,4 +1,4 @@
-use crate::{Bevy, AppLabel, InternedAppLabel, Plugin, Plugins, PluginsState};
+use crate::{AppLabel, Bevy, InternedAppLabel, Plugin, Plugins, PluginsState};
 use alloc::{boxed::Box, string::String, vec::Vec};
 use bevy_ecs::{
     message::MessageRegistry,
@@ -135,6 +135,16 @@ impl App {
         &mut self,
     ) -> &mut Self {
         self.world_mut().register_required_components::<T, R>();
+        self
+    }
+
+    /// A
+    pub fn register_required_components_with<T: Component, R: Component>(
+        &mut self,
+        constructor: fn() -> R,
+    ) -> &mut Self {
+        self.world_mut()
+            .register_required_components_with::<T, R>(constructor);
         self
     }
 

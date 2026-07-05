@@ -150,6 +150,8 @@ pub struct MeshPipelineSystems;
 
 impl Plugin for MeshRenderPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+
         load_shader_library!(app, "forward_io.wgsl");
         load_shader_library!(app, "mesh_view_types.wgsl", |settings| *settings =
             ShaderSettings {
@@ -174,7 +176,7 @@ impl Plugin for MeshRenderPlugin {
 
         embedded_asset!(app, "mesh.wgsl");
 
-        if bevy.get_app(RenderApp).is_none() {
+        if maybe_render_app.is_none() {
             return;
         }
 
@@ -192,7 +194,7 @@ impl Plugin for MeshRenderPlugin {
             SortedRenderPhasePlugin::<Transparent3d, MeshPipeline>::new(self.debug_flags),
         ));
 
-        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
+        if let Some(render_app) = maybe_render_app {
             render_app
                 .init_gpu_resource::<MeshCullingDataBuffer>()
                 .init_resource::<RenderMaterialInstances>()
@@ -230,9 +232,11 @@ impl Plugin for MeshRenderPlugin {
     }
 
     fn finish(&self, bevy: &mut Bevy) {
+        let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+
         let mut mesh_bindings_shader_defs = Vec::with_capacity(1);
 
-        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
+        if let Some(render_app) = maybe_render_app {
             render_app
                 .init_gpu_resource::<MorphIndices>()
                 .init_gpu_resource::<MorphUniforms>()

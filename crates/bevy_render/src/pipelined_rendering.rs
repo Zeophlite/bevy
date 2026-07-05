@@ -1,6 +1,6 @@
 use async_channel::{Receiver, Sender};
 
-use bevy_app::{Bevy, AppExit, AppLabel, Plugin, App};
+use bevy_app::{App, AppExit, AppLabel, Bevy, Plugin};
 use bevy_ecs::{
     resource::Resource,
     schedule::MainThreadExecutor,
@@ -27,10 +27,7 @@ pub struct RenderAppChannels {
 
 impl RenderAppChannels {
     /// Create a `RenderAppChannels` from a [`async_channel::Receiver`] and [`async_channel::Sender`]
-    pub fn new(
-        app_to_render_sender: Sender<App>,
-        render_to_app_receiver: Receiver<App>,
-    ) -> Self {
+    pub fn new(app_to_render_sender: Sender<App>, render_to_app_receiver: Receiver<App>) -> Self {
         Self {
             app_to_render_sender,
             render_to_app_receiver,
@@ -128,7 +125,6 @@ impl Plugin for PipelinedRenderingPlugin {
         if bevy.get_app(RenderExtractApp).is_none() {
             return;
         }
-        let app = bevy.main_mut();
 
         let (app_to_render_sender, app_to_render_receiver) = async_channel::bounded::<App>(1);
         let (render_to_app_sender, render_to_app_receiver) = async_channel::bounded::<App>(1);
@@ -138,6 +134,7 @@ impl Plugin for PipelinedRenderingPlugin {
             .expect("Unable to get RenderApp. Another plugin may have removed the RenderApp before PipelinedRenderingPlugin");
 
         // clone main thread executor to render world
+        let app = bevy.main_mut();
         let executor = app.world().get_resource::<MainThreadExecutor>().unwrap();
         render_app.world_mut().insert_resource(executor.clone());
 
@@ -166,8 +163,7 @@ impl Plugin for PipelinedRenderingPlugin {
 
                 {
                     #[cfg(feature = "trace")]
-                    let _app_span =
-                        bevy_log::info_span!("sub app", name = ?RenderApp).entered();
+                    let _app_span = bevy_log::info_span!("sub app", name = ?RenderApp).entered();
                     render_app.update();
                 }
 

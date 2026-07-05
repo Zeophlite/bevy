@@ -1,4 +1,4 @@
-use bevy_app::{Bevy, MainScheduleOrder, Plugin, PreStartup, PreUpdate, App};
+use bevy_app::{App, Bevy, MainScheduleOrder, Plugin, PreStartup, PreUpdate};
 use bevy_ecs::{message::Messages, schedule::IntoScheduleConfigs, world::FromWorld};
 use bevy_utils::once;
 use log::warn;

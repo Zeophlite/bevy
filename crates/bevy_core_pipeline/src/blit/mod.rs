@@ -19,6 +19,7 @@ pub struct BlitPlugin;
 
 impl Plugin for BlitPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "blit.wgsl");
 
         let Some(render_app) = bevy.get_app_mut(RenderApp) else {

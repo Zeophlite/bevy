@@ -278,6 +278,7 @@ where
     M::Data: PartialEq + Eq + Hash + Clone,
 {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.init_asset::<M>()
             .init_resource::<EntitiesNeedingSpecialization<M>>()
             .register_type::<MeshMaterial2d<M>>()

@@ -134,6 +134,7 @@ pub struct DlssPlugin;
 impl Plugin for DlssPlugin {
     fn build(&self, bevy: &mut Bevy) {
         let app = bevy.main_mut();
+        let app = bevy.main_mut();
         app.register_type::<Dlss<DlssSuperResolutionFeature>>()
             .register_type::<Dlss<DlssRayReconstructionFeature>>();
     }

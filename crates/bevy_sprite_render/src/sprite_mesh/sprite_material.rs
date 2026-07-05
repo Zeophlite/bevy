@@ -24,6 +24,7 @@ pub struct SpriteMaterialPlugin;
 
 impl Plugin for SpriteMaterialPlugin {
     fn build(&self, bevy: &mut bevy_app::Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "sprite_material.wgsl");
 
         app.add_plugins(Material2dPlugin::<SpriteMaterial>::default())

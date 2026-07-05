@@ -37,6 +37,7 @@ pub struct UiTextureSlicerPlugin;
 
 impl Plugin for UiTextureSlicerPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "ui_texture_slice.wgsl");
 
         if let Some(render_app) = bevy.get_app_mut(RenderApp) {

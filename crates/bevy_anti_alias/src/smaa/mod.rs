@@ -287,6 +287,7 @@ pub struct SmaaSpecializedRenderPipelines {
 
 impl Plugin for SmaaPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         // Load the shader.
         embedded_asset!(app, "smaa.wgsl");
 

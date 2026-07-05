@@ -185,6 +185,7 @@ pub struct LightmapSlotIndex(pub(crate) NonMaxU16);
 
 impl Plugin for LightmapPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "lightmap.wgsl");
 
         let Some(render_app) = bevy.get_app_mut(RenderApp) else {

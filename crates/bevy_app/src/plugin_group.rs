@@ -1,4 +1,4 @@
-use crate::{Bevy, AppError, Plugin};
+use crate::{AppError, Bevy, Plugin};
 use alloc::{
     boxed::Box,
     string::{String, ToString},

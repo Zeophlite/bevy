@@ -1,5 +1,5 @@
 use approx::relative_eq;
-use bevy_app::{Bevy, AppExit, PluginsState};
+use bevy_app::{AppExit, Bevy, PluginsState};
 use bevy_ecs::{
     change_detection::{DetectChanges, Res},
     entity::Entity,

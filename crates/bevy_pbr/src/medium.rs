@@ -25,6 +25,7 @@ pub struct ScatteringMediumPlugin;
 
 impl Plugin for ScatteringMediumPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins(RenderAssetPlugin::<GpuScatteringMedium>::default());
 
         if let Some(render_app) = bevy.get_app_mut(RenderApp) {

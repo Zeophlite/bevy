@@ -45,6 +45,7 @@ pub struct BloomPlugin;
 
 impl Plugin for BloomPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "bloom.wgsl");
 
         app.add_plugins((

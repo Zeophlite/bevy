@@ -29,6 +29,7 @@ pub struct ScreenSpaceTransmissionPlugin;
 
 impl Plugin for ScreenSpaceTransmissionPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "transmission.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<ScreenSpaceTransmission>::default())

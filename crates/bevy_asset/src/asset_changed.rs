@@ -319,7 +319,7 @@ mod tests {
     use std::println;
 
     use crate::{AssetApp, Assets};
-    use bevy_app::{Bevy, AppExit, PostUpdate, Startup, Update};
+    use bevy_app::{AppExit, Bevy, PostUpdate, Startup, Update};
     use bevy_ecs::schedule::IntoScheduleConfigs;
     use bevy_ecs::{
         component::Component,

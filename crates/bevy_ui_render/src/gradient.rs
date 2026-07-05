@@ -44,6 +44,7 @@ pub struct GradientPlugin;
 
 impl Plugin for GradientPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "gradient.wgsl");
 
         if let Some(render_app) = bevy.get_app_mut(RenderApp) {

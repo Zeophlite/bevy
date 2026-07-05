@@ -131,7 +131,7 @@ mod sealed {
     use alloc::boxed::Box;
     use variadics_please::all_tuples;
 
-    use crate::{Bevy, AppError, Plugin, PluginGroup};
+    use crate::{AppError, Bevy, Plugin, PluginGroup};
 
     pub trait Plugins<Marker> {
         fn add_to_bevy(self, app: &mut Bevy);

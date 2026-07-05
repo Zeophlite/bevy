@@ -4,13 +4,13 @@ use bevy_gltf::{
 };
 
 use crate::{MeshMaterial3d, StandardMaterial};
-use bevy_app::Bevy;
+use bevy_app::App;
 use bevy_asset::Handle;
 use bevy_ecs::prelude::*;
 
 use bevy_asset::LoadContext;
 
-pub(crate) fn add_gltf(app: &mut Bevy) {
+pub(crate) fn add_gltf(app: &mut App) {
     #[cfg(target_family = "wasm")]
     bevy_tasks::block_on(async {
         app.world_mut()

@@ -1,6 +1,5 @@
 use crate::{
-    First, Main, MainSchedulePlugin, PlaceholderPlugin, Plugin, Plugins, PluginsState, App,
-    Apps,
+    App, Apps, First, Main, MainSchedulePlugin, PlaceholderPlugin, Plugin, Plugins, PluginsState,
 };
 use alloc::{
     boxed::Box,
@@ -98,9 +97,7 @@ pub struct Bevy {
 impl Debug for Bevy {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "App {{ apps: ")?;
-        f.debug_map()
-            .entries(self.apps.apps.iter())
-            .finish()?;
+        f.debug_map().entries(self.apps.apps.iter()).finish()?;
         write!(f, "}}")
     }
 }
@@ -1227,11 +1224,18 @@ impl Bevy {
         self.apps.apps.get_mut(&label.intern())
     }
 
+    ///
+    pub fn get_main_and_app_mut(&mut self, label: impl AppLabel) -> (&mut App, Option<&mut App>) {
+        let Apps { main: app, apps } = self.apps_mut();
+        let maybe_app = apps.get_mut(&label.intern());
+
+        (app, maybe_app)
+    }
+
     /// Inserts a [`App`] with the given label.
     pub fn insert_app(&mut self, label: impl AppLabel, mut app: App) {
         if let Some(handler) = self.fallback_error_handler {
-            app
-                .world_mut()
+            app.world_mut()
                 .get_resource_or_insert_with(|| FallbackErrorHandler(handler));
         }
         self.apps.apps.insert(label.intern(), app);
@@ -1493,8 +1497,7 @@ impl Bevy {
         );
         self.fallback_error_handler = Some(handler);
         for app in self.apps.iter_mut() {
-            app
-                .world_mut()
+            app.world_mut()
                 .get_resource_or_insert_with(|| FallbackErrorHandler(handler));
         }
         self
@@ -1619,7 +1622,7 @@ mod tests {
         world::{FromWorld, World},
     };
 
-    use crate::{Bevy, AppExit, Plugin, App, Update};
+    use crate::{App, AppExit, Bevy, Plugin, Update};
 
     struct PluginA;
     impl Plugin for PluginA {

@@ -62,6 +62,7 @@ pub enum SpriteSystems {
 
 impl Plugin for SpriteRenderPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "render/sprite_view_bindings.wgsl");
 
         embedded_asset!(app, "render/sprite.wgsl");

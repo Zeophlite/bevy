@@ -21,17 +21,15 @@ fn main() {
     let mut bevy = Bevy::new();
 
     bevy.main_mut()
-    .add_plugins((
-        DefaultPlugins,
-        ExtractResourcePlugin::<RenderError>::default(),
-    ))
-    .add_systems(Startup, setup)
-    .add_systems(Update, (update_camera, input))
-    .init_resource::<RenderError>();
+        .add_plugins((
+            DefaultPlugins,
+            ExtractResourcePlugin::<RenderError>::default(),
+        ))
+        .add_systems(Startup, setup)
+        .add_systems(Update, (update_camera, input))
+        .init_resource::<RenderError>();
 
-    bevy
-    .app_mut(RenderApp)
-    .add_systems(Render, cause_error);
+    bevy.app_mut(RenderApp).add_systems(Render, cause_error);
 
     bevy.run();
 }

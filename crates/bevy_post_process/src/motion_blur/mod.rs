@@ -149,6 +149,7 @@ pub struct MotionBlurUniform {
 pub struct MotionBlurPlugin;
 impl Plugin for MotionBlurPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "motion_blur.wgsl");
 
         app.add_plugins((

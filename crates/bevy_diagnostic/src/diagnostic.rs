@@ -4,7 +4,7 @@ use core::{
     time::Duration,
 };
 
-use bevy_app::{Bevy, App};
+use bevy_app::{App, Bevy};
 use bevy_ecs::resource::Resource;
 use bevy_ecs::system::{Deferred, Res, SystemBuffer, SystemParam};
 use bevy_platform::{collections::HashMap, hash::PassHash, time::Instant};

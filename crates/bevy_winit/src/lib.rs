@@ -88,7 +88,6 @@ impl Plugin for WinitPlugin {
     }
 
     fn build(&self, bevy: &mut Bevy) {
-        let app = bevy.main_mut();
         let mut event_loop_builder = EventLoop::<WinitUserEvent>::with_user_event();
 
         // linux check is needed because x11 might be enabled on other platforms.
@@ -127,11 +126,15 @@ impl Plugin for WinitPlugin {
         let event_loop = event_loop_builder
             .build()
             .expect("Failed to build event loop");
+        let x = event_loop.owned_display_handle();
+        let y = event_loop.create_proxy();
+        bevy.set_runner(|bevy| winit_runner(bevy, event_loop));
 
+        let app = bevy.main_mut();
         app.init_resource::<WinitMonitors>()
             .init_resource::<WinitSettings>()
-            .insert_resource(DisplayHandleWrapper(event_loop.owned_display_handle()))
-            .insert_resource(EventLoopProxyWrapper(event_loop.create_proxy()))
+            .insert_resource(DisplayHandleWrapper(x))
+            .insert_resource(EventLoopProxyWrapper(y))
             .add_message::<RawWinitWindowEvent>()
             .add_systems(
                 Last,
@@ -143,7 +146,6 @@ impl Plugin for WinitPlugin {
                 )
                     .chain(),
             );
-        bevy.set_runner(|bevy| winit_runner(bevy, event_loop));
 
         app.add_plugins(AccessKitPlugin);
         app.add_plugins(cursor::WinitCursorPlugin);

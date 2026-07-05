@@ -1,4 +1,4 @@
-use bevy_app::{Bevy, AppLabel};
+use bevy_app::{AppLabel, Bevy};
 use bevy_asset::{Asset, AssetApp, AssetEvent, AssetId, Assets, RenderAssetUsages};
 use bevy_ecs::prelude::*;
 use bevy_reflect::TypePath;

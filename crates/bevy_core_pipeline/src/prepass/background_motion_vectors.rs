@@ -94,6 +94,7 @@ impl BackgroundMotionVectorsPlugin {
 
 impl Plugin for BackgroundMotionVectorsPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "background_motion_vectors.wgsl");
         app.register_type::<NoBackgroundMotionVectors>()
             .add_plugins(ExtractComponentPlugin::<NoBackgroundMotionVectors>::default());

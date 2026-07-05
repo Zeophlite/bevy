@@ -1,7 +1,7 @@
 use bevy_material::labels::DrawFunctionId;
 
 use crate::render_phase::{PhaseItem, TrackedRenderPass};
-use bevy_app::{Bevy, App};
+use bevy_app::{App, Bevy};
 use bevy_ecs::{
     entity::Entity,
     query::{QueryEntityError, QueryState, ROQueryItem, ReadOnlyQueryData},

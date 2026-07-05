@@ -81,6 +81,7 @@ pub struct TransformGizmoRenderPlugin;
 
 impl Plugin for TransformGizmoRenderPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_systems(
             Startup,
             spawn_gizmo_meshes.run_if(

@@ -96,7 +96,7 @@ use crate::{
 };
 use alloc::sync::Arc;
 use batching::gpu_preprocessing::BatchingPlugin;
-use bevy_app::{Bevy, AppLabel, Plugin, App};
+use bevy_app::{App, AppLabel, Bevy, Plugin};
 use bevy_asset::{AssetApp, AssetServer};
 use bevy_derive::Deref;
 use bevy_ecs::{

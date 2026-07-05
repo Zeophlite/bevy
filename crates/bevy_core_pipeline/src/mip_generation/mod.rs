@@ -253,6 +253,7 @@ pub struct MipGenerationPlugin;
 
 impl Plugin for MipGenerationPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "experimental/downsample_depth.wgsl");
         embedded_asset!(app, "downsample.wgsl");
 

@@ -44,6 +44,7 @@ where
     M::Data: PartialEq + Eq + Hash + Clone,
 {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "ui_vertex_output.wgsl");
 
         embedded_asset!(app, "ui_material.wgsl");

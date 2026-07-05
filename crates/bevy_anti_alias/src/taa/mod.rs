@@ -48,6 +48,7 @@ pub struct TemporalAntiAliasPlugin;
 
 impl Plugin for TemporalAntiAliasPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "taa.wgsl");
 
         app.add_plugins(SyncComponentPlugin::<TemporalAntiAliasing>::default());

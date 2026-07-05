@@ -126,6 +126,7 @@ pub struct FogPlugin;
 
 impl Plugin for FogPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         load_shader_library!(app, "fog.wgsl");
 
         app.add_plugins(ExtractComponentPlugin::<DistanceFog>::default());

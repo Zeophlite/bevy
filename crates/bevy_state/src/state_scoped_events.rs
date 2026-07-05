@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 
-use bevy_app::{Bevy, App};
+use bevy_app::{App, Bevy};
 use bevy_ecs::{
     message::{Message, MessageReader, Messages},
     resource::Resource,

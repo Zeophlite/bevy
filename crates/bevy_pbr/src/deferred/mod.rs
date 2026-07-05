@@ -91,6 +91,7 @@ impl Default for PbrDeferredLightingDepthId {
 
 impl Plugin for DeferredPbrLightingPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins((
             ExtractComponentPlugin::<PbrDeferredLightingDepthId>::default(),
             UniformComponentPlugin::<PbrDeferredLightingDepthId>::default(),

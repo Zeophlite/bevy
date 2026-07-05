@@ -24,6 +24,7 @@ pub struct CopyDeferredLightingIdPlugin;
 
 impl Plugin for CopyDeferredLightingIdPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "copy_deferred_lighting_id.wgsl");
         let Some(render_app) = bevy.get_app_mut(RenderApp) else {
             return;

@@ -2,7 +2,7 @@ use core::sync::atomic::{AtomicU8, Ordering};
 
 use bevy_ecs::message::MessageWriter;
 
-use crate::{Bevy, AppExit, Plugin, Update};
+use crate::{AppExit, Bevy, Plugin, Update};
 
 pub use ctrlc;
 
@@ -76,6 +76,7 @@ impl Plugin for TerminalCtrlCHandlerPlugin {
             Err(err) => log::warn!("Failed to set `Ctrl+C` handler: {err}"),
         }
 
-        bevy.main_mut().add_systems(Update, TerminalCtrlCHandlerPlugin::exit_on_flag);
+        bevy.main_mut()
+            .add_systems(Update, TerminalCtrlCHandlerPlugin::exit_on_flag);
     }
 }

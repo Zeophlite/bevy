@@ -14,6 +14,7 @@ pub struct TilemapChunkMaterialPlugin;
 
 impl Plugin for TilemapChunkMaterialPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         embedded_asset!(app, "tilemap_chunk_material.wgsl");
 
         app.add_plugins(Material2dPlugin::<TilemapChunkMaterial>::default());

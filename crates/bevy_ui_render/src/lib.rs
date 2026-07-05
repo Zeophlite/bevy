@@ -198,12 +198,14 @@ pub struct UiRenderPlugin;
 
 impl Plugin for UiRenderPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+
         load_shader_library!(app, "ui.wgsl");
 
         #[cfg(feature = "bevy_ui_debug")]
         app.init_resource::<GlobalUiDebugOptions>();
 
-        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
+        let Some(render_app) = maybe_render_app else {
             return;
         };
 

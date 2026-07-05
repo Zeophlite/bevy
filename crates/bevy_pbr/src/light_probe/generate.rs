@@ -103,25 +103,27 @@ pub struct EnvironmentMapGenerationPlugin;
 impl Plugin for EnvironmentMapGenerationPlugin {
     fn build(&self, _: &mut Bevy) {}
     fn finish(&self, bevy: &mut Bevy) {
-        if let Some(render_app) = bevy.get_app_mut(RenderApp) {
-            let adapter = render_app.world().resource::<RenderAdapter>();
-            let device = render_app.world().resource::<RenderDevice>();
+        let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
 
-            // Cubemap SPD requires at least 6 storage textures
-            let limit_support = device.limits().max_storage_textures_per_shader_stage >= 6
-                && device.limits().max_compute_workgroup_storage_size != 0
-                && device.limits().max_compute_workgroup_size_x != 0;
+        let Some(render_app) = maybe_render_app else {
+            return;
+        };
 
-            let downlevel_support = adapter
-                .get_downlevel_capabilities()
-                .flags
-                .contains(DownlevelFlags::COMPUTE_SHADERS);
+        let adapter = render_app.world().resource::<RenderAdapter>();
+        let device = render_app.world().resource::<RenderDevice>();
 
-            if !limit_support || !downlevel_support {
-                info!("Disabling EnvironmentMapGenerationPlugin because compute is not supported on this platform. This is safe to ignore if you are not using EnvironmentMapGenerationPlugin.");
-                return;
-            }
-        } else {
+        // Cubemap SPD requires at least 6 storage textures
+        let limit_support = device.limits().max_storage_textures_per_shader_stage >= 6
+            && device.limits().max_compute_workgroup_storage_size != 0
+            && device.limits().max_compute_workgroup_size_x != 0;
+
+        let downlevel_support = adapter
+            .get_downlevel_capabilities()
+            .flags
+            .contains(DownlevelFlags::COMPUTE_SHADERS);
+
+        if !limit_support || !downlevel_support {
+            info!("Disabling EnvironmentMapGenerationPlugin because compute is not supported on this platform. This is safe to ignore if you are not using EnvironmentMapGenerationPlugin.");
             return;
         }
 
@@ -130,10 +132,6 @@ impl Plugin for EnvironmentMapGenerationPlugin {
 
         app.add_plugins(SyncComponentPlugin::<GeneratedEnvironmentMapLight, Self>::default())
             .add_systems(Update, generate_environment_map_light);
-
-        let Some(render_app) = bevy.get_app_mut(RenderApp) else {
-            return;
-        };
 
         render_app
             .add_systems(

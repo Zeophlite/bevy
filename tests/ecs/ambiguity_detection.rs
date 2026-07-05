@@ -97,13 +97,10 @@ fn count_ambiguities(app: &mut App) -> AmbiguitiesCount {
         .collect::<Vec<_>>();
     let mut ambiguities = <HashMap<_, _>>::default();
     for label in schedule_labels {
-        let ambiguities_in_schedule =
-            app
-                .world_mut()
-                .schedule_scope(label, |world, schedule| {
-                    schedule.initialize(world).unwrap().unwrap();
-                    schedule.graph().conflicting_systems().len()
-                });
+        let ambiguities_in_schedule = app.world_mut().schedule_scope(label, |world, schedule| {
+            schedule.initialize(world).unwrap().unwrap();
+            schedule.graph().conflicting_systems().len()
+        });
         ambiguities.insert(label, ambiguities_in_schedule);
     }
     AmbiguitiesCount(ambiguities)

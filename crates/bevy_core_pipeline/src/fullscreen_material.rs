@@ -49,6 +49,7 @@ pub struct FullscreenMaterialPlugin<T: FullscreenMaterial> {
 
 impl<T: FullscreenMaterial> Plugin for FullscreenMaterialPlugin<T> {
     fn build(&self, bevy: &mut Bevy) {
+        let app = bevy.main_mut();
         app.add_plugins((
             ExtractComponentPlugin::<T>::default(),
             UniformComponentPlugin::<T>::default(),
