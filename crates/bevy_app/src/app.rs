@@ -217,13 +217,59 @@ impl App {
         self.extract.take()
     }
 
-    /// See [`App::insert_resource`].
+    /// Inserts the [`Resource`] into the app, overwriting any existing resource of the same type.
+    ///
+    /// There is also an [`init_resource`](Self::init_resource) for resources that have
+    /// [`Default`] or [`FromWorld`] implementations.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// #
+    /// #[derive(Resource)]
+    /// struct MyCounter {
+    ///     counter: usize,
+    /// }
+    ///
+    /// App::new()
+    ///    .insert_resource(MyCounter { counter: 0 });
+    /// ```
     pub fn insert_resource<R: Resource>(&mut self, resource: R) -> &mut Self {
         self.world.insert_resource(resource);
         self
     }
 
-    /// See [`App::init_resource`].
+    /// Inserts the [`Resource`], initialized with its default value, into the app,
+    /// if there is no existing instance of `R`.
+    ///
+    /// `R` must implement [`FromWorld`].
+    /// If `R` implements [`Default`], [`FromWorld`] will be automatically implemented and
+    /// initialize the [`Resource`] with [`Default::default`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// #
+    /// #[derive(Resource)]
+    /// struct MyCounter {
+    ///     counter: usize,
+    /// }
+    ///
+    /// impl Default for MyCounter {
+    ///     fn default() -> MyCounter {
+    ///         MyCounter {
+    ///             counter: 100
+    ///         }
+    ///     }
+    /// }
+    ///
+    /// App::new()
+    ///     .init_resource::<MyCounter>();
+    /// ```
     pub fn init_resource<R: Resource + FromWorld>(&mut self) -> &mut Self {
         self.world.init_resource::<R>();
         self
@@ -257,7 +303,29 @@ impl App {
         self
     }
 
-    /// See [`App::remove_systems_in_set`]
+    /// Removes all systems in a [`SystemSet`]. This will cause the schedule to be rebuilt when
+    /// the schedule is run again and can be slow. A [`ScheduleError`] is returned if the schedule needs to be
+    /// [`Schedule::initialize`]'d or the `set` is not found.
+    ///
+    /// Note that this can remove all systems of a type if you pass
+    /// the system to this function as systems implicitly create a set based
+    /// on the system type.
+    ///
+    /// ## Example
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::schedule::ScheduleCleanupPolicy;
+    /// #
+    /// # let mut app = App::new();
+    /// # fn system_a() {}
+    /// # fn system_b() {}
+    /// #
+    /// // add the system
+    /// app.add_systems(Update, system_a);
+    ///
+    /// // remove the system
+    /// app.remove_systems_in_set(Update, system_a, ScheduleCleanupPolicy::RemoveSystemsOnly);
+    /// ```
     pub fn remove_systems_in_set<M>(
         &mut self,
         schedule: impl ScheduleLabel,
@@ -269,7 +337,15 @@ impl App {
         })
     }
 
-    /// See [`App::register_system`].
+    /// Registers a system and returns a [`SystemId`] so it can later be called by [`World::run_system`].
+    ///
+    /// It's possible to register the same systems more than once, they'll be stored separately.
+    ///
+    /// This is different from adding systems to a [`Schedule`] with [`App::add_systems`],
+    /// because the [`SystemId`] that is returned can be used anywhere in the [`World`] to run the associated system.
+    /// This allows for running systems in a push-based fashion.
+    /// Using a [`Schedule`] is still preferred for most cases
+    /// due to its better performance and ability to run non-conflicting systems simultaneously.
     pub fn register_system<I, O, M>(
         &mut self,
         system: impl IntoSystem<I, O, M> + 'static,
@@ -281,7 +357,13 @@ impl App {
         self.world.register_system(system)
     }
 
-    /// See [`App::register_tracked_system`].
+    /// Registers a system and returns a tracked [`SystemHandle`] so it can later
+    /// be called by [`World::run_system`]. The system entity will be automatically
+    /// queued for despawn when the last clone of the returned handle is dropped.
+    ///
+    /// See [`World::register_tracked_system`] for more details.
+    ///
+    /// [`SystemHandle`]: bevy_ecs::system::SystemHandle
     pub fn register_tracked_system<I, O, M>(
         &mut self,
         system: impl IntoSystem<I, O, M> + 'static,
@@ -293,7 +375,7 @@ impl App {
         self.world.register_tracked_system(system)
     }
 
-    /// See [`App::configure_sets`].
+    /// Configures a collection of system sets in the provided schedule, adding any sets that do not exist.
     #[track_caller]
     pub fn configure_sets<M>(
         &mut self,
@@ -305,7 +387,8 @@ impl App {
         self
     }
 
-    /// See [`App::add_schedule`].
+    /// Inserts a new `schedule` under the provided `label`, overwriting any existing
+    /// schedule with the same label.
     pub fn add_schedule(&mut self, schedule: Schedule) -> &mut Self {
         let mut schedules = self.world.resource_mut::<Schedules>();
         let _old_schedule = schedules.insert(schedule);
@@ -321,7 +404,9 @@ impl App {
         self
     }
 
-    /// See [`App::init_schedule`].
+    /// Initializes an empty `schedule` under the provided `label`, if it does not exist.
+    ///
+    /// See [`add_schedule`](Self::add_schedule) to insert an existing schedule.
     pub fn init_schedule(&mut self, label: impl ScheduleLabel) -> &mut Self {
         let label = label.intern();
         let mut schedules = self.world.resource_mut::<Schedules>();
@@ -331,13 +416,13 @@ impl App {
         self
     }
 
-    /// See [`App::get_schedule`].
+    /// Returns a reference to the [`Schedule`] with the provided `label` if it exists.
     pub fn get_schedule(&self, label: impl ScheduleLabel) -> Option<&Schedule> {
         let schedules = self.world.get_resource::<Schedules>()?;
         schedules.get(label)
     }
 
-    /// See [`App::get_schedule_mut`].
+    /// Returns a mutable reference to the [`Schedule`] with the provided `label` if it exists.
     pub fn get_schedule_mut(&mut self, label: impl ScheduleLabel) -> Option<&mut Schedule> {
         let schedules = self.world.get_resource_mut::<Schedules>()?;
         // We must call `.into_inner` here because the borrow checker only understands reborrows
@@ -345,7 +430,9 @@ impl App {
         schedules.into_inner().get_mut(label)
     }
 
-    /// See [`App::edit_schedule`].
+    /// Runs function `f` with the [`Schedule`] associated with `label`.
+    ///
+    /// **Note:** This will create the schedule if it does not already exist.
     pub fn edit_schedule(
         &mut self,
         label: impl ScheduleLabel,
@@ -363,7 +450,10 @@ impl App {
         self
     }
 
-    /// See [`App::configure_schedules`].
+    /// Applies the provided [`ScheduleBuildSettings`] to all schedules.
+    ///
+    /// This mutates all currently present schedules, but does not apply to any custom schedules
+    /// that might be added in the future.
     pub fn configure_schedules(
         &mut self,
         schedule_build_settings: ScheduleBuildSettings,
@@ -374,19 +464,89 @@ impl App {
         self
     }
 
-    /// See [`App::allow_ambiguous_component`].
+    /// When doing [ambiguity checking](ScheduleBuildSettings) this
+    /// ignores systems that are ambiguous on [`Component`] T.
+    ///
+    /// This settings only applies to the main world. To apply this to other worlds call the
+    /// [corresponding method](World::allow_ambiguous_component) on World
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// # use bevy_ecs::schedule::{LogLevel, ScheduleBuildSettings};
+    /// # use bevy_utils::default;
+    ///
+    /// #[derive(Component)]
+    /// struct A;
+    ///
+    /// // these systems are ambiguous on A
+    /// fn system_1(_: Query<&mut A>) {}
+    /// fn system_2(_: Query<&A>) {}
+    ///
+    /// let mut app = App::new();
+    /// app.configure_schedules(ScheduleBuildSettings {
+    ///   ambiguity_detection: LogLevel::Error,
+    ///   ..default()
+    /// });
+    ///
+    /// app.add_systems(Update, ( system_1, system_2 ));
+    /// app.allow_ambiguous_component::<A>();
+    ///
+    /// // running the app does not error.
+    /// app.update();
+    /// ```
     pub fn allow_ambiguous_component<T: Component>(&mut self) -> &mut Self {
         self.world_mut().allow_ambiguous_component::<T>();
         self
     }
 
-    /// See [`App::allow_ambiguous_resource`].
+    /// When doing [ambiguity checking](ScheduleBuildSettings) this
+    /// ignores systems that are ambiguous on [`Resource`] T.
+    ///
+    /// This settings only applies to the main world. To apply this to other worlds call the
+    /// [corresponding method](World::allow_ambiguous_resource) on World
+    ///
+    /// ## Example
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// # use bevy_ecs::schedule::{LogLevel, ScheduleBuildSettings};
+    /// # use bevy_utils::default;
+    ///
+    /// #[derive(Resource)]
+    /// struct R;
+    ///
+    /// // these systems are ambiguous on R
+    /// fn system_1(_: ResMut<R>) {}
+    /// fn system_2(_: Res<R>) {}
+    ///
+    /// let mut app = App::new();
+    /// app.configure_schedules(ScheduleBuildSettings {
+    ///   ambiguity_detection: LogLevel::Error,
+    ///   ..default()
+    /// });
+    /// app.insert_resource(R);
+    ///
+    /// app.add_systems(Update, ( system_1, system_2 ));
+    /// app.allow_ambiguous_resource::<R>();
+    ///
+    /// // running the app does not error.
+    /// app.update();
+    /// ```
     pub fn allow_ambiguous_resource<T: Resource>(&mut self) -> &mut Self {
         self.world_mut().allow_ambiguous_resource::<T>();
         self
     }
 
-    /// See [`App::ignore_ambiguity`].
+    /// Suppress warnings and errors that would result from systems in these sets having ambiguities
+    /// (conflicting access but indeterminate order) with systems in `set`.
+    ///
+    /// When possible, do this directly in the `.add_systems(Update, a.ambiguous_with(b))` call.
+    /// However, sometimes two independent plugins `A` and `B` are reported as ambiguous, which you
+    /// can only suppress as the consumer of both.
     #[track_caller]
     pub fn ignore_ambiguity<M1, M2, S1, S2>(
         &mut self,
@@ -406,13 +566,63 @@ impl App {
         self
     }
 
-    /// See [`App::add_observer`].
+    /// Spawns an [`Observer`] entity, which will watch for and respond to the given event.
+    ///
+    /// `observer` can be any system whose first parameter is [`On`].
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// # use bevy_utils::default;
+    /// #
+    /// # let mut app = App::new();
+    /// #
+    /// # #[derive(Event)]
+    /// # struct Party {
+    /// #   friends_allowed: bool,
+    /// # };
+    /// #
+    /// # #[derive(EntityEvent)]
+    /// # struct Invite {
+    /// #    entity: Entity,
+    /// # }
+    /// #
+    /// # #[derive(Component)]
+    /// # struct Friend;
+    /// #
+    ///
+    /// app.add_observer(|event: On<Party>, friends: Query<Entity, With<Friend>>, mut commands: Commands| {
+    ///     if event.friends_allowed {
+    ///         for entity in friends.iter() {
+    ///             commands.trigger(Invite { entity } );
+    ///         }
+    ///     }
+    /// });
+    /// ```
     pub fn add_observer<M>(&mut self, observer: impl IntoObserver<M>) -> &mut Self {
         self.world_mut().add_observer(observer);
         self
     }
 
-    /// See [`App::add_message`].
+    /// Initializes [`Message`] handling for `T` by inserting a message queue resource ([`Messages::<T>`])
+    /// and scheduling an [`message_update_system`] in [`First`].
+    ///
+    /// See [`Messages`] for information on how to define messages.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # use bevy_ecs::prelude::*;
+    /// #
+    /// # #[derive(Message)]
+    /// # struct MyMessage;
+    /// # let mut app = App::new();
+    /// #
+    /// app.add_message::<MyMessage>();
+    /// ```
     pub fn add_message<T>(&mut self) -> &mut Self
     where
         T: Message,
@@ -424,13 +634,13 @@ impl App {
         self
     }
 
-    /// See [`App::add_plugins`].
+    /// See [`Bevy::add_plugins`].
     pub fn add_plugins<M>(&mut self, plugins: impl Plugins<M>) -> &mut Self {
         self.run_as_app(|app| plugins.add_to_bevy(app));
         self
     }
 
-    /// See [`App::is_plugin_added`].
+    /// See [`Bevy::is_plugin_added`].
     pub fn is_plugin_added<T>(&self) -> bool
     where
         T: Plugin,
@@ -438,7 +648,7 @@ impl App {
         self.plugin_names.contains(core::any::type_name::<T>())
     }
 
-    /// See [`App::get_added_plugins`].
+    /// See [`Bevy::get_added_plugins`].
     pub fn get_added_plugins<T>(&self) -> Vec<&T>
     where
         T: Plugin,
@@ -510,7 +720,14 @@ impl App {
         self.plugins_state = PluginsState::Cleaned;
     }
 
-    /// See [`App::register_type`].
+    /// Registers the type `T` in the [`AppTypeRegistry`] resource,
+    /// adding reflect data as specified in the [`Reflect`] derive:
+    /// ```ignore (No serde "derive" feature)
+    /// #[derive(Component, Serialize, Deserialize, Reflect)]
+    /// #[reflect(Component, Serialize, Deserialize)] // will register ReflectComponent, ReflectSerialize, ReflectDeserialize
+    /// ```
+    ///
+    /// See [`bevy_reflect::TypeRegistry::register`] for more information.
     #[cfg(feature = "bevy_reflect")]
     pub fn register_type<T: bevy_reflect::GetTypeRegistration>(&mut self) -> &mut Self {
         let registry = self.world.resource_mut::<AppTypeRegistry>();
@@ -518,7 +735,27 @@ impl App {
         self
     }
 
-    /// See [`App::register_type_data`].
+    /// Associates type data `D` with type `T` in the [`AppTypeRegistry`] resource.
+    ///
+    /// Most of the time [`register_type`](Self::register_type) can be used instead to register a
+    /// type you derived [`Reflect`] for. However, in cases where you want to
+    /// add a piece of type data that was not included in the list of `#[reflect(...)]` type data in
+    /// the derive, or where the type is generic and cannot register e.g. `ReflectSerialize`
+    /// unconditionally without knowing the specific type parameters, this method can be used to
+    /// insert additional type data.
+    ///
+    /// # Example
+    /// ```
+    /// use bevy_app::App;
+    /// use bevy_reflect::{ReflectSerialize, ReflectDeserialize};
+    ///
+    /// App::new()
+    ///     .register_type::<Option<String>>()
+    ///     .register_type_data::<Option<String>, ReflectSerialize>()
+    ///     .register_type_data::<Option<String>, ReflectDeserialize>();
+    /// ```
+    ///
+    /// See [`bevy_reflect::TypeRegistry::register_type_data`].
     #[cfg(feature = "bevy_reflect")]
     pub fn register_type_data<
         T: bevy_reflect::Reflect + bevy_reflect::TypePath,
@@ -531,7 +768,24 @@ impl App {
         self
     }
 
-    /// See [`App::register_type_conversion`].
+    /// Registers a fallible conversion from type T to U with the reflection
+    /// system.
+    ///
+    /// The supplied closure is expected to produce a value of type U, given an
+    /// instance of type T. If the conversion fails, the closure should return
+    /// the input value, wrapped in an `Err` variant.
+    ///
+    /// # Example
+    /// ```
+    /// use bevy_app::App;
+    ///
+    /// App::new()
+    ///     .register_type::<i32>()
+    ///     .register_type::<String>()
+    ///     .register_type_conversion::<i32, String, _>(|n| Ok(n.to_string()));
+    /// ```
+    ///
+    /// See [`bevy_reflect::TypeRegistry::register_type_conversion`].
     #[cfg(feature = "bevy_reflect")]
     pub fn register_type_conversion<T, U, F>(&mut self, function: F) -> &mut Self
     where
@@ -546,7 +800,20 @@ impl App {
         self
     }
 
-    /// See [`App::register_into_type_conversion`].
+    /// Given types T and U, where `U: From<T>`, registers that conversion with
+    /// the reflection system.
+    ///
+    /// # Example
+    /// ```
+    /// use bevy_app::App;
+    ///
+    /// App::new()
+    ///     .register_type::<u8>()
+    ///     .register_type::<u32>()
+    ///     .register_into_type_conversion::<u8, u32>();
+    /// ```
+    ///
+    /// See [`bevy_reflect::TypeRegistry::register_into_type_conversion`].
     #[cfg(feature = "bevy_reflect")]
     pub fn register_into_type_conversion<T, U>(&mut self) -> &mut Self
     where
@@ -558,7 +825,68 @@ impl App {
         self
     }
 
-    /// See [`App::register_function`].
+    /// Registers the given function into the [`AppFunctionRegistry`] resource.
+    ///
+    /// The given function will internally be stored as a [`DynamicFunction`]
+    /// and mapped according to its [name].
+    ///
+    /// Because the function must have a name,
+    /// anonymous functions (e.g. `|a: i32, b: i32| { a + b }`) and closures must instead
+    /// be registered using [`register_function_with_name`] or converted to a [`DynamicFunction`]
+    /// and named using [`DynamicFunction::with_name`].
+    /// Failure to do so will result in a panic.
+    ///
+    /// Only types that implement [`IntoFunction`] may be registered via this method.
+    ///
+    /// See [`FunctionRegistry::register`] for more information.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a function has already been registered with the given name
+    /// or if the function is missing a name (such as when it is an anonymous function).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bevy_app::App;
+    ///
+    /// fn add(a: i32, b: i32) -> i32 {
+    ///     a + b
+    /// }
+    ///
+    /// App::new().register_function(add);
+    /// ```
+    ///
+    /// Functions cannot be registered more than once.
+    ///
+    /// ```should_panic
+    /// use bevy_app::App;
+    ///
+    /// fn add(a: i32, b: i32) -> i32 {
+    ///     a + b
+    /// }
+    ///
+    /// App::new()
+    ///     .register_function(add)
+    ///     // Panic! A function has already been registered with the name "my_function"
+    ///     .register_function(add);
+    /// ```
+    ///
+    /// Anonymous functions and closures should be registered using [`register_function_with_name`] or given a name using [`DynamicFunction::with_name`].
+    ///
+    /// ```should_panic
+    /// use bevy_app::App;
+    ///
+    /// // Panic! Anonymous functions cannot be registered using `register_function`
+    /// App::new().register_function(|a: i32, b: i32| a + b);
+    /// ```
+    ///
+    /// [`register_function_with_name`]: Self::register_function_with_name
+    /// [`DynamicFunction`]: bevy_reflect::func::DynamicFunction
+    /// [name]: bevy_reflect::func::FunctionInfo::name
+    /// [`DynamicFunction::with_name`]: bevy_reflect::func::DynamicFunction::with_name
+    /// [`IntoFunction`]: bevy_reflect::func::IntoFunction
+    /// [`FunctionRegistry::register`]: bevy_reflect::func::FunctionRegistry::register
     #[cfg(feature = "reflect_functions")]
     pub fn register_function<F, Marker>(&mut self, function: F) -> &mut Self
     where
@@ -569,7 +897,72 @@ impl App {
         self
     }
 
-    /// See [`App::register_function_with_name`].
+    /// Registers the given function or closure into the [`AppFunctionRegistry`] resource using the given name.
+    ///
+    /// To avoid conflicts, it's recommended to use a unique name for the function.
+    /// This can be achieved by "namespacing" the function with a unique identifier,
+    /// such as the name of your crate.
+    ///
+    /// For example, to register a function, `add`, from a crate, `my_crate`,
+    /// you could use the name, `"my_crate::add"`.
+    ///
+    /// Another approach could be to use the [type name] of the function,
+    /// however, it should be noted that anonymous functions do _not_ have unique type names.
+    ///
+    /// For named functions (e.g. `fn add(a: i32, b: i32) -> i32 { a + b }`) where a custom name is not needed,
+    /// it's recommended to use [`register_function`] instead as the generated name is guaranteed to be unique.
+    ///
+    /// Only types that implement [`IntoFunction`] may be registered via this method.
+    ///
+    /// See [`FunctionRegistry::register_with_name`] for more information.
+    ///
+    /// # Panics
+    ///
+    /// Panics if a function has already been registered with the given name.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bevy_app::App;
+    ///
+    /// fn mul(a: i32, b: i32) -> i32 {
+    ///     a * b
+    /// }
+    ///
+    /// let div = |a: i32, b: i32| a / b;
+    ///
+    /// App::new()
+    ///     // Registering an anonymous function with a unique name
+    ///     .register_function_with_name("my_crate::add", |a: i32, b: i32| {
+    ///         a + b
+    ///     })
+    ///     // Registering an existing function with its type name
+    ///     .register_function_with_name(std::any::type_name_of_val(&mul), mul)
+    ///     // Registering an existing function with a custom name
+    ///     .register_function_with_name("my_crate::mul", mul)
+    ///     // Be careful not to register anonymous functions with their type name.
+    ///     // This code works but registers the function with a non-unique name like `foo::bar::{{closure}}`
+    ///     .register_function_with_name(std::any::type_name_of_val(&div), div);
+    /// ```
+    ///
+    /// Names must be unique.
+    ///
+    /// ```should_panic
+    /// use bevy_app::App;
+    ///
+    /// fn one() {}
+    /// fn two() {}
+    ///
+    /// App::new()
+    ///     .register_function_with_name("my_function", one)
+    ///     // Panic! A function has already been registered with the name "my_function"
+    ///     .register_function_with_name("my_function", two);
+    /// ```
+    ///
+    /// [type name]: std::any::type_name
+    /// [`register_function`]: Self::register_function
+    /// [`IntoFunction`]: bevy_reflect::func::IntoFunction
+    /// [`FunctionRegistry::register_with_name`]: bevy_reflect::func::FunctionRegistry::register_with_name
     #[cfg(feature = "reflect_functions")]
     pub fn register_function_with_name<F, Marker>(
         &mut self,
