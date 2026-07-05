@@ -640,7 +640,7 @@ impl App {
         self
     }
 
-    /// See [`Bevy::is_plugin_added`].
+    /// Returns `true` if the [`Plugin`] has already been added.
     pub fn is_plugin_added<T>(&self) -> bool
     where
         T: Plugin,
@@ -648,7 +648,25 @@ impl App {
         self.plugin_names.contains(core::any::type_name::<T>())
     }
 
-    /// See [`Bevy::get_added_plugins`].
+    /// Returns a vector of references to all plugins of type `T` that have been added.
+    ///
+    /// This can be used to read the settings of any existing plugins.
+    /// This vector will be empty if no plugins of that type have been added.
+    /// If multiple copies of the same plugin are added to the [`App`], they will be listed in insertion order in this vector.
+    ///
+    /// ```
+    /// # use bevy_app::prelude::*;
+    /// # #[derive(Default)]
+    /// # struct ImagePlugin {
+    /// #    default_sampler: bool,
+    /// # }
+    /// # impl Plugin for ImagePlugin {
+    /// #    fn build(&self, app: &mut App) {}
+    /// # }
+    /// # let mut app = App::new();
+    /// # app.add_plugins(ImagePlugin::default());
+    /// let default_sampler = app.get_added_plugins::<ImagePlugin>()[0].default_sampler;
+    /// ```
     pub fn get_added_plugins<T>(&self) -> Vec<&T>
     where
         T: Plugin,
