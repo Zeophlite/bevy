@@ -348,6 +348,7 @@ pub struct RenderApp;
 impl Plugin for RenderPlugin {
     /// Initializes the renderer, sets up the [`RenderSystems`] and creates the rendering sub-app.
     fn build(&self, bevy: &mut Bevy) {
+        println!("RenderPlugin 1");
         let app = bevy.main_mut();
         app.init_asset::<Shader>()
             .init_asset_loader::<ShaderLoader>();
@@ -357,6 +358,7 @@ impl Plugin for RenderPlugin {
         load_shader_library!(app, "bindless.wgsl");
 
         if insert_future_resources(&self.render_creation, app.world_mut()) {
+            println!("RenderPlugin 2");
             // We only create the render world and set up extraction if we
             // have a rendering backend available.
             app.add_plugins(ExtractPlugin {
@@ -389,6 +391,7 @@ impl Plugin for RenderPlugin {
         app.init_resource::<RenderAssetBytesPerFrame>()
             .init_resource::<RenderErrorHandler>();
         if let Some(render_app) = bevy.get_app_mut(RenderApp) {
+            println!("RenderPlugin 3a");
             render_app.init_resource::<RenderScheduleOrder>();
             render_app.init_resource::<RenderAssetBytesPerFrameLimiter>();
             render_app.init_gpu_resource::<renderer::PendingCommandBuffers>();
@@ -433,10 +436,13 @@ impl Plugin for RenderPlugin {
                     reset_render_asset_bytes_per_frame.in_set(RenderSystems::Cleanup),
                 ),
             );
+        } else {
+            println!("RenderPlugin 3b");
         }
     }
 
     fn ready(&self, app: &Bevy) -> bool {
+        println!("RenderPlugin ready");
         // This is a little tricky. `FutureRenderResources` is added in `build`, which runs synchronously before `ready`.
         // It is only added if there is a wgpu backend and thus the renderer can be created.
         // Hence, if we try and get the resource and it is not present, that means we are ready, because we dont need it.
@@ -452,17 +458,18 @@ impl Plugin for RenderPlugin {
     }
 
     fn finish(&self, bevy: &mut Bevy) {
-        let app = bevy.main_mut();
+        println!("RenderPlugin finish");
+        let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+
         if let Some(future_render_resources) =
             app.world_mut().remove_resource::<FutureRenderResources>()
         {
-            let bevy_app::Apps { main, apps } = bevy.apps_mut();
-            let render = apps.get_mut(&RenderApp.intern()).unwrap();
+            let render_app = maybe_render_app.unwrap();
             let render_resources = future_render_resources.0.lock().unwrap().take().unwrap();
 
             render_resources.unpack_into(
-                main.world_mut(),
-                render.world_mut(),
+                app.world_mut(),
+                render_app.world_mut(),
                 self.synchronous_pipeline_compilation,
             );
         }

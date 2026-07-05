@@ -30,6 +30,7 @@ impl Default for ExtractPlugin {
 
 impl Plugin for ExtractPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        println!("ExtractPlugin 1");
         let app = bevy.main_mut();
         app.add_plugins(SyncWorldPlugin);
         app.init_resource::<ScratchMainWorld>();
@@ -74,6 +75,8 @@ impl Plugin for ExtractPlugin {
         });
 
         bevy.insert_app(RenderApp, render_app);
+        let t = bevy.get_app_mut(RenderApp);
+        println!("ExtractPlugin end {:?}", t);
     }
 }
 

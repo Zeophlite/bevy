@@ -62,6 +62,7 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, bevy: &mut Bevy) {
+        println!("CameraPlugin 1");
         let app = bevy.main_mut();
 
         app.register_required_components::<Camera, Msaa>()
@@ -85,6 +86,7 @@ impl Plugin for CameraPlugin {
             .on_add(warn_on_no_render_graph);
 
         if let Some(render_app) = bevy.get_app_mut(RenderApp) {
+            println!("CameraPlugin 2a");
             render_app
                 .init_resource::<CameraMainPassTextureFormats>()
                 .init_resource::<SortedCameras>()
@@ -113,6 +115,8 @@ impl Plugin for CameraPlugin {
                     ),
                 )
                 .add_systems(Render, sort_cameras.in_set(RenderSystems::CreateViews));
+        } else {
+            println!("CameraPlugin 2b");
         }
     }
 }

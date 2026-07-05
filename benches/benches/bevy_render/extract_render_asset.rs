@@ -1,4 +1,4 @@
-use bevy_app::{AppLabel, Bevy};
+use bevy_app::Bevy;
 use bevy_asset::{Asset, AssetApp, AssetEvent, AssetId, Assets, RenderAssetUsages};
 use bevy_ecs::prelude::*;
 use bevy_reflect::TypePath;
@@ -41,7 +41,8 @@ fn extract_render_asset_bench(c: &mut Criterion) {
         group.throughput(Throughput::Elements(size as u64));
         group.bench_with_input(BenchmarkId::new("allocations", size), &size, |b, &size| {
             // --- ONCE PER BENCHMARK SCALE ---
-            let mut app = Bevy::new();
+            let mut bevy = Bevy::new();
+            let app = bevy.main_mut();
 
             app.add_plugins(bevy_asset::AssetPlugin::default());
             app.init_asset::<DummyAsset>();
@@ -62,6 +63,10 @@ fn extract_render_asset_bench(c: &mut Criterion) {
             // Run one initial update to flush any startup systems
             app.update();
 
+            let (app, maybe_render_app) = bevy.get_main_and_app_mut(RenderApp);
+            let render_app = maybe_render_app
+                .expect("RenderApp should exist");
+
             b.iter_custom(|iters| {
                 let mut total = Duration::default();
 
@@ -72,15 +77,11 @@ fn extract_render_asset_bench(c: &mut Criterion) {
                             .write_message(AssetEvent::Modified { id: handle.id() });
                     }
 
-                    let bevy_app::Apps { main, apps: apps } = app.apps_mut();
-                    let render_app = apps
-                        .get_mut(&RenderApp.intern())
-                        .expect("RenderApp should exist");
                     let render_world = render_app.world_mut();
 
                     // Measuring the extract call
                     let start = Instant::now();
-                    bevy_render::extract_plugin::extract(main.world_mut(), render_world);
+                    bevy_render::extract_plugin::extract(app.world_mut(), render_world);
                     total += Instant::now().duration_since(start);
 
                     // Run a standard app update to allow Bevy's internal systems to flush/clear the message queues.

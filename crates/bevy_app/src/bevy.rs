@@ -18,6 +18,7 @@ use bevy_platform::collections::HashMap;
 #[cfg(feature = "bevy_reflect")]
 use bevy_reflect::Reflect;
 use core::{fmt::Debug, num::NonZero, panic::AssertUnwindSafe};
+use std::println;
 use log::debug;
 
 #[cfg(feature = "trace")]
@@ -727,21 +728,25 @@ impl Bevy {
 
     /// Returns a reference to the main [`App`].
     pub fn main(&self) -> &App {
+        // println!("main");
         &self.apps.main
     }
 
     /// Returns a mutable reference to the main [`App`].
     pub fn main_mut(&mut self) -> &mut App {
+        // println!("main_mut");
         &mut self.apps.main
     }
 
     /// Returns a reference to the [`Apps`] collection.
     pub fn apps(&self) -> &Apps {
+        println!("apps");
         &self.apps
     }
 
     /// Returns a mutable reference to the [`Apps`] collection.
     pub fn apps_mut(&mut self) -> &mut Apps {
+        println!("apps_mut");
         &mut self.apps
     }
 
@@ -751,6 +756,7 @@ impl Bevy {
     ///
     /// Panics if the [`App`] doesn't exist.
     pub fn app(&self, label: impl AppLabel) -> &App {
+        println!("app {:?}", label);
         let str = label.intern();
         self.get_app(label).unwrap_or_else(|| {
             panic!("No sub-app with label '{:?}' exists.", str);
@@ -763,6 +769,7 @@ impl Bevy {
     ///
     /// Panics if the [`App`] doesn't exist.
     pub fn app_mut(&mut self, label: impl AppLabel) -> &mut App {
+        println!("app_mut {:?}", label);
         let str = label.intern();
         self.get_app_mut(label).unwrap_or_else(|| {
             panic!("No sub-app with label '{:?}' exists.", str);
@@ -771,17 +778,22 @@ impl Bevy {
 
     /// Returns a reference to the [`App`] with the given label, if it exists.
     pub fn get_app(&self, label: impl AppLabel) -> Option<&App> {
+        println!("get_app {:?}", label);
         self.apps.apps.get(&label.intern())
     }
 
     /// Returns a mutable reference to the [`App`] with the given label, if it exists.
     pub fn get_app_mut(&mut self, label: impl AppLabel) -> Option<&mut App> {
+        println!("get_app_mut {:?}", label);
+        println!("apps = {:?}", self.apps.apps);
         self.apps.apps.get_mut(&label.intern())
     }
 
     ///
     pub fn get_main_and_app_mut(&mut self, label: impl AppLabel) -> (&mut App, Option<&mut App>) {
+        println!("get_main_and_app_mut {:?}", label);
         let Apps { main: app, apps } = self.apps_mut();
+        println!("apps = {:?}", apps);
         let maybe_app = apps.get_mut(&label.intern());
 
         (app, maybe_app)
@@ -789,15 +801,18 @@ impl Bevy {
 
     /// Inserts a [`App`] with the given label.
     pub fn insert_app(&mut self, label: impl AppLabel, mut app: App) {
+        println!("insert_app {:?}", label);
         if let Some(handler) = self.fallback_error_handler {
             app.world_mut()
                 .get_resource_or_insert_with(|| FallbackErrorHandler(handler));
         }
         self.apps.apps.insert(label.intern(), app);
+        println!("apps = {:?}", self.apps.apps);
     }
 
     /// Removes the [`App`] with the given label, if it exists.
     pub fn remove_app(&mut self, label: impl AppLabel) -> Option<App> {
+        println!("remove_app {:?}", label);
         self.apps.apps.remove(&label.intern())
     }
 

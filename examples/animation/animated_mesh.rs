@@ -10,7 +10,11 @@ use bevy::{
 const GLTF_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
-    Bevy::new()
+    let mut bevy = Bevy::new();
+
+    let app = bevy.main_mut();
+
+    app
         .insert_resource(GlobalAmbientLight {
             color: Color::WHITE,
             brightness: 2000.,
@@ -18,7 +22,9 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup_mesh_and_animation)
-        .add_systems(Startup, setup_camera_and_environment)
+        .add_systems(Startup, setup_camera_and_environment);
+
+    bevy
         .run();
 }
 

@@ -42,9 +42,12 @@ impl<R: ExtractResource<F, Mutability = Mutable>, F: 'static + Send + Sync> Plug
     for ExtractResourcePlugin<R, F>
 {
     fn build(&self, bevy: &mut Bevy) {
+        println!("ExtractResourcePlugin {:?}", core::any::type_name::<R>());
         if let Some(render_app) = bevy.get_app_mut(RenderApp) {
+            println!("ExtractResourcePlugin 1a");
             render_app.add_systems(ExtractSchedule, extract_resource::<R, F>);
         } else {
+            println!("ExtractResourcePlugin 1b");
             once!(bevy_log::error!(
                 "Render app did not exist when trying to add `extract_resource` for <{}>.",
                 core::any::type_name::<R>()
