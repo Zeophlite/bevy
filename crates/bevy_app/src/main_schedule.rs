@@ -325,6 +325,7 @@ impl Plugin for MainSchedulePlugin {
             .init_resource::<FixedMainScheduleOrder>()
             .add_systems(Main, Main::run_main)
             .add_systems(FixedMain, FixedMain::run_fixed_main)
+            .configure_sets(PostUpdate, CameraThing)
             .configure_sets(
                 RunFixedMainLoop,
                 (
@@ -490,3 +491,7 @@ pub enum RunFixedMainLoopSystems {
     /// ```
     AfterFixedMainLoop,
 }
+
+/// Aa
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub struct CameraThing;
