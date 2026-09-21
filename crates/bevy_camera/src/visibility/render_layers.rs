@@ -17,6 +17,7 @@ pub type Layer = usize;
 /// An empty `RenderLayers` makes the entity invisible.
 #[derive(Component, Clone, Reflect, PartialEq, Eq, PartialOrd, Ord)]
 #[reflect(Component, Default, PartialEq, Debug, Clone)]
+#[component(summary_tick)]
 pub struct RenderLayers(SmallVec<[u64; INLINE_BLOCKS]>);
 
 /// The number of memory blocks stored inline
