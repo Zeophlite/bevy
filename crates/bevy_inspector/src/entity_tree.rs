@@ -232,6 +232,7 @@ fn plan_sync(world: &World) -> SyncPlan {
     let mut roots = Vec::new();
     let mut populated = Vec::new();
     let remote = crate::is_remote(world);
+    let inspect_world = crate::world_to_inspect(world);
 
     for entity_ref in world.iter_entities() {
         let entity = entity_ref.id();
@@ -241,9 +242,13 @@ fn plan_sync(world: &World) -> SyncPlan {
         if entity_ref.contains::<InspectorRow>() && entity_ref.contains::<InspectorRowPopulated>() {
             populated.push(entity);
         }
+    }
+
+    for entity_ref in inspect_world.iter_entities() {
+        let entity = entity_ref.id();
         if !entity_ref.contains::<ChildOf>()
-            && remote == crate::remote_entity(world, entity).is_some()
-            && !is_excluded(world, entity)
+            // && remote
+            && !is_excluded(inspect_world, entity)
         {
             roots.push(entity);
         }
@@ -253,30 +258,32 @@ fn plan_sync(world: &World) -> SyncPlan {
         return plan;
     };
 
-    roots.sort_unstable_by_key(|root| crate::remote_entity(world, *root).unwrap_or(*root).index());
-    diff_container(world, tree_view, &roots, &mut plan);
+    println!("Found {} roots", roots.len());
+
+    roots.sort_unstable_by_key(|root| root.index());
+    diff_container(world, inspect_world, tree_view, &roots, &mut plan);
 
     for row in populated {
         let Some(source) = world.get::<InspectorRow>(row).map(|row| row.source) else {
             continue;
         };
-        if world.get_entity(source).is_err() {
+        if inspect_world.get_entity(source).is_err() {
             continue;
         }
-        let Some(container) = child_with::<FeathersTreeItemChildren>(world, row) else {
+        let Some(container) = child_with::<FeathersTreeItemChildren>(inspect_world, row) else {
             continue;
         };
-        let expected = visible_children(world, source);
-        diff_container(world, container, &expected, &mut plan);
+        let expected = visible_children(inspect_world, source);
+        diff_container(world, inspect_world, container, &expected, &mut plan);
     }
 
     plan
 }
 
 /// Diffs one container's rows against `expected`, recording the changes into `plan`. See [`SyncPlan`].
-fn diff_container(world: &World, container: Entity, expected: &[Entity], plan: &mut SyncPlan) {
+fn diff_container(world: &World, inspect_world: &World, container: Entity, expected: &[Entity], plan: &mut SyncPlan) {
     let mut existing: HashMap<Entity, Entity> = HashMap::new();
-    if let Some(children) = world.get::<Children>(container) {
+    if let Some(children) = inspect_world.get::<Children>(container) {
         for child in children.iter().copied() {
             if let Some(row) = world.get::<InspectorRow>(child) {
                 existing.insert(row.source, child);
@@ -291,8 +298,8 @@ fn diff_container(world: &World, container: Entity, expected: &[Entity], plan: &
     }
 
     for source in expected.iter().copied() {
-        let expandable = !visible_children(world, source).is_empty();
-        let label = entity_label(world, source);
+        let expandable = !visible_children(inspect_world, source).is_empty();
+        let label = entity_label(inspect_world, source);
         let Some(row) = existing.get(&source).copied() else {
             plan.spawn.push(RowSpawn {
                 container,
@@ -390,9 +397,9 @@ fn is_excluded(world: &World, entity: Entity) -> bool {
     let Ok(entity_ref) = world.get_entity(entity) else {
         return true;
     };
-    if entity_ref.contains::<IsResource>()
-        || entity_ref.contains::<SystemIdMarker>()
-        || entity_ref.contains::<Observer>()
+    if false // entity_ref.contains::<IsResource>()
+        // || entity_ref.contains::<SystemIdMarker>()
+        //|| entity_ref.contains::<Observer>()
     {
         return true;
     }
@@ -426,6 +433,7 @@ fn visible_children(world: &World, entity: Entity) -> Vec<Entity> {
 }
 
 fn entity_label(world: &World, entity: Entity) -> String {
+    // TODO: cache lable?
     #[cfg(feature = "remote")]
     if let Some(label) = crate::remote::proxy_label(world, entity) {
         return label;

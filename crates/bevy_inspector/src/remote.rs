@@ -18,9 +18,8 @@ use bevy_ecs::{
     change_detection::Mut,
     component::{Component, ComponentId},
     entity::Entity,
-    entity_disabling::Disabled,
     hierarchy::{ChildOf, Children},
-    query::{Allow, With},
+    query::With,
     reflect::{AppTypeRegistry, ReflectComponent},
     resource::Resource,
     system::{Res, ResMut},
@@ -157,6 +156,14 @@ impl RemoteConnection {
     }
 }
 
+/// Contains the proxied remote worlds
+#[derive(Resource, Debug, Default)]
+pub struct RemoteWorlds {
+    pub(crate) remote_main: World,
+    // TODO: remote_render: World,
+}
+
+
 /// The entities of the remote world, as last reported by `world.query`.
 #[derive(Resource, Debug, Default)]
 pub struct RemoteSnapshot {
@@ -197,83 +204,50 @@ impl RemoteSnapshot {
     }
 }
 
-/// Maps remote entities to the local proxy entities mirroring them.
-#[derive(Resource, Debug, Default)]
-pub struct RemoteProxyIndex {
-    proxies: HashMap<Entity, Entity>,
-}
-
-impl RemoteProxyIndex {
-    /// The proxy mirroring `remote`, if one exists.
-    pub fn proxy(&self, remote: Entity) -> Option<Entity> {
-        self.proxies.get(&remote).copied()
-    }
-
-    /// The number of proxies currently tracked.
-    pub fn len(&self) -> usize {
-        self.proxies.len()
-    }
-
-    /// Whether no proxies are currently tracked.
-    pub fn is_empty(&self) -> bool {
-        self.proxies.is_empty()
-    }
-}
-
 /// A local proxy entity mirroring one entity of the remote world.
 #[derive(Component, Debug, Clone, Copy, Reflect)]
 #[reflect(Component, Debug, Clone)]
-pub struct RemoteEntityProxy {
-    /// The id of the mirrored entity in the remote world.
-    pub remote: Entity,
-}
+pub struct RemoteEntityProxy;
 
 /// The label the entity tree shows for a proxy.
 #[derive(Component, Debug, Default, Clone, PartialEq, Eq, Reflect)]
 #[reflect(Component, Debug, Default, Clone, PartialEq)]
 pub struct RemoteLabel(pub String);
 
-/// Whether the inspector currently reads from a remote app.
-pub(crate) fn is_remote(world: &World) -> bool {
-    matches!(
-        world.get_resource::<InspectorSource>(),
-        Some(InspectorSource::Remote(_))
-    )
-}
-
-/// The remote id mirrored by `entity`, if it is a proxy.
-pub(crate) fn remote_entity(world: &World, entity: Entity) -> Option<Entity> {
-    world
-        .get::<RemoteEntityProxy>(entity)
-        .map(|proxy| proxy.remote)
-}
-
 /// The label the entity tree shows for `entity`, if it is a proxy.
 pub(crate) fn proxy_label(world: &World, entity: Entity) -> Option<String> {
-    let remote = remote_entity(world, entity)?;
-    Some(
+    // world.get_resource::<RemoteWorlds>().map(|rw|
+        // rw.remote_main
         world
             .get::<RemoteLabel>(entity)
             .map(|label| label.0.clone())
-            .unwrap_or_else(|| remote.to_string()),
-    )
+            .or_else(|| Some(entity.to_string()))
+    // )
 }
 
 /// Sets the connection up for the current [`InspectorSource`], clearing every proxy when it
 /// changes.
-pub fn sync_remote_source(world: &mut World) {
-    let source = match world.get_resource::<InspectorSource>() {
-        Some(InspectorSource::Remote(source)) => Some(source.clone()),
+pub fn sync_remote_source(
+    mut selection: ResMut<InspectorSelection>,
+    mut rw: ResMut<RemoteWorlds>,
+    inspector_source: Res<InspectorSource>,
+    mut connection: ResMut<RemoteConnection>,
+    mut remote_snapshot: ResMut<RemoteSnapshot>,
+    mut entity_tree_sync: ResMut<EntityTreeSync>,
+    mut details_panel_sync: ResMut<DetailsPanelSync>,
+) {
+    let source = match &*inspector_source {
+        InspectorSource::Remote(source) => Some(source.clone()),
         _ => None,
     };
-    if world.resource::<RemoteConnection>().source == source {
-        return;
-    }
+    // if connection.source != source {
+    //     return;
+    // }
+    // println!("sync_remote_source");
 
-    clear_proxies(world);
-    world.resource_mut::<RemoteSnapshot>().set(Vec::new());
+    clear_proxies(selection, &mut rw.remote_main);
+    remote_snapshot.set(Vec::new());
 
-    let mut connection = world.resource_mut::<RemoteConnection>();
     connection.pending = None;
     connection.state = RemoteConnectionState::Disconnected;
     connection.next_poll = Duration::ZERO;
@@ -282,17 +256,17 @@ pub fn sync_remote_source(world: &mut World) {
         .map(|source| BrpClient::new(source.host.clone(), source.port));
     connection.source = source;
 
-    world.resource_mut::<EntityTreeSync>().set_dirty();
-    world.resource_mut::<DetailsPanelSync>().set_dirty();
+    entity_tree_sync.set_dirty();
+    details_panel_sync.set_dirty();
 }
 
 /// Despawns every proxy, clearing the selection if it was one.
-fn clear_proxies(world: &mut World) {
-    let proxies: Vec<Entity> = world
-        .query_filtered::<Entity, (With<RemoteEntityProxy>, Allow<Disabled>)>()
-        .iter(world)
+fn clear_proxies(mut selection: ResMut<InspectorSelection>, remote_world: &mut World) {
+    let proxies: Vec<Entity> = remote_world
+        .query_filtered::<Entity, With<RemoteEntityProxy>>()
+        .iter(&remote_world)
         .collect();
-    let mut selection = world.resource_mut::<InspectorSelection>();
+
     if selection
         .0
         .is_some_and(|selected| proxies.contains(&selected))
@@ -300,11 +274,10 @@ fn clear_proxies(world: &mut World) {
         selection.0 = None;
     }
     for proxy in proxies {
-        if let Ok(proxy) = world.get_entity_mut(proxy) {
+        if let Ok(proxy) = remote_world.get_entity_mut(proxy) {
             proxy.despawn();
         }
     }
-    world.resource_mut::<RemoteProxyIndex>().proxies.clear();
 }
 
 /// Polls the request in flight and starts the next one when it is due.
@@ -392,6 +365,7 @@ fn finish_call(
     now: Duration,
     elapsed: Duration,
 ) {
+    // println!("finish_call");
     let value = match result {
         Ok(value) => value,
         Err(error) => {
@@ -427,84 +401,75 @@ fn finish_call(
 
 /// Spawns, reparents, relabels and despawns the proxies so that they match the latest snapshot.
 pub fn apply_remote_snapshot(world: &mut World) {
-    if !is_remote(world) || !world.resource::<RemoteSnapshot>().dirty {
+    if !world.resource::<RemoteSnapshot>().dirty {
         return;
     }
+    // println!("apply_remote_snapshot");
+
     world.resource_scope(|world, mut snapshot: Mut<RemoteSnapshot>| {
         snapshot.dirty = false;
         snapshot.revision += 1;
-        despawn_vanished(world, &snapshot);
-        spawn_missing(world, &snapshot);
-        apply_hierarchy(world, &snapshot);
-        apply_labels(world, &snapshot);
+
+        world.resource_scope(|world, mut rw: Mut<RemoteWorlds>| {
+            // let mut rw = world.resource_mut::<RemoteWorlds>();
+            let remote_world = &mut rw.remote_main;
+
+            despawn_vanished(world, remote_world, &snapshot);
+            spawn_missing(world, remote_world, &snapshot);
+            apply_hierarchy(world, remote_world, &snapshot);
+            apply_labels(world, remote_world, &snapshot);
+        })
     });
     world.resource_mut::<EntityTreeSync>().set_dirty();
     world.resource_mut::<DetailsPanelSync>().set_dirty();
 }
 
-fn despawn_vanished(world: &mut World, snapshot: &RemoteSnapshot) {
-    let stale: Vec<(Entity, Entity)> = world
-        .resource::<RemoteProxyIndex>()
-        .proxies
-        .iter()
-        .filter(|(remote, _)| !snapshot.rows.contains_key(*remote))
-        .map(|(remote, proxy)| (*remote, *proxy))
+fn despawn_vanished(_world: &mut World, remote_world: &mut World, snapshot: &RemoteSnapshot) {
+    let stale: Vec<Entity> = remote_world
+        .query_filtered::<Entity, With<RemoteEntityProxy>>()
+        .iter(&remote_world)
+        .filter(|remote| !snapshot.rows.contains_key(remote))
         .collect();
 
-    for (remote, proxy) in stale {
-        let children: Vec<Entity> = world
-            .get::<Children>(proxy)
+    for remote in stale {
+        let children: Vec<Entity> = remote_world
+            .get::<Children>(remote)
             .map(|children| children.iter().copied().collect())
             .unwrap_or_default();
         for child in children {
-            if let Ok(mut child) = world.get_entity_mut(child) {
+            if let Ok(mut child) = remote_world.get_entity_mut(child) {
                 child.remove::<ChildOf>();
             }
         }
-        if let Ok(proxy) = world.get_entity_mut(proxy) {
+        if let Ok(proxy) = remote_world.get_entity_mut(remote) {
             proxy.despawn();
         }
-        world
-            .resource_mut::<RemoteProxyIndex>()
-            .proxies
-            .remove(&remote);
     }
 }
 
-fn spawn_missing(world: &mut World, snapshot: &RemoteSnapshot) {
+fn spawn_missing(_world: &mut World, remote_world: &mut World, snapshot: &RemoteSnapshot) {
     for remote in &snapshot.order {
-        let known = world
-            .resource::<RemoteProxyIndex>()
-            .proxy(*remote)
-            .is_some_and(|proxy| world.get_entity(proxy).is_ok());
+        let known = remote_world.get_entity(*remote).is_ok();
         if known {
             continue;
         }
-        let proxy = world
-            .spawn((RemoteEntityProxy { remote: *remote }, Disabled))
-            .id();
-        world
-            .resource_mut::<RemoteProxyIndex>()
-            .proxies
-            .insert(*remote, proxy);
+        let _ = remote_world.spawn_at(*remote, RemoteEntityProxy {  });
     }
 }
 
-fn apply_hierarchy(world: &mut World, snapshot: &RemoteSnapshot) {
+fn apply_hierarchy(_world: &mut World, remote_world: &mut World, snapshot: &RemoteSnapshot) {
     for remote in &snapshot.order {
-        let index = world.resource::<RemoteProxyIndex>();
-        let Some(proxy) = index.proxy(*remote) else {
-            continue;
-        };
+        // let index = world.resource::<RemoteProxyIndex>();
+        let proxy = remote;
         let parent = snapshot.rows[remote]
             .get(CHILD_OF)
             .and_then(|parent| serde_json::from_value::<Entity>(parent.clone()).ok())
-            .and_then(|parent| index.proxy(parent))
-            .filter(|parent| *parent != proxy);
-        if world.get::<ChildOf>(proxy).map(ChildOf::parent) == parent {
+            .and_then(|parent| Some(parent))
+            .filter(|parent| *parent != *proxy);
+        if remote_world.get::<ChildOf>(*proxy).map(ChildOf::parent) == parent {
             continue;
         }
-        let Ok(mut proxy) = world.get_entity_mut(proxy) else {
+        let Ok(mut proxy) = remote_world.get_entity_mut(*proxy) else {
             continue;
         };
         match parent {
@@ -518,21 +483,19 @@ fn apply_hierarchy(world: &mut World, snapshot: &RemoteSnapshot) {
     }
 }
 
-fn apply_labels(world: &mut World, snapshot: &RemoteSnapshot) {
+fn apply_labels(world: &World, remote_world: &mut World, snapshot: &RemoteSnapshot) {
     let registry = world.resource::<AppTypeRegistry>().clone();
     let registry = registry.read();
     for remote in &snapshot.order {
-        let Some(proxy) = world.resource::<RemoteProxyIndex>().proxy(*remote) else {
-            continue;
-        };
-        let label = remote_label(world, &registry, proxy, &snapshot.rows[remote])
+        let proxy = *remote;
+        let label = remote_label(world, remote_world, &registry, proxy, &snapshot.rows[remote])
             .unwrap_or_else(|| remote.to_string());
-        if world
+        if remote_world
             .get::<RemoteLabel>(proxy)
             .map(|label| label.0.as_str())
             != Some(label.as_str())
         {
-            world.entity_mut(proxy).insert(RemoteLabel(label));
+            remote_world.entity_mut(proxy).insert(RemoteLabel(label));
         }
     }
 }
@@ -543,6 +506,7 @@ fn apply_labels(world: &mut World, snapshot: &RemoteSnapshot) {
 /// [`Name`]: bevy_ecs::name::Name
 fn remote_label(
     world: &World,
+    remote_world: &World,
     registry: &TypeRegistry,
     proxy: Entity,
     components: &Map<String, Value>,
@@ -570,7 +534,7 @@ fn remote_label(
             label_definition_priority: Some(*priority),
         })
         .collect();
-    resolve_label(world, proxy, &data).map(|label| label.label.as_str().to_string())
+    resolve_label(&remote_world, proxy, &data).map(|label| label.label.as_str().to_string())
 }
 
 #[cfg(test)]
@@ -592,7 +556,7 @@ mod tests {
         world.insert_resource(InspectorSource::Remote(RemoteSource::localhost(15702)));
         world.init_resource::<InspectorSelection>();
         world.init_resource::<RemoteConnection>();
-        world.init_resource::<RemoteProxyIndex>();
+        // world.init_resource::<RemoteProxyIndex>();
         world.init_resource::<RemoteSnapshot>();
         world.init_resource::<EntityTreeSync>();
         world.init_resource::<DetailsPanelSync>();
@@ -611,10 +575,6 @@ mod tests {
         let rows: BrpQueryResponse = serde_json::from_value(Value::Array(rows)).unwrap();
         world.resource_mut::<RemoteSnapshot>().set(rows);
         apply_remote_snapshot(world);
-    }
-
-    pub(crate) fn proxy(world: &World, remote: Entity) -> Entity {
-        world.resource::<RemoteProxyIndex>().proxy(remote).unwrap()
     }
 
     #[test]
@@ -637,8 +597,8 @@ mod tests {
             ],
         );
 
-        let parent_proxy = proxy(&world, parent);
-        let child_proxy = proxy(&world, child);
+        let parent_proxy = parent;
+        let child_proxy = child;
         assert_ne!(parent_proxy, parent);
         assert!(world.get::<Disabled>(parent_proxy).is_some());
         assert!(world.get::<Name>(parent_proxy).is_none());
@@ -657,7 +617,7 @@ mod tests {
             alloc::vec![row(remote(7), json!({ "demo::Unknown": 1 }))],
         );
         assert_eq!(
-            proxy_label(&world, proxy(&world, remote(7))).as_deref(),
+            proxy_label(&world, remote(7)).as_deref(),
             Some("7v0")
         );
     }
@@ -676,8 +636,8 @@ mod tests {
                 row(c, json!({ NAME: "C", CHILD_OF: b })),
             ],
         );
-        let b_proxy = proxy(&world, b);
-        let c_proxy = proxy(&world, c);
+        let b_proxy = b;
+        let c_proxy = c;
 
         apply(
             &mut world,
@@ -691,9 +651,9 @@ mod tests {
         assert!(world.get_entity(c_proxy).is_ok());
         assert_eq!(
             world.get::<ChildOf>(c_proxy).map(ChildOf::parent),
-            Some(proxy(&world, a))
+            Some(a)
         );
-        assert_eq!(world.resource::<RemoteProxyIndex>().len(), 2);
+        // assert_eq!(world.resource::<RemoteProxyIndex>().len(), 2);
     }
 
     #[test]
@@ -705,7 +665,7 @@ mod tests {
             alloc::vec![row(local, json!({ NAME: "Remote" }))],
         );
 
-        let proxy = proxy(&world, local);
+        let proxy = local;
         assert_ne!(proxy, local);
         assert_eq!(world.get::<Name>(local).map(Name::as_str), Some("Local"));
         assert_eq!(proxy_label(&world, proxy).as_deref(), Some("Remote"));
@@ -718,13 +678,13 @@ mod tests {
         let new =
             Entity::from_index_and_generation(old.index(), old.generation().after_versions(1));
         apply(&mut world, alloc::vec![row(old, json!({ NAME: "Old" }))]);
-        let old_proxy = proxy(&world, old);
+        let old_proxy = old;
         world.resource_mut::<InspectorSelection>().0 = Some(old_proxy);
 
         apply(&mut world, alloc::vec![row(new, json!({ NAME: "New" }))]);
 
         assert!(world.get_entity(old_proxy).is_err());
-        assert_ne!(proxy(&world, new), old_proxy);
+        assert_ne!(new, old_proxy);
     }
 
     #[test]
@@ -735,14 +695,14 @@ mod tests {
             &mut world,
             alloc::vec![row(remote(1), json!({ NAME: "A" }))],
         );
-        let proxy = proxy(&world, remote(1));
+        let proxy = remote(1);
         world.resource_mut::<InspectorSelection>().0 = Some(proxy);
 
         world.insert_resource(InspectorSource::Local);
         sync_remote_source(&mut world);
 
         assert!(world.get_entity(proxy).is_err());
-        assert!(world.resource::<RemoteProxyIndex>().is_empty());
+        // assert!(world.resource::<RemoteProxyIndex>().is_empty());
         assert_eq!(world.resource::<InspectorSelection>().0, None);
         assert!(world.resource::<RemoteConnection>().client().is_none());
     }
