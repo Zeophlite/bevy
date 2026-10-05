@@ -258,7 +258,7 @@ fn plan_sync(world: &World) -> SyncPlan {
         return plan;
     };
 
-    println!("Found {} roots", roots.len());
+    // println!("Found {} roots, {} populated", roots.len(), populated.len());
 
     roots.sort_unstable_by_key(|root| root.index());
     diff_container(world, inspect_world, tree_view, &roots, &mut plan);
@@ -270,20 +270,26 @@ fn plan_sync(world: &World) -> SyncPlan {
         if inspect_world.get_entity(source).is_err() {
             continue;
         }
-        let Some(container) = child_with::<FeathersTreeItemChildren>(inspect_world, row) else {
+        let Some(container) = child_with::<FeathersTreeItemChildren>(world, row) else {
             continue;
         };
         let expected = visible_children(inspect_world, source);
         diff_container(world, inspect_world, container, &expected, &mut plan);
     }
 
+    // println!("-- despawn={}  relabel={}  spawn={}  expandable={}",
+    //     plan.despawn.len(),
+    //     plan.relabel.len(),
+    //     plan.spawn.len(),
+    //     plan.expandable.len()
+    // );
     plan
 }
 
 /// Diffs one container's rows against `expected`, recording the changes into `plan`. See [`SyncPlan`].
 fn diff_container(world: &World, inspect_world: &World, container: Entity, expected: &[Entity], plan: &mut SyncPlan) {
     let mut existing: HashMap<Entity, Entity> = HashMap::new();
-    if let Some(children) = inspect_world.get::<Children>(container) {
+    if let Some(children) = world.get::<Children>(container) {
         for child in children.iter().copied() {
             if let Some(row) = world.get::<InspectorRow>(child) {
                 existing.insert(row.source, child);
@@ -397,9 +403,12 @@ fn is_excluded(world: &World, entity: Entity) -> bool {
     let Ok(entity_ref) = world.get_entity(entity) else {
         return true;
     };
+    let r1 = entity_ref.contains::<IsResource>(); // TODO: this returns true in remote, but that's not possible...
+    let r2 = entity_ref.contains::<SystemIdMarker>();
+    let r3 = entity_ref.contains::<Observer>();
     if false // entity_ref.contains::<IsResource>()
         // || entity_ref.contains::<SystemIdMarker>()
-        //|| entity_ref.contains::<Observer>()
+        // || entity_ref.contains::<Observer>()
     {
         return true;
     }
