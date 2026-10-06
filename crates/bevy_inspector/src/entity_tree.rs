@@ -244,6 +244,7 @@ fn plan_sync(world: &World) -> SyncPlan {
         }
     }
 
+    // println!("Plan");
     for entity_ref in inspect_world.iter_entities() {
         let entity = entity_ref.id();
         if !entity_ref.contains::<ChildOf>()
@@ -406,9 +407,10 @@ fn is_excluded(world: &World, entity: Entity) -> bool {
     let r1 = entity_ref.contains::<IsResource>(); // TODO: this returns true in remote, but that's not possible...
     let r2 = entity_ref.contains::<SystemIdMarker>();
     let r3 = entity_ref.contains::<Observer>();
-    if false // entity_ref.contains::<IsResource>()
-        // || entity_ref.contains::<SystemIdMarker>()
-        // || entity_ref.contains::<Observer>()
+    // println!("-- {r1} {r2} {r3}");
+    if entity_ref.contains::<IsResource>()
+        || entity_ref.contains::<SystemIdMarker>()
+        || entity_ref.contains::<Observer>()
     {
         return true;
     }

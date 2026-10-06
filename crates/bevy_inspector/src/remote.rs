@@ -193,6 +193,8 @@ impl RemoteSnapshot {
         self.rows.clear();
         self.order.clear();
         for row in rows {
+            let r1 = row.components.contains_key(IS_RESOURCE);
+            let r2 = row.components.is_empty();
             if row.components.contains_key(IS_RESOURCE) || row.components.is_empty() {
                 continue;
             }
@@ -237,13 +239,13 @@ pub fn sync_remote_source(
     mut details_panel_sync: ResMut<DetailsPanelSync>,
 ) {
     let source = match &*inspector_source {
-        InspectorSource::Remote(source) => Some(source.clone()),
+        InspectorSource::Remote(source) => Some(source),
         _ => None,
     };
-    // if connection.source != source {
-    //     return;
-    // }
-    // println!("sync_remote_source");
+    if connection.source.as_ref() == source {
+        return;
+    }
+    let source = source.cloned();
 
     clear_proxies(selection, &mut rw.remote_main);
     remote_snapshot.set(Vec::new());
@@ -306,6 +308,7 @@ pub fn poll_remote_connection(
                 );
             }
             None if now.saturating_sub(pending.started) >= REQUEST_TIMEOUT => {
+                println!("fail: the remote app did not answer in time");
                 connection.fail("the remote app did not answer in time".to_string(), now);
             }
             None => {
@@ -320,20 +323,25 @@ pub fn poll_remote_connection(
     }
 
     let (kind, task) = match connection.state {
-        RemoteConnectionState::Connected { .. } => (
+        RemoteConnectionState::Connected { .. } => {
+            // println!("connected");
+            (
             RequestKind::Query,
             client.spawn_call(BRP_QUERY_METHOD, Some(query_params())),
-        ),
+        )},
         _ => {
             if connection.state == RemoteConnectionState::Disconnected {
                 connection.state = RemoteConnectionState::Connecting;
             }
+            println!("Not connected");
             (
                 RequestKind::Info,
                 client.spawn_call(BRP_APP_INFO_METHOD, None),
             )
         }
     };
+
+    // println!("pending --> {:?}", kind);
     connection.pending = Some(PendingCall {
         kind,
         task,
@@ -377,6 +385,7 @@ fn finish_call(
     match kind {
         RequestKind::Info => match serde_json::from_value::<BrpAppInfoResponse>(value) {
             Ok(info) => {
+                // println!("got info");
                 info!(
                     "the remote inspector connected to {} ({})",
                     info.app_name, info.bevy_version
@@ -391,6 +400,7 @@ fn finish_call(
         },
         RequestKind::Query => match serde_json::from_value::<BrpQueryResponse>(value) {
             Ok(rows) => {
+                // println!("got query");
                 snapshot.set(rows);
                 connection.next_poll = now + POLL_INTERVAL.max(elapsed * 2);
             }

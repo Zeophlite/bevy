@@ -71,6 +71,7 @@ pub(crate) fn world_to_inspect(world: &World) -> &World {
     if is_remote(world) {
         let rw = world.get_resource::<remote::RemoteWorlds>();
         if let Some(rw) = rw {
+            println!("world_to_inspect is remote_main");
             return &rw.remote_main;
         }
     }
