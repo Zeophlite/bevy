@@ -404,8 +404,9 @@ pub fn sync_details_panel(world: &mut World) {
         return;
     };
 
-    let components = inspect_components(world, selection);
-    let empty = empty_state(world, selection, &components);
+    let inspected = crate::world_to_inspect(world);
+    let components = inspect_components(inspected, selection);
+    let empty = empty_state(inspected, selection, &components);
 
     let index = world.resource::<DetailsIndex>();
     if selection_changed || index.body != Some(body) || index.empty != empty {
@@ -424,6 +425,7 @@ fn find_body(world: &mut World) -> Option<Entity> {
         .next()
 }
 
+/// The component groups of `selection` in the inspected `world`, sorted in display order.
 pub(crate) fn inspect_components(
     world: &World,
     selection: Option<Entity>,
@@ -431,10 +433,6 @@ pub(crate) fn inspect_components(
     let Some(entity) = selection else {
         return Vec::new();
     };
-    #[cfg(feature = "remote")]
-    if let Some(components) = crate::remote::details::proxy_components(world, entity) {
-        return components;
-    }
 
     let settings = EntityInspectionSettings {
         include_components: true,
@@ -464,6 +462,10 @@ pub(crate) fn inspect_components(
                 .unwrap_or_default(),
         })
         .collect();
+    #[cfg(feature = "remote")]
+    if let Some(record) = world.component_id::<crate::remote::RemoteComponents>() {
+        components.retain(|component| component.id != record);
+    }
     components.sort_by(|left, right| (&left.name, left.id).cmp(&(&right.name, right.id)));
     components
 }
