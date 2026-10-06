@@ -404,7 +404,7 @@ pub fn sync_details_panel(world: &mut World) {
         return;
     };
 
-    let inspected = crate::world_to_inspect(world);
+    let inspected = crate::world_to_inspect(world, true);
     let components = inspect_components(inspected, selection);
     let empty = empty_state(inspected, selection, &components);
 

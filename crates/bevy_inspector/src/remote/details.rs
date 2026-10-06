@@ -37,10 +37,10 @@ use serde_json::Value;
 use super::{
     source::{spawn, POLL_INTERVAL, REQUEST_TIMEOUT},
     world::{AsideReason, Coverage, PolledComponent, UnregisteredComponents},
-    RemoteComponents, RemoteConnection, RemoteConnectionState, RemoteWorld,
+    RemoteComponents, RemoteConnections, RemoteConnectionState, RemoteWorlds,
 };
 use crate::{
-    InspectorSelection, component_short_name, details_panel::{ComponentDetails, DetailsPanelSync, FieldEntry, FieldValue, field_entries}, remote::world::RemoteWorlds,
+    InspectorSelection, component_short_name, details_panel::{ComponentDetails, DetailsPanelSync, FieldEntry, FieldValue, field_entries},
 };
 
 /// The time between two fetches of the selected entity's components.
@@ -63,8 +63,14 @@ struct DetailsCall {
     started: Duration,
 }
 
-/// The fetch of the selected remote entity's components.
 #[derive(Resource, Default)]
+pub struct RemoteEntityFetchs {
+    pub main: RemoteEntityFetch,
+    pub render: RemoteEntityFetch,
+}
+
+/// The fetch of the selected remote entity's components.
+#[derive(Default)]
 pub struct RemoteEntityFetch {
     entity: Option<Entity>,
     pending: Option<DetailsCall>,
@@ -86,13 +92,13 @@ impl RemoteEntityFetch {
 
 /// Fetches the components of the selected remote entity, and writes them into the
 /// [`RemoteWorld`] when they change.
-pub fn sync_remote_details(world: &mut World) {
+pub fn sync_remote_details(world: &mut World) { // CHAIN 4
     let selection = world
         .resource::<InspectorSelection>()
         .0
         .filter(|entity| world.resource::<RemoteWorlds>().main.contains(*entity));
-    if world.resource::<RemoteEntityFetch>().entity != selection {
-        *world.resource_mut::<RemoteEntityFetch>() = RemoteEntityFetch {
+    if world.resource::<RemoteEntityFetchs>().main.entity != selection {
+        world.resource_mut::<RemoteEntityFetchs>().main = RemoteEntityFetch {
             entity: selection,
             ..RemoteEntityFetch::default()
         };
@@ -105,15 +111,15 @@ pub fn sync_remote_details(world: &mut World) {
         .map(Time::elapsed)
         .unwrap_or_default();
 
-    if let Some(fetched) = finish_fetch(&mut world.resource_mut::<RemoteEntityFetch>(), now) {
+    if let Some(fetched) = finish_fetch(&mut world.resource_mut::<RemoteEntityFetchs>().main, now) {
         receive_entity(world, remote, fetched);
     }
 
-    let fetch = world.resource::<RemoteEntityFetch>();
+    let fetch = &world.resource::<RemoteEntityFetchs>().main;
     if fetch.pending.is_some() || now < fetch.next_fetch {
         return;
     }
-    let connection = world.resource::<RemoteConnection>();
+    let connection = &world.resource::<RemoteConnections>().main;
     if !matches!(connection.state, RemoteConnectionState::Connected { .. }) {
         return;
     }
@@ -121,7 +127,7 @@ pub fn sync_remote_details(world: &mut World) {
         return;
     };
     let registry = world.resource::<AppTypeRegistry>().0.clone();
-    world.resource_mut::<RemoteEntityFetch>().pending = Some(DetailsCall {
+    world.resource_mut::<RemoteEntityFetchs>().main.pending = Some(DetailsCall {
         task: spawn(fetch_entity(client, remote, registry)),
         started: now,
     });
@@ -172,6 +178,7 @@ fn finish_fetch(fetch: &mut RemoteEntityFetch, now: Duration) -> Option<FetchedE
             return None;
         }
     };
+
     fetch.next_fetch = now + DETAILS_INTERVAL;
     match result {
         Ok(fetched) => {
@@ -461,7 +468,7 @@ mod tests {
 
         assert!(mirrored(&world).get_entity(target).is_err());
         assert!(groups(&world, target).is_empty());
-        assert_eq!(world.resource::<RemoteEntityFetch>().entity(), None);
+        assert_eq!(world.resource::<RemoteEntityFetchs>().main.entity(), None);
     }
 
     #[test]
