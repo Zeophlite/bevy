@@ -40,9 +40,7 @@ use super::{
     RemoteComponents, RemoteConnection, RemoteConnectionState, RemoteWorld,
 };
 use crate::{
-    component_short_name,
-    details_panel::{field_entries, ComponentDetails, DetailsPanelSync, FieldEntry, FieldValue},
-    InspectorSelection,
+    InspectorSelection, component_short_name, details_panel::{ComponentDetails, DetailsPanelSync, FieldEntry, FieldValue, field_entries}, remote::world::RemoteWorlds,
 };
 
 /// The time between two fetches of the selected entity's components.
@@ -92,7 +90,7 @@ pub fn sync_remote_details(world: &mut World) {
     let selection = world
         .resource::<InspectorSelection>()
         .0
-        .filter(|entity| world.resource::<RemoteWorld>().contains(*entity));
+        .filter(|entity| world.resource::<RemoteWorlds>().main.contains(*entity));
     if world.resource::<RemoteEntityFetch>().entity != selection {
         *world.resource_mut::<RemoteEntityFetch>() = RemoteEntityFetch {
             entity: selection,
@@ -131,14 +129,14 @@ pub fn sync_remote_details(world: &mut World) {
 
 /// Writes the fetched components of `remote` into the [`RemoteWorld`].
 pub(crate) fn receive_entity(world: &mut World, remote: Entity, fetched: FetchedEntity) {
-    let written = world.resource_scope(|_, mut remote_world: Mut<RemoteWorld>| {
-        remote_world.register(
+    let written = world.resource_scope(|_, mut remote_world: Mut<RemoteWorlds>| {
+        remote_world.main.register(
             fetched
                 .components
                 .iter()
                 .map(|component| component.type_path.as_str()),
         );
-        let written = remote_world.write(
+        let written = remote_world.main.write(
             remote,
             fetched.components,
             &fetched.unserialized,
@@ -146,9 +144,9 @@ pub(crate) fn receive_entity(world: &mut World, remote: Entity, fetched: Fetched
             false,
         );
         if written.tree {
-            remote_world.order_children();
+            remote_world.main.order_children();
         }
-        remote_world.take_garbage();
+        remote_world.main.take_garbage();
         written
     });
     if written.changed {
