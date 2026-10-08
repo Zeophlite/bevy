@@ -49,7 +49,7 @@ pub struct InspectorUi;
 /// Marker for the tree view that holds the entity tree rows.
 #[derive(Component, Debug, Default, Clone, Copy, Reflect)]
 #[reflect(Component, Debug, Default, Clone)]
-pub struct InspectorTreeView;
+pub struct InspectorTreeView(pub bool); // is_main
 
 /// A row of the entity tree, and the entity it displays.
 #[derive(Component, Debug, Clone, Copy, Reflect)]
@@ -122,7 +122,7 @@ impl EntityTreeSync {
 }
 
 /// A panel listing the entities of the inspected world as an expandable tree.
-pub fn entity_tree_panel() -> impl Scene {
+pub fn entity_tree_panel(is_main: bool) -> impl Scene {
     bsn! {
         InspectorUi
         @subpane()
@@ -132,7 +132,7 @@ pub fn entity_tree_panel() -> impl Scene {
         }
         Children [
             @subpane_header() Children [
-                @caption("Entities")
+                @caption(format!("Entities {}", is_main))
             ]
             --
             @subpane_body()
@@ -140,7 +140,7 @@ pub fn entity_tree_panel() -> impl Scene {
                 overflow: Overflow::scroll_y(),
             }
             Children [
-                InspectorTreeView
+                InspectorTreeView(is_main)
                 @FeathersTreeView
                 on(tree_view_self_update)
                 on(tree_view_expand_self_update)
@@ -154,17 +154,18 @@ pub fn entity_tree_panel() -> impl Scene {
 /// Observer that records the inspected entity of the selected row in [`InspectorSelection`].
 pub fn inspector_tree_selected(
     change: On<ValueChange<Option<Entity>>>,
-    trees: Query<(), With<InspectorTreeView>>,
+    trees: Query<&InspectorTreeView>,
     rows: Query<&InspectorRow>,
     mut selection: ResMut<InspectorSelection>,
 ) {
-    if !trees.contains(change.source) {
+    let Ok(tree) = trees.get(change.source) else {
         return;
-    }
+    };
+
     selection.0 = change
         .value
         .and_then(|row| rows.get(row).ok())
-        .map(|row| row.source);
+        .map(|row| (row.source, tree.0));
 }
 
 /// Observer that starts keeping a row's child rows in sync the first time it is expanded.
@@ -609,7 +610,7 @@ mod tests {
         let panel = app.world_mut().spawn(InspectorUi).id();
         let tree = app
             .world_mut()
-            .spawn((InspectorTreeView, ChildOf(panel)))
+            .spawn((InspectorTreeView(true), ChildOf(panel)))
             .id();
         let local = app.world_mut().spawn(Name::new("Local")).id();
         let parent = Entity::from_raw_u32(40).unwrap();
@@ -644,7 +645,7 @@ mod tests {
         let panel = app.world_mut().spawn(InspectorUi).id();
         let tree = app
             .world_mut()
-            .spawn((InspectorTreeView, ChildOf(panel)))
+            .spawn((InspectorTreeView(true), ChildOf(panel)))
             .id();
         let roots: Vec<Entity> = (0..500)
             .map(|index| app.world_mut().spawn(Name::new(format!("{index}"))).id())
@@ -673,7 +674,7 @@ mod tests {
         let panel = app.world_mut().spawn(InspectorUi).id();
         let tree = app
             .world_mut()
-            .spawn((InspectorTreeView, ChildOf(panel)))
+            .spawn((InspectorTreeView(true), ChildOf(panel)))
             .id();
         let parent = app.world_mut().spawn(Name::new("Parent")).id();
         app.world_mut().spawn((Name::new("Child"), ChildOf(parent)));

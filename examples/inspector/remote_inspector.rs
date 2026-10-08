@@ -69,7 +69,7 @@ fn inspector_ui() -> impl Scene {
             Children [
                 @FeathersPane { @size: 1.0, @min_size: 220.0 }
                 Children [
-                    @entity_tree_panel()
+                    @entity_tree_panel(true)
                     Node {
                         width: Val::Auto,
                     }
@@ -89,7 +89,7 @@ fn inspector_ui() -> impl Scene {
                 --
                 @FeathersPane { @size: 1.0, @min_size: 220.0 }
                 Children [
-                    @entity_tree_panel()
+                    @entity_tree_panel(false)
                     Node {
                         width: Val::Auto,
                     }

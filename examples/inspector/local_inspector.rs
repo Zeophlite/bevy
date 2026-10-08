@@ -143,7 +143,7 @@ fn inspector_ui() -> impl Scene {
             Children [
                 @FeathersPane { @size: 1.0, @min_size: 220.0 }
                 Children [
-                    @entity_tree_panel()
+                    @entity_tree_panel(true)
                     Node {
                         width: Val::Auto,
                     }
@@ -171,7 +171,7 @@ fn log_selection(selection: Res<InspectorSelection>, names: Query<&Name>) {
         Some(entity) => info!(
             "selected {entity}: {}",
             names
-                .get(entity)
+                .get(entity.0)
                 .map(Name::as_str)
                 .unwrap_or("<unnamed entity>")
         ),

@@ -236,7 +236,7 @@ pub struct DetailsIndex {
     fields: HashMap<(ComponentId, String), FieldWidget>,
     groups: HashMap<ComponentId, GroupWidget>,
     body: Option<Entity>,
-    selection: Option<Entity>,
+    selection: Option<(Entity, bool)>, // is_main
     empty: Option<EmptyState>,
 }
 
@@ -404,9 +404,12 @@ pub fn sync_details_panel(world: &mut World) {
         return;
     };
 
-    let inspected = crate::world_to_inspect(world, true);
+    let maybe_is_main = selection.map_or(false, |s| s.1);
+    let maybe_selected = selection.map_or(None, |s| Some(s.0));
+
+    let inspected = crate::world_to_inspect(world, maybe_is_main);
     let components = inspect_components(inspected, selection);
-    let empty = empty_state(inspected, selection, &components);
+    let empty = empty_state(inspected, maybe_selected, &components);
 
     let index = world.resource::<DetailsIndex>();
     if selection_changed || index.body != Some(body) || index.empty != empty {
@@ -428,9 +431,9 @@ fn find_body(world: &mut World) -> Option<Entity> {
 /// The component groups of `selection` in the inspected `world`, sorted in display order.
 pub(crate) fn inspect_components(
     world: &World,
-    selection: Option<Entity>,
+    selection: Option<(Entity, bool)>,
 ) -> Vec<ComponentDetails> {
-    let Some(entity) = selection else {
+    let Some((entity, is_main)) = selection else {
         return Vec::new();
     };
 
@@ -488,7 +491,7 @@ fn empty_state(
 fn reset_body(
     world: &mut World,
     body: Entity,
-    selection: Option<Entity>,
+    selection: Option<(Entity, bool)>,
     empty: Option<EmptyState>,
 ) {
     let children: Vec<Entity> = world
@@ -1631,7 +1634,7 @@ mod tests {
     fn rebuilds_on_selection_and_updates_values_in_place() {
         let mut app = test_app();
         let ui_root = app.world_mut().spawn(InspectorUi).id();
-        app.world_mut().spawn((InspectorTreeView, ChildOf(ui_root)));
+        app.world_mut().spawn((InspectorTreeView(true), ChildOf(ui_root)));
         let panel = app
             .world_mut()
             .spawn((InspectorDetailsBody, ChildOf(ui_root)))
