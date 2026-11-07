@@ -1,5 +1,5 @@
 use crate::contact_shadows::ContactShadows;
-use crate::{resources::prepare_atmosphere_buffers, skin::skin_uniforms_from_world};
+use crate::skin::skin_uniforms_from_world;
 use alloc::sync::Arc;
 use bevy_asset::uuid::Uuid;
 use bevy_asset::{embedded_asset, load_embedded_asset, AssetId, AssetIndex, AssetServer};
@@ -145,6 +145,9 @@ impl MeshRenderPlugin {
 #[cfg(debug_assertions)]
 pub const MESH_PIPELINE_VIEW_LAYOUT_SAFE_MAX_TEXTURES: usize = 10;
 
+#[derive(SystemSet, Hash, Debug, Clone, Eq, PartialEq)]
+pub struct AtmoSet;
+
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub struct MeshPipelineSystems;
 
@@ -220,7 +223,7 @@ impl Plugin for MeshRenderPlugin {
                         prepare_mesh_view_bind_groups
                             .in_set(RenderSystems::PrepareBindGroups)
                             .after(prepare_oit_buffers)
-                            .after(prepare_atmosphere_buffers),
+                            .after(AtmoSet),
                         no_gpu_preprocessing::clear_batched_cpu_instance_buffers::<MeshPipeline>
                             .in_set(RenderSystems::Cleanup)
                             .after(RenderSystems::Render),

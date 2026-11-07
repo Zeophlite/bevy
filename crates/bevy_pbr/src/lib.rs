@@ -38,13 +38,10 @@ pub use contact_shadows::{
 pub mod decal;
 pub mod deferred;
 pub mod diagnostic;
-mod extended_material;
 mod fog;
 mod light_probe;
 mod lightmap;
-mod material;
 mod medium;
-mod mesh_material;
 mod parallax;
 mod pbr_material;
 mod prepass;
@@ -63,13 +60,13 @@ use bevy_light::{
 use bevy_shader::{load_shader_library, ShaderRef};
 pub use cluster::*;
 pub use decal::clustered::ClusteredDecalPlugin;
-pub use extended_material::*;
+pub use bevy_toon::extended_material::*;
 pub use fog::*;
 pub use light_probe::*;
 pub use lightmap::*;
-pub use material::*;
+pub use bevy_toon::material::*;
 pub use medium::*;
-pub use mesh_material::*;
+pub use bevy_toon::mesh_material::*;
 pub use parallax::*;
 pub use pbr_material::*;
 pub use prepass::*;
@@ -87,8 +84,8 @@ pub mod prelude {
     pub use crate::{
         contact_shadows::ContactShadowsPlugin,
         fog::{DistanceFog, FogFalloff},
-        material::{Material, MaterialPlugin},
-        mesh_material::MeshMaterial3d,
+        bevy_toon::material::{Material, MaterialPlugin},
+        bevy_toon::mesh_material::MeshMaterial3d,
         parallax::ParallaxMappingMethod,
         pbr_material::StandardMaterial,
         ssao::ScreenSpaceAmbientOcclusionPlugin,

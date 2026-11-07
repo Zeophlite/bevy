@@ -183,7 +183,7 @@ impl Plugin for AtmospherePlugin {
                     prepare_atmosphere_probe_bind_groups.in_set(RenderSystems::PrepareBindGroups),
                     prepare_atmosphere_transforms.in_set(RenderSystems::PrepareResources),
                     prepare_atmosphere_bind_groups.in_set(RenderSystems::PrepareBindGroups),
-                    prepare_atmosphere_buffers.in_set(RenderSystems::PrepareResources),
+                    prepare_atmosphere_buffers.in_set(AtmoSet).in_set(RenderSystems::PrepareResources),
                 ),
             )
             .add_systems(

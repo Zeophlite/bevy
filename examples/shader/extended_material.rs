@@ -3,7 +3,7 @@
 use bevy::{
     color::palettes::basic::RED,
     material::OpaqueRendererMethod,
-    pbr::{ExtendedMaterial, MaterialExtension},
+    toon::{ExtendedMaterial, MaterialExtension},
     prelude::*,
     render::render_resource::*,
     shader::ShaderRef,
